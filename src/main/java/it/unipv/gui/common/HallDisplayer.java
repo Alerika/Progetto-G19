@@ -33,8 +33,7 @@ public class HallDisplayer extends JFrame {
     *    le informazioni riguardanti i posti a sedere e li salvo in una lista
     */
     private void initDraggableSeatsList() {
-        CSVToDraggableSeats csvToDraggableSeats = new CSVToDraggableSeats();
-        draggableSeats = csvToDraggableSeats.getMyDraggableSeatListFromCSV(StringReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
+        draggableSeats = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(StringReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
     }
 
     /* Inizializzo il JPanel che all'interno ospiterà i posti a sedere;

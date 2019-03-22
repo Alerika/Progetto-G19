@@ -2,6 +2,8 @@ package it.unipv.gui.manager;
 
 import it.unipv.conversion.FileToHallList;
 import it.unipv.gui.common.HallDisplayer;
+import it.unipv.utils.ApplicationUtils;
+import it.unipv.utils.StringReferences;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -24,9 +26,7 @@ public class ManagerUI extends JFrame {
     private JScrollPane hallListPanel;
     private List<String> hallNames = new ArrayList<>();
     private JTable hallTable;
-    private FileToHallList fthl = new FileToHallList();
     private DefaultTableModel dtm;
-
 
     public ManagerUI() {
         initHallNamesList();
@@ -37,7 +37,7 @@ public class ManagerUI extends JFrame {
 
     // Inizializzo la lista delle sale tramite la classe "FileToHallList"
     private void initHallNamesList() {
-        hallNames = fthl.getHallList();
+        hallNames = FileToHallList.getHallList();
     }
 
     /*
@@ -60,7 +60,7 @@ public class ManagerUI extends JFrame {
             if(nomeSala.equalsIgnoreCase("") || nomeSala.trim().length()==0) {
                 JOptionPane.showMessageDialog(this, "Devi inserire un nome!");
             } else if(!nomeSala.equalsIgnoreCase("")) {
-                new HallEditor(nomeSala, this);
+                new HallEditor(nomeSala, this, false);
             }
         });
     }
@@ -91,6 +91,7 @@ public class ManagerUI extends JFrame {
         hallTable = new JTable();
         hallTable.getTableHeader().setUI(null);
         hallTable.setModel(dtm);
+        ManagerUI manager = this;
         hallTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -102,7 +103,18 @@ public class ManagerUI extends JFrame {
                 }
 
                 if(col == 1) {
-                    //TODO :D
+                    new HallEditor(hallNames.get(row), manager, true);
+                }
+
+                if(col == 2) {
+                    int reply = JOptionPane.showConfirmDialog(manager, "Vuoi davvero eliminare la piantina " + hallNames.get(row) + " ?");
+                    if(reply == JOptionPane.YES_OPTION) {
+                        ApplicationUtils.removeFileFromPath(StringReferences.PIANTINAFOLDERPATH+hallNames.get(row)+".csv");
+                        hallNames.remove(row);
+                        dtm.setDataVector(getRowData(), getColumnNames());
+                        dtm.fireTableDataChanged();
+                        manager.repaint();
+                    }
                 }
 
             }
@@ -126,18 +138,19 @@ public class ManagerUI extends JFrame {
 
     //Metodo utilizzato per popolare le righe della tabella
     private Object[][] getRowData() {
-        Object rowData[][] = new Object[hallNames.size()][2];
+        Object rowData[][] = new Object[hallNames.size()][3];
         String hall;
         for(int i=0; i<hallNames.size(); i++) {
             hall = hallNames.get(i);
             rowData[i][0] = ""+hall;
             rowData[i][1] = "Modifica";
+            rowData[i][2] = "Rimuovi";
         }
         return rowData;
     }
 
     //Metodo utilizzato per dare un nome alle colonne della tabella, anche se le ho nascoste
-    private Object[] getColumnNames() { return new Object[]{"",""}; }
+    private Object[] getColumnNames() { return new Object[]{"","",""}; }
 
     //Inizializzazione dei parametri base del frame
     private void initFrame() {

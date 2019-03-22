@@ -1,5 +1,6 @@
 package it.unipv.gui.manager;
 
+import it.unipv.conversion.CSVToDraggableSeats;
 import it.unipv.conversion.DraggableSeatsToCSV;
 import it.unipv.gui.common.MyDraggableSeat;
 import it.unipv.utils.StringReferences;
@@ -13,8 +14,7 @@ import java.util.List;
 
 
 /**
- *  Questa classe viene utilizzata principalmente per creare/modificare
- *     la piantina di una sala. Per ora funziona solo la parte creazione.
+ *  Questa classe viene utilizzata principalmente per creare/modificare la piantina di una sala.
  */
 class HallEditor extends JFrame{
     private List<String> createdSeatsName = new ArrayList<>();
@@ -26,14 +26,35 @@ class HallEditor extends JFrame{
     /**
      * @param nomeSala -> viene utilizzato per il nome del file e per il titolo del frame;
      * @param summoner -> viene utilizzato per triggerare l'evento di update della tabella
+     * @param wasItAlreadyCreated -> viene utilizzato per stabilire se si è in modalità nuova sala o modifica sala esistente
      */
-    HallEditor(String nomeSala, ManagerUI summoner) {
+    HallEditor( String nomeSala
+              , ManagerUI summoner
+              , boolean wasItAlreadyCreated) {
         this.nomeSala = nomeSala;
         this.summoner = summoner;
 
         initMenuBar();
         initDraggableSeatsPanel();
         initFrame();
+
+        if(wasItAlreadyCreated) {
+            initDraggableSeatsList();
+        }
+
+    }
+
+    /* Se la sala è già stata creata vuol dire che esistono dei posti in precedenza,
+     *    quindi vado a leggerli da file e a disegnarli di conseguenza.
+    */
+    private void initDraggableSeatsList() {
+        draggableSeatsList = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(StringReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
+        for(MyDraggableSeat mds : draggableSeatsList) {
+            draggableSeatsPanel.add(mds);
+            createdSeatsName.add(mds.getText());
+            mds.setIsItDraggable(true);
+            repaint();
+        }
     }
 
     /* Creazione del menuBar
@@ -51,8 +72,7 @@ class HallEditor extends JFrame{
         JMenuItem saveItem = new JMenuItem("Salva");
         fileMenu.add(saveItem);
         saveItem.addActionListener( e -> {
-            DraggableSeatsToCSV draggableSeatsToCSV = new DraggableSeatsToCSV();
-            draggableSeatsToCSV.createCSVFromDraggableSeatsList( draggableSeatsList
+            DraggableSeatsToCSV.createCSVFromDraggableSeatsList( draggableSeatsList
                                                                , StringReferences.PIANTINAFOLDERPATH + nomeSala +".csv"
                                                                , false);
             JOptionPane.showMessageDialog(this, "Piantina salvata con successo!");
@@ -154,12 +174,7 @@ class HallEditor extends JFrame{
     // Inizializzazione dei parametri di base del frame
     private void initFrame() {
         setTitle("Editor " + nomeSala);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent windowEvent) {
-                setVisible(false);
-            }
-        });
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new GridLayout(1,1));
         add(draggableSeatsPanel);
         setSize(700,500);

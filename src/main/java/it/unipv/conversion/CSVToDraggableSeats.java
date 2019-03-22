@@ -1,6 +1,6 @@
 package it.unipv.conversion;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 import it.unipv.gui.common.MyDraggableSeat;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
@@ -22,7 +22,7 @@ public class CSVToDraggableSeats {
 
     public CSVToDraggableSeats() { }
 
-    public List<MyDraggableSeat> getMyDraggableSeatListFromCSV(String path) {
+    public static List<MyDraggableSeat> getMyDraggableSeatListFromCSV(String path) {
         CSVReader reader = null;
         List<MyDraggableSeat> myDraggableSeats = new ArrayList<>();
         try {
@@ -41,7 +41,7 @@ public class CSVToDraggableSeats {
         return myDraggableSeats;
     }
 
-    private MyDraggableSeat setMyDraggableSeat(String[] line) {
+    private static MyDraggableSeat setMyDraggableSeat(String[] line) {
         MyDraggableSeat res = new MyDraggableSeat(Integer.parseInt(line[1]),Integer.parseInt(line[2]));
         res.setText(line[0]);
         return res;

@@ -17,7 +17,7 @@ public class FileToHallList {
 
     public FileToHallList() {}
 
-    public List<String> getHallList() {
+    public static List<String> getHallList() {
         List<String> hallNames = new ArrayList<>();
         File folder = new File(StringReferences.PIANTINAFOLDERPATH);
 

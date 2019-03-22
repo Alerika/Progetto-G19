@@ -1,6 +1,6 @@
 package it.unipv.conversion;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVWriter;
 import it.unipv.gui.common.MyDraggableSeat;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
@@ -20,7 +20,7 @@ public class DraggableSeatsToCSV {
 
     public DraggableSeatsToCSV() {}
 
-    public void createCSVFromDraggableSeatsList(List<MyDraggableSeat> seats, String pathCSV, boolean isItToAppend) {
+    public static void createCSVFromDraggableSeatsList(List<MyDraggableSeat> seats, String pathCSV, boolean isItToAppend) {
         CSVWriter writer = null;
         FileWriter file = null;
         try {
@@ -46,7 +46,12 @@ public class DraggableSeatsToCSV {
         } catch (IOException ex) {
             throw new ApplicationException(ex);
         } finally {
+            CloseableUtils.flush(writer,file);
             CloseableUtils.close(writer, file);
+            /* Per un bug di java, a quanto pare, non chiude realmente lo stream.. devo richiamare la garbage collector
+             * per poter poi liberare il processo che tiene attivo lo stream ed eventualmente poter cancellare il file
+            */
+            System.gc();
         }
     }
 
