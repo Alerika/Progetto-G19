@@ -5,6 +5,7 @@ import it.unipv.gui.common.MyDraggableSeat;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,15 +23,25 @@ public class CSVToDraggableSeats {
 
     public CSVToDraggableSeats() { }
 
+    /**
+     * Metodo utilizzato per recuperare la lista di posti a sedere inizializzati
+     *    da un determinato file .csv
+     * @param path -> percorso dov'è possibile trovare il file .csv da cui trarre le informazioni
+     * @return -> lista di posti a sedere correttamente inizializzati con le informazioni salvate nel file
+     */
     public static List<MyDraggableSeat> getMyDraggableSeatListFromCSV(String path) {
         CSVReader reader = null;
         List<MyDraggableSeat> myDraggableSeats = new ArrayList<>();
         try {
-            reader = new CSVReader(new FileReader(path), DELIMITATOR, VUOTO);
-            String[] line;
-            while((line = reader.readNext()) != null) {
-                MyDraggableSeat myDraggableSeat = setMyDraggableSeat(line);
-                myDraggableSeats.add(myDraggableSeat);
+            //Controllo se il file esiste: in caso negativo non faccio niente e ritorno una lista vuota
+            File f = new File(path);
+            if(f.exists()) {
+                reader = new CSVReader(new FileReader(path), DELIMITATOR, VUOTO);
+                String[] line;
+                while((line = reader.readNext()) != null) {
+                    MyDraggableSeat myDraggableSeat = setMyDraggableSeat(line);
+                    myDraggableSeats.add(myDraggableSeat);
+                }
             }
         } catch (IOException ex) {
             throw new ApplicationException(ex);
@@ -41,6 +52,14 @@ public class CSVToDraggableSeats {
         return myDraggableSeats;
     }
 
+    /**
+     * Metodo per riempire il singolo posto a sedere con le informazioni della singola riga del .csv
+     * @param line -> array di stringhe che contiene le informazioni di una singola riga
+     * @return -> posto a sedere inizializzato con le varie informazioni:
+     *               line[0] -> nome del posto a sedere
+     *               line[1] -> coordinata x del posto a sedere
+     *               line[2] -> coordinata y del posto a sedere
+     */
     private static MyDraggableSeat setMyDraggableSeat(String[] line) {
         MyDraggableSeat res = new MyDraggableSeat(Integer.parseInt(line[1]),Integer.parseInt(line[2]));
         res.setText(line[0]);

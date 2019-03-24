@@ -17,12 +17,12 @@ import java.util.List;
  *   dalla parte dell'utente per poter prenotare i posti e visualizzare
  *   quali sono occupati o meno
  */
-public class HallDisplayer extends JFrame {
+public class HallViewer extends JFrame {
     private String nomeSala;
     private JPanel undraggableSeatsPanel;
     private List<MyDraggableSeat> draggableSeats = new ArrayList<>();
 
-    public HallDisplayer(String nomeSala) {
+    public HallViewer(String nomeSala) {
         this.nomeSala = nomeSala;
         initDraggableSeatsList();
         initUndraggableSeatsPanel();

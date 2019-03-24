@@ -1,0 +1,22 @@
+Parte comune:
+[ ] Login
+[ ] Portare tutto su database
+[ ] ...
+
+Parte gestore:
+[X] Creare una sala tramite editor
+[X] Creare un visualizzatore di sala
+[X] Implementare la modifica di una sala già esistente
+[X] Implementare l'eliminazione di una sala già esistente
+[X] Implementare l'inserimento di nuovi film
+[X] Implementare modifica di un film già esistente
+[X] Implemenntare l'eliminazione di un film già esistente
+[ ] Implementare la programmazione dei film
+[ ] Fare in modo che i posti a sedere non possano essere trascinati all'esterno della finestra
+[ ] ...
+
+Parte cliente
+[ ] Implementare la prenotazione del posto a sedere
+[ ] Implementare la prenotazione del film
+[ ] Implementare la visualizzazione dell'ordine (quindi far vedere i posti selezionati)
+[ ] ...

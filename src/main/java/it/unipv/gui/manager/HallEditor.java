@@ -7,6 +7,8 @@ import it.unipv.utils.StringReferences;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ import java.util.List;
 /**
  *  Questa classe viene utilizzata principalmente per creare/modificare la piantina di una sala.
  */
-class HallEditor extends JFrame{
+class HallEditor extends JFrame {
     private List<String> createdSeatsName = new ArrayList<>();
     private JPanel draggableSeatsPanel;
     private List<MyDraggableSeat> draggableSeatsList = new ArrayList<>();

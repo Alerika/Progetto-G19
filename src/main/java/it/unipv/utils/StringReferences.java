@@ -8,4 +8,5 @@ import java.io.File;
 public class StringReferences {
 
     public final static String PIANTINAFOLDERPATH = "piantine" + File.separator;
+    public final static String FILMFOLDERPATH = "film" + File.separator +"lista film.csv";
 }

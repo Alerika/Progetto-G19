@@ -1,0 +1,262 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package it.unipv.gui.manager;
+
+import it.unipv.conversion.MovieToCSV;
+import it.unipv.gui.common.Movie;
+import it.unipv.utils.ApplicationUtils;
+import it.unipv.utils.StringReferences;
+
+import javax.swing.*;
+
+/**
+ *
+ * @author Andrea
+ */
+public class MovieEditor extends JFrame {
+
+
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        imgLabel = new javax.swing.JLabel();
+        titleLabel = new javax.swing.JLabel();
+        directionLabel = new javax.swing.JLabel();
+        castLabel = new javax.swing.JLabel();
+        timeLabel = new javax.swing.JLabel();
+        yearLabel = new javax.swing.JLabel();
+        imgTextField = new javax.swing.JTextField();
+        titleTextField = new javax.swing.JTextField();
+        directionTextField = new javax.swing.JTextField();
+        castTextField = new javax.swing.JTextField();
+        timeTextField = new javax.swing.JTextField();
+        yearTextField = new javax.swing.JTextField();
+        searchButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        plotTextArea = new javax.swing.JTextArea();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        saveItem = new javax.swing.JMenuItem();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        imgLabel.setText("Locandina");
+
+        titleLabel.setText("Titolo");
+
+        directionLabel.setText("Regia");
+
+        castLabel.setText("Cast");
+
+        timeLabel.setText("Durata");
+
+        yearLabel.setText("Anno");
+
+        searchButton.setText("...");
+        searchButton.setPreferredSize(new java.awt.Dimension(6, 20));
+
+        plotTextArea.setColumns(20);
+        plotTextArea.setRows(5);
+        jScrollPane1.setViewportView(plotTextArea);
+
+        jMenu1.setText("File");
+
+        saveItem.setText("Salva");
+        saveItem.setHideActionText(true);
+        jMenu1.add(saveItem);
+
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(imgLabel)
+                            .addComponent(titleLabel)
+                            .addComponent(directionLabel)
+                            .addComponent(castLabel)
+                            .addComponent(timeLabel)
+                            .addComponent(yearLabel))
+                        .addGap(102, 102, 102)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(castTextField)
+                            .addComponent(timeTextField)
+                            .addComponent(yearTextField)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(imgTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(titleTextField)
+                            .addComponent(directionTextField))))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(imgLabel)
+                    .addComponent(imgTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(titleLabel)
+                    .addComponent(titleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(directionLabel)
+                    .addComponent(directionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(castLabel)
+                    .addComponent(castTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(timeLabel)
+                    .addComponent(timeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(yearLabel)
+                    .addComponent(yearTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        titleLabel.getAccessibleContext().setAccessibleName("titleLabel");
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel castLabel;
+    private javax.swing.JTextField castTextField;
+    private javax.swing.JLabel directionLabel;
+    private javax.swing.JTextField directionTextField;
+    private javax.swing.JLabel imgLabel;
+    private javax.swing.JTextField imgTextField;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea plotTextArea;
+    private javax.swing.JMenuItem saveItem;
+    private javax.swing.JButton searchButton;
+    private javax.swing.JLabel timeLabel;
+    private javax.swing.JTextField timeTextField;
+    private javax.swing.JLabel titleLabel;
+    private javax.swing.JTextField titleTextField;
+    private javax.swing.JLabel yearLabel;
+    private javax.swing.JTextField yearTextField;
+    // End of variables declaration//GEN-END:variables
+
+    private boolean wasItAlreadyCreated;
+    private MovieListViewer parentFrame;
+    private Movie movie;
+
+    public MovieEditor() {
+        wasItAlreadyCreated = false;
+        initComponents();
+        setFileChooser(this);
+        setSaveItem(this);
+        initFrame("Nuovo film");
+    }
+
+    public MovieEditor( Movie movie
+                      , MovieListViewer parentFrame) {
+        wasItAlreadyCreated = true;
+        this.movie = movie;
+        this.parentFrame = parentFrame;
+        initComponents();
+        setComponents();
+        setFileChooser(this);
+        setSaveItem(this);
+        initFrame("Modifica a " + movie.getTitolo());
+    }
+
+    private void setComponents() {
+        imgTextField.setText(movie.getLocandinaPath());
+        titleTextField.setText(movie.getTitolo());
+        directionTextField.setText(movie.getRegia());
+        castTextField.setText(movie.getCast());
+        timeTextField.setText(movie.getDurata());
+        yearTextField.setText(movie.getAnno());
+        plotTextArea.setText(movie.getTrama());
+    }
+
+    private JFileChooser fileChooser;
+    
+    private void initFrame(String title) {
+        setTitle(title);
+        setLocationRelativeTo(null);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+
+    private void setSaveItem(JFrame summoner) {
+        saveItem.addActionListener( e -> {
+            if( imgTextField.getText().trim().equalsIgnoreCase("")
+             && titleTextField.getText().trim().equalsIgnoreCase("")
+             && directionTextField.getText().trim().equalsIgnoreCase("")
+             && castTextField.getText().trim().equalsIgnoreCase("")
+             && timeTextField.getText().trim().equalsIgnoreCase("")
+             && yearTextField.getText().trim().equalsIgnoreCase("")) {
+                JOptionPane.showMessageDialog(summoner, "Devi compilare tutti i campi!");
+            } else {
+                if(!wasItAlreadyCreated) {
+                    MovieToCSV.appendInfoMovieToCSV(getMovieFromTextFields(), StringReferences.FILMFOLDERPATH, true);
+                } else {
+                    parentFrame.triggerOverwriteMovieEvent(getMovieFromTextFields());
+                }
+            }
+        });
+    }
+
+    private Movie getMovieFromTextFields() {
+        Movie f = new Movie();
+        f.setLocandinaPath(imgTextField.getText());
+        f.setTitolo(titleTextField.getText());
+        f.setRegia(directionTextField.getText());
+        f.setCast(castTextField.getText());
+        f.setDurata(timeTextField.getText());
+        f.setAnno(yearTextField.getText());
+        f.setTrama(plotTextArea.getText());
+        if(!wasItAlreadyCreated) {
+            f.setCodice(ApplicationUtils.getUUID());
+        } else {
+            f.setCodice(movie.getCodice());
+        }
+        return f;
+    }
+
+    private void setFileChooser(JFrame summoner) {
+        searchButton.addActionListener(e -> {
+            fileChooser = new JFileChooser();
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            addFileTypeFilter(".jpg", "JPEG Image");
+            addFileTypeFilter(".png", "PNG Image");
+            addFileTypeFilter(".gif", "GIF Image");
+            if (fileChooser.showOpenDialog(summoner) == JFileChooser.APPROVE_OPTION) {
+                imgTextField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+
+            }
+        });
+    }
+
+    public void addFileTypeFilter(String extension, String description) {
+        FileTypeFilter filter = new FileTypeFilter(extension, description);
+        fileChooser.addChoosableFileFilter(filter);
+    }
+
+}

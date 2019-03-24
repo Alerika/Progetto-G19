@@ -37,8 +37,10 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
     }
 
     // Per ora non ha molto senso che il gestore possa selezionare il posto ma è un test
+    Point coord;
     @Override
     public void mouseClicked(MouseEvent e) {
+
         if(e.getClickCount()==2) {
             if(getBackground().equals(Color.WHITE)) {
                 setBackground(Color.GREEN);
@@ -81,14 +83,14 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
         }
     }
 
-
     // È la parte che si occupa di trascinare il posto a sedere
+    double previousX;
+    double previousY;
     @Override
     public void mouseDragged(MouseEvent e) {
         if(isItDraggable) {
             int deltaX = e.getXOnScreen() - screenX;
             int deltaY = e.getYOnScreen() - screenY;
-
             setLocation(myX + deltaX, myY + deltaY);
         }
     }

@@ -1,7 +1,7 @@
 package it.unipv.gui.manager;
 
 import it.unipv.conversion.FileToHallList;
-import it.unipv.gui.common.HallDisplayer;
+import it.unipv.gui.common.HallViewer;
 import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.StringReferences;
 
@@ -63,6 +63,21 @@ public class ManagerUI extends JFrame {
                 new HallEditor(nomeSala, this, false);
             }
         });
+
+        JMenuItem newFilmItem = new JMenuItem("Nuovo film");
+        addMenu.add(newFilmItem);
+        newFilmItem.addActionListener(e -> {
+            new MovieEditor();
+        });
+
+        JMenu viewMenu = new JMenu("Visualizza");
+        menuBar.add(viewMenu);
+
+        JMenuItem filmListItem = new JMenuItem("Lista Movie");
+        viewMenu.add(filmListItem);
+        filmListItem.addActionListener(e -> {
+            new MovieListViewer();
+        });
     }
 
     /* Inizializzazione del pannello con all'interno la tabella che a sua volta contiene la lista delle sale
@@ -99,7 +114,7 @@ public class ManagerUI extends JFrame {
                 int col = hallTable.columnAtPoint(e.getPoint());
 
                 if(col == 0) {
-                    new HallDisplayer(hallNames.get(row));
+                    new HallViewer(hallNames.get(row));
                 }
 
                 if(col == 1) {
@@ -139,10 +154,8 @@ public class ManagerUI extends JFrame {
     //Metodo utilizzato per popolare le righe della tabella
     private Object[][] getRowData() {
         Object rowData[][] = new Object[hallNames.size()][3];
-        String hall;
         for(int i=0; i<hallNames.size(); i++) {
-            hall = hallNames.get(i);
-            rowData[i][0] = ""+hall;
+            rowData[i][0] = ""+hallNames.get(i);
             rowData[i][1] = "Modifica";
             rowData[i][2] = "Rimuovi";
         }
