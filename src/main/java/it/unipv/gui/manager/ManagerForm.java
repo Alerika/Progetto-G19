@@ -2,6 +2,8 @@ package it.unipv.gui.manager;
 
 import it.unipv.conversion.FileToHallList;
 import it.unipv.gui.common.HallViewer;
+import it.unipv.gui.login.LoginForm;
+import it.unipv.gui.login.UserInfo;
 import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.StringReferences;
 
@@ -21,32 +23,42 @@ import java.util.List;
  *  Cliccando su modifica può modificare la piantina della sala
  *  Dal menu può aggiungere una nuova sala
  */
-public class ManagerUI extends JFrame {
+public class ManagerForm extends JFrame {
 
     private JScrollPane hallListPanel;
     private List<String> hallNames = new ArrayList<>();
     private JTable hallTable;
     private DefaultTableModel dtm;
 
-    public ManagerUI() {
+    public ManagerForm(LoginForm loginForm, String managerUserName) {
         initHallNamesList();
         initHallListPanel();
-        initMenuBar();
-        initFrame();
+        initMenuBar(loginForm);
+        initFrame(managerUserName);
     }
 
-    // Inizializzo la lista delle sale tramite la classe "FileToHallList"
+    /**
+     * Inizializzo la lista delle sale tramite la classe "FileToHallList"
+     */
     private void initHallNamesList() {
         hallNames = FileToHallList.getHallList();
     }
 
-    /*
-    * Inizializzazione del menu:
-    *    Aggiungi -> Nuova sala  richiama la classe "HallEditor" per la creazione di una nuova piantina
-    *       Al click viene chiesto il nome della nuova sala: se viene lasciato vuoto oppure vengono inseriti
-    *       solo spazi, allora il nome viene ritenuto non valido.
+    /**
+     * Metodo per l'inizializzazione del menu:
+     *   Aggiungi:
+     *      Nuova sala  richiama la classe "HallEditor" per la creazione di una nuova piantina
+     *         Al click viene chiesto il nome della nuova sala: se viene lasciato vuoto oppure vengono inseriti
+     *         solo spazi, allora il nome viene ritenuto non valido.
+     *      Nuovo film richiama la classe "MovieEditor" per la creazione di un nuovo film
+     *
+     *   Visualizza:
+     *      Lista film richiama la classe "MovieListViewer" per la visualizzazione della lista film inseriti
+     *
+     *   ?:
+     *      Logout permette di effettuare un logout dal programma
     */
-    private void initMenuBar() {
+    private void initMenuBar(LoginForm loginForm) {
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
@@ -66,23 +78,31 @@ public class ManagerUI extends JFrame {
 
         JMenuItem newFilmItem = new JMenuItem("Nuovo film");
         addMenu.add(newFilmItem);
-        newFilmItem.addActionListener(e -> {
-            new MovieEditor();
-        });
+        newFilmItem.addActionListener(e -> new MovieEditor());
 
         JMenu viewMenu = new JMenu("Visualizza");
         menuBar.add(viewMenu);
 
-        JMenuItem filmListItem = new JMenuItem("Lista Movie");
+        JMenuItem filmListItem = new JMenuItem("Lista Film");
         viewMenu.add(filmListItem);
-        filmListItem.addActionListener(e -> {
-            new MovieListViewer();
+        filmListItem.addActionListener(e -> new MovieListViewer());
+
+        JMenu questionMenu = new JMenu("?");
+        menuBar.add(questionMenu);
+
+        JMenuItem logoutItem = new JMenuItem("Logout");
+        questionMenu.add(logoutItem);
+        logoutItem.addActionListener( e -> {
+            setVisible(false);
+            loginForm.triggerLogoutEvent();
         });
+
     }
 
-    /* Inizializzazione del pannello con all'interno la tabella che a sua volta contiene la lista delle sale
-          Ho utilizzato un JScrollPane perché se si hanno tante sale poi si potrebbe aver problemi.
-          (anche se non credo che un cinema possa avere millemila sale)
+    /**
+     * Metodo per l'inizializzazione del pannello con all'interno la tabella che a sua volta contiene la lista delle sale
+     *    Ho utilizzato un JScrollPane perché se si hanno tante sale poi si potrebbe aver problemi.
+     *    (anche se non credo che un cinema possa avere millemila sale)
     */
     private void initHallListPanel() {
         hallListPanel = new JScrollPane();
@@ -91,11 +111,12 @@ public class ManagerUI extends JFrame {
         hallListPanel.setViewportView(hallTable);
     }
 
-    /* Inizializzazione della tabella contenente la lista delle sale
-     *    Sono due colonne:
+    /**
+     * Metodo per l´inizializzazione della tabella contenente la lista delle sale
+     *    Sono tre colonne:
      *       La prima colonna contiene il nome della sala che, se cliccato, apre la visualizzazione della piantina
      *       La seconda colonna contiene il tasto "modifica" che, se cliccato, apre l'editor della piantina.
-     *          Tuttavia, questa funzione è ancora da implementare.
+     *       La terza colonna contiene il tasto "rimuovi" che, se cliccato, rimuove la piantina dalla lista (e dai file).
     */
     private void initHallTable(Object[][] rowData, Object[] columnNames) {
         dtm = new DefaultTableModel(rowData, columnNames) {
@@ -106,7 +127,7 @@ public class ManagerUI extends JFrame {
         hallTable = new JTable();
         hallTable.getTableHeader().setUI(null);
         hallTable.setModel(dtm);
-        ManagerUI manager = this;
+        ManagerForm manager = this;
         hallTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -141,7 +162,8 @@ public class ManagerUI extends JFrame {
         hallListPanel.setColumnHeader(null);
     }
 
-    /* Questo metodo viene richiamato dall'editor al momento del salvataggio della nuova piantina
+    /**
+     *  Questo metodo viene richiamato dall'editor al momento del salvataggio della nuova piantina
      *   per triggerare l'aggiornamento della tabella.
     */
     void repaintHallTable() {
@@ -151,7 +173,9 @@ public class ManagerUI extends JFrame {
         repaint();
     }
 
-    //Metodo utilizzato per popolare le righe della tabella
+    /**
+     * Metodo utilizzato per popolare le righe della tabella
+     */
     private Object[][] getRowData() {
         Object rowData[][] = new Object[hallNames.size()][3];
         for(int i=0; i<hallNames.size(); i++) {
@@ -162,12 +186,17 @@ public class ManagerUI extends JFrame {
         return rowData;
     }
 
-    //Metodo utilizzato per dare un nome alle colonne della tabella, anche se le ho nascoste
+    /**
+     * Metodo utilizzato per dare un nome alle colonne della tabella, anche se le ho nascoste
+     */
     private Object[] getColumnNames() { return new Object[]{"","",""}; }
 
-    //Inizializzazione dei parametri base del frame
-    private void initFrame() {
-        setTitle("Sezione Manager");
+    /**
+     * Inizializzazione dei parametri base del frame
+     * @param managerUserName -> utilizzato per inserirlo all'interno del titolo del form
+     */
+    private void initFrame(String managerUserName) {
+        setTitle("Manager: " + managerUserName);
         add(hallListPanel);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(new GridLayout(1,1));

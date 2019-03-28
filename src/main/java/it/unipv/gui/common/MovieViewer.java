@@ -6,7 +6,6 @@
 package it.unipv.gui.common;
 
 import it.unipv.utils.ApplicationException;
-import it.unipv.utils.ApplicationUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -16,8 +15,10 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- *
- * @author Andrea
+ * Classe utilizzare per vedere le informazioni riguardanti un dato film.
+ *    È stata creata attraverso il builder Form di NetBeans, quindi il file
+ *    "MovieViewer.form" associato è possibile vederlo/modificarlo
+ *    correttamente solamente da NetBeans stesso.
  */
 public class MovieViewer extends javax.swing.JFrame {
 
@@ -172,25 +173,26 @@ public class MovieViewer extends javax.swing.JFrame {
         initFrame(movie.getTitolo());
     }
 
+    //Setto il contenuto dei componenti che mostrano le informazioni del film
     private void setComponents(Movie movie) {
-        tramaTextArea.setBorder(null);
         setLocandina(movie.getLocandinaPath());
         titoloLabel.setText(movie.getTitolo());
         regiaLabel.setText(movie.getRegia());
         castLabel.setText(movie.getCast());
         durataLabel.setText(movie.getDurata());
         annoLabel.setText(movie.getAnno());
-
         tramaTextArea.setText(movie.getTrama());
         tramaTextArea.setEditable(false);
+        tramaTextArea.setBorder(null);
     }
 
+    //Qua viene settata la locandina. Essa deve essere ridimensionata per farla apparire correttamente nella label.
     private void setLocandina(String path) {
-        Image image = getScaledImageFromPath(path, locandinaLabel.getWidth(), locandinaLabel.getHeight());
-        ImageIcon img = new ImageIcon(image);
+        ImageIcon img = new ImageIcon(getScaledImageFromPath(path, locandinaLabel.getWidth(), locandinaLabel.getHeight()));
         locandinaLabel.setIcon(img);
     }
 
+    //Metodo che va a ridimensionare l'immagine data una certa altezza ed una certa larghezza (in questo caso quelli della label
     private Image getScaledImageFromPath(String path, int w, int h){
         BufferedImage img = null;
         try {
@@ -210,8 +212,10 @@ public class MovieViewer extends javax.swing.JFrame {
         return resizedImg;
     }
 
+    //Metodo utilizzato per settare le impostazioni base del form
     private void initFrame(String titolo) {
         setTitle(titolo);
+        //Crea il frame al centro dello schermo
         setLocationRelativeTo(null);
         setVisible(true);
         pack();

@@ -4,6 +4,9 @@ import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
 
+/**
+ * Classe utilizzata per chiudere/flushare possibili Closeable e Flushable
+ */
 public class CloseableUtils {
 
     public static void flush(Flushable... toFlush) {

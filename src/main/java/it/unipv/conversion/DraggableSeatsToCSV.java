@@ -20,6 +20,12 @@ public class DraggableSeatsToCSV {
 
     public DraggableSeatsToCSV() {}
 
+    /**
+     * Metodo utilizzato per creare il csv contenente le informazioni dei posti a sedere di una sala
+     * @param seats -> lista dei posti a sedere di cui dobbiamo salvare le informazioni
+     * @param pathCSV -> percorso del file .csv su cui salvare le informazioni
+     * @param isItToAppend -> se vero, entra in modalità di scrittura "append"
+     */
     public static void createCSVFromDraggableSeatsList(List<MyDraggableSeat> seats, String pathCSV, boolean isItToAppend) {
         CSVWriter writer = null;
         FileWriter file = null;

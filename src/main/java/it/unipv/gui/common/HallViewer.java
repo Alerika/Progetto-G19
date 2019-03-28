@@ -30,8 +30,8 @@ public class HallViewer extends JFrame {
     }
 
     /* Vado a leggere dal file (che riconosco tramite il parametro nomeSala)
-    *    le informazioni riguardanti i posti a sedere e li salvo in una lista
-    */
+     *   le informazioni riguardanti i posti a sedere e li salvo in una lista
+     */
     private void initDraggableSeatsList() {
         draggableSeats = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(StringReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
     }
@@ -39,7 +39,7 @@ public class HallViewer extends JFrame {
     /* Inizializzo il JPanel che all'interno ospiterà i posti a sedere;
      *   i posti a sedere li aggiungo scorrendo quelli presenti nella lista
      *   popolata precedentemente in "initDraggableSeatsList"
-    * */
+     */
     private void initUndraggableSeatsPanel() {
         undraggableSeatsPanel = new JPanel();
         undraggableSeatsPanel.setMinimumSize(new Dimension(300, 150));

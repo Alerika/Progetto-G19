@@ -13,8 +13,10 @@ import it.unipv.utils.StringReferences;
 import javax.swing.*;
 
 /**
- *
- * @author Andrea
+ * Form utilizzato per la creazione del movie
+ *    Esso è stato creato attraverso il builder Form di NetBeans, quindi il file
+ *    "RegisterForm.form" associato è possibile vederlo/modificarlo
+ *    correttamente solamente da NetBeans stesso.
  */
 public class MovieEditor extends JFrame {
 
@@ -165,26 +167,38 @@ public class MovieEditor extends JFrame {
     private MovieListViewer parentFrame;
     private Movie movie;
 
+    /**
+     * Costruttore del form utilizzato quando il film viene creato da zero
+     */
     public MovieEditor() {
         wasItAlreadyCreated = false;
         initComponents();
         setFileChooser(this);
-        setSaveItem(this);
+        setSaveItem();
         initFrame("Nuovo film");
     }
 
+    /**
+     * Costruttore del form utilizzato quando il film viene modificato a partire da uno già esistente
+     * @param movie -> film da modificare
+     * @param movieListViewer -> il form della lista dei film
+     */
     public MovieEditor( Movie movie
-                      , MovieListViewer parentFrame) {
+                      , MovieListViewer movieListViewer) {
         wasItAlreadyCreated = true;
         this.movie = movie;
-        this.parentFrame = parentFrame;
+        this.parentFrame = movieListViewer;
         initComponents();
         setComponents();
         setFileChooser(this);
-        setSaveItem(this);
+        setSaveItem();
         initFrame("Modifica a " + movie.getTitolo());
     }
 
+    /**
+     * Se è un film da modificare, imposto le textfield settandole con il testo
+     *    delle informazioni del film da modificare
+     */
     private void setComponents() {
         imgTextField.setText(movie.getLocandinaPath());
         titleTextField.setText(movie.getTitolo());
@@ -195,8 +209,10 @@ public class MovieEditor extends JFrame {
         plotTextArea.setText(movie.getTrama());
     }
 
-    private JFileChooser fileChooser;
-    
+    /**
+     * Metodo per settare le impostazioni base del form
+     * @param title -> imposto il titolo del form con il titolo del film
+     */
     private void initFrame(String title) {
         setTitle(title);
         setLocationRelativeTo(null);
@@ -204,7 +220,10 @@ public class MovieEditor extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
-    private void setSaveItem(JFrame summoner) {
+    /**
+     * Metodo per impostare il menu Salva
+     */
+    private void setSaveItem() {
         saveItem.addActionListener( e -> {
             if( imgTextField.getText().trim().equalsIgnoreCase("")
              && titleTextField.getText().trim().equalsIgnoreCase("")
@@ -212,7 +231,7 @@ public class MovieEditor extends JFrame {
              && castTextField.getText().trim().equalsIgnoreCase("")
              && timeTextField.getText().trim().equalsIgnoreCase("")
              && yearTextField.getText().trim().equalsIgnoreCase("")) {
-                JOptionPane.showMessageDialog(summoner, "Devi compilare tutti i campi!");
+                JOptionPane.showMessageDialog(this, "Devi compilare tutti i campi!");
             } else {
                 if(!wasItAlreadyCreated) {
                     MovieToCSV.appendInfoMovieToCSV(getMovieFromTextFields(), StringReferences.FILMFOLDERPATH, true);
@@ -223,6 +242,10 @@ public class MovieEditor extends JFrame {
         });
     }
 
+    /**
+     * Metodo utilizzato per creare una instanza del film riempita dalle informazioni inserite nelle textfield
+     * @return -> instanza del film riempito con le informazioni inserite nelle textfield
+     */
     private Movie getMovieFromTextFields() {
         Movie f = new Movie();
         f.setLocandinaPath(imgTextField.getText());
@@ -240,6 +263,12 @@ public class MovieEditor extends JFrame {
         return f;
     }
 
+    private JFileChooser fileChooser;
+
+    /**
+     * Metodo utilizzato per impostare il file chooser con estensioni .jpg, .png, .gif
+     * @param summoner -> è il frame da cui deve essere evocato il file chooser, ovvero MovieEditor
+     */
     private void setFileChooser(JFrame summoner) {
         searchButton.addActionListener(e -> {
             fileChooser = new JFileChooser();
@@ -254,6 +283,11 @@ public class MovieEditor extends JFrame {
         });
     }
 
+    /**
+     * Metodo utilizzato per aggiungere filtri estensione al file chooser
+     * @param extension -> estensione da aggiungere
+     * @param description -> descrizione dell'estensione da aggiungere
+     */
     public void addFileTypeFilter(String extension, String description) {
         FileTypeFilter filter = new FileTypeFilter(extension, description);
         fileChooser.addChoosableFileFilter(filter);

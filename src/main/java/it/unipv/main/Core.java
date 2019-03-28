@@ -1,6 +1,6 @@
 package it.unipv.main;
 
-import it.unipv.gui.manager.ManagerUI;
+import it.unipv.gui.login.LoginForm;
 
 import java.awt.*;
 
@@ -10,7 +10,7 @@ import java.awt.*;
 public class Core {
 
     public static void main(String args []) {
-        EventQueue.invokeLater(() -> new ManagerUI());
+        EventQueue.invokeLater(() -> new LoginForm());
     }
 
 }

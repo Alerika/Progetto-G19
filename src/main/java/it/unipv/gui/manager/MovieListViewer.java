@@ -14,22 +14,35 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
+/**
+ * Questo form viene utilizzato per mostrare la lista dei film inseriti dal gestore
+ */
 public class MovieListViewer extends JFrame {
     private JScrollPane filmListPanel;
     private JTable filmListTable;
     private DefaultTableModel dtm;
     private List<Movie> movies;
 
+    /**
+     * Costruttore della classe, dove instanzio la lista dei film e i componenti del frame
+     */
     public MovieListViewer() {
         initFilmList();
         initFilmListPanel(getRowData(), getColumnNames());
         initFrame();
     }
 
+    /**
+     * Metodo per instanziare la lista dei film dal file .csv
+     */
     private void initFilmList() {
         movies = CSVToMovieList.getMovieListFromCSV(StringReferences.FILMFOLDERPATH);
     }
 
+    /**
+     * Metodo utilizzato per creare le righe della tabella
+     * @return -> una matrice di Object che rappresenta le righe della tabella
+     */
     private Object[][] getRowData() {
         Object rowData[][] = new Object[movies.size()][3];
 
@@ -41,8 +54,17 @@ public class MovieListViewer extends JFrame {
         return rowData;
     }
 
+    /**
+     * Metodo utilizzato per dare un nome alle colonne della tabella, anche se le nascondo
+     * @return -> un array di Object che rappresenta il nome delle colonne della tabella
+     */
     private Object[] getColumnNames() { return new Object[]{"","",""}; }
 
+    /**
+     * Instanzio il panel che contiene la tabella
+     * @param rowData -> matrice che rappresenta le righe della tabella
+     * @param columnNames -> array che rappresenta i nomi delle colonne della tabella
+     */
     private void initFilmListPanel(Object[][] rowData, Object[] columnNames) {
         filmListPanel = new JScrollPane();
         initFilmListTable(rowData, columnNames);
@@ -52,6 +74,11 @@ public class MovieListViewer extends JFrame {
         filmListPanel.setViewportView(filmListTable);
     }
 
+    /**
+     * Creazione della tabella che mostrerà la lista dei film
+     * @param rowData -> matrice che rappresenta le righe della tabella
+     * @param columnNames -> array che rappresenta i nomi delle colonne della tabella
+     */
     private void initFilmListTable(Object[][] rowData, Object[] columnNames) {
         dtm = new DefaultTableModel(rowData, columnNames) {
             public boolean isCellEditable(int row, int column)     {
@@ -93,8 +120,11 @@ public class MovieListViewer extends JFrame {
         ((DefaultTableCellRenderer)filmListTable.getDefaultRenderer(Object.class)).setOpaque(false);
     }
 
+    /**
+     * Metodo utilizzato per settare le impostazioni base del form
+     */
     private void initFrame() {
-        setTitle("Movie Inseriti");
+        setTitle("Film Inseriti");
         add(filmListPanel);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new GridLayout(1,1));
@@ -103,6 +133,11 @@ public class MovieListViewer extends JFrame {
         setVisible(true);
     }
 
+
+    /**
+     * Metodo utilizzato per triggerare l'evento di sovrascrizione del file modificato
+     * @param movie -> film modificato da sostituire a quello già presente in lista
+     */
     public void triggerOverwriteMovieEvent(Movie movie) {
         boolean flag = false;
         Movie toRemove = null;

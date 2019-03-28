@@ -3,6 +3,9 @@ package it.unipv.gui.manager;
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
 
+/**
+ * Classe utilizzata per impostare i filtri del JFileChoser presente nel form di creazione del film
+ */
 public class FileTypeFilter extends FileFilter {
 
     private String extension;

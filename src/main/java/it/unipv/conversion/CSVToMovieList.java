@@ -11,12 +11,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Questa classe è utilizzata per recuperare la lista dei film dal file .csv
+ *    salvato dentro la cartella film del progetto.
+ * Ho utilizzato la libreria "opencsv", la cui dipendenza
+ *    è possibile trovarla all'interno del pom.
+ */
 public class CSVToMovieList {
     private static final char DELIMITATOR = ';';
     private static final char VUOTO = '\0';
 
     public CSVToMovieList() { }
 
+    /**
+     * Metodo utilizzato per recuperare la lista dei film dal file .csv.
+     * @param path -> percorso del file .csv
+     * @return -> lista dei film (Movie) salvati all'interno del file
+     */
     public static List<Movie> getMovieListFromCSV(String path) {
         CSVReader reader = null;
         List<Movie> movies = new ArrayList<>();
@@ -39,6 +50,19 @@ public class CSVToMovieList {
         return movies;
     }
 
+    /**
+     * Metodo utilizzato per riempire il singolo film con le informazioni della singola riga del csv
+     *    line[0] -> codice del film
+     *    line[1] -> percorso della locandina
+     *    line[2] -> titolo
+     *    line[3] -> regia
+     *    line[4] -> cast
+     *    line[5] -> durata
+     *    line[6] -> anno
+     *    line[7] -> trama
+     * @param line -> singola riga del .csv da cui trarre le informazioni
+     * @return -> film inizializzato con le informazioni della singola riga
+     */
     private static Movie setFilm(String[] line) {
         Movie res = new Movie();
         res.setCodice(line[0]);

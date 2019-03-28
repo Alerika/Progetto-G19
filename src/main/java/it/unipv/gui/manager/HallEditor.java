@@ -7,10 +7,6 @@ import it.unipv.utils.StringReferences;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +19,7 @@ class HallEditor extends JFrame {
     private JPanel draggableSeatsPanel;
     private List<MyDraggableSeat> draggableSeatsList = new ArrayList<>();
     private String nomeSala;
-    private ManagerUI summoner;
+    private ManagerForm summoner;
 
     /**
      * @param nomeSala -> viene utilizzato per il nome del file e per il titolo del frame;
@@ -31,7 +27,7 @@ class HallEditor extends JFrame {
      * @param wasItAlreadyCreated -> viene utilizzato per stabilire se si è in modalità nuova sala o modifica sala esistente
      */
     HallEditor( String nomeSala
-              , ManagerUI summoner
+              , ManagerForm summoner
               , boolean wasItAlreadyCreated) {
         this.nomeSala = nomeSala;
         this.summoner = summoner;
@@ -46,7 +42,9 @@ class HallEditor extends JFrame {
 
     }
 
-    /* Se la sala è già stata creata vuol dire che esistono dei posti in precedenza,
+    /**
+     * Metodo utilizzato per instanziare la lista dei posti a sedere, se esistono posti in precedenza
+     * Se la sala è già stata creata vuol dire che esistono dei posti in precedenza,
      *    quindi vado a leggerli da file e a disegnarli di conseguenza.
     */
     private void initDraggableSeatsList() {
@@ -59,7 +57,8 @@ class HallEditor extends JFrame {
         }
     }
 
-    /* Creazione del menuBar
+    /**
+     * Metodo utilizzato per la creazione del menuBar
      *   File -> Salva, permette di salvare all'interno del CSV le posizioni dei posti a sedere creati
      *      il nome del file viene impostato grazie a "nomeSala".
      *   Modifica -> Aggiungi, permette di aggiungere un nuovo posto e di trascinarlo dove si vuole nella piantina
@@ -94,14 +93,18 @@ class HallEditor extends JFrame {
         });
     }
 
-    // Inizializzazione del pannnello che rappresenterà la piantina
+    /**
+     * Inizializzazione del pannnello che rappresenterà la piantina
+     */
     private void initDraggableSeatsPanel() {
         draggableSeatsPanel = new JPanel();
         draggableSeatsPanel.setMinimumSize(new Dimension(300, 150));
         draggableSeatsPanel.setLayout(null);
     }
 
-    /* Quando si crea un nuovo posto a sedere viene chiesto il nome:
+    /**
+     * Metodo per la creazione del nuovo posto a sedere.
+     * Quando si crea un nuovo posto a sedere viene chiesto il nome:
      *    se il nome è già stato usato, non viene impostato, oppure è una stringa
      *    vuota o di soli spazi, viene ritenuto non opportuno.
      * Ad ogni posto a sedere viene impostato un menu apribile con un
@@ -145,7 +148,9 @@ class HallEditor extends JFrame {
         return mc;
     }
 
-    // Inizializzazione menu richiamabile con un click destro sul posto a sedere
+    /**
+     * Inizializzazione menu richiamabile con un click destro sul posto a sedere
+     */
     private JPopupMenu initJPopupMenu(String name) {
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem deleteItem = new JMenuItem("Rimuovi Posto");
@@ -154,7 +159,9 @@ class HallEditor extends JFrame {
         return popupMenu;
     }
 
-    // La parte che effettivamente rimuove il posto a sedere
+    /**
+     * Metodo per la rimozione effettiva del posto a sedere
+     */
     private void rimuoviPosto(String name) {
         boolean status = false;
         MyDraggableSeat toRemove = null;
@@ -173,7 +180,9 @@ class HallEditor extends JFrame {
         }
     }
 
-    // Inizializzazione dei parametri di base del frame
+    /**
+     * Inizializzazione dei parametri di base del frame
+     */
     private void initFrame() {
         setTitle("Editor " + nomeSala);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

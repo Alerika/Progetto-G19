@@ -1,5 +1,6 @@
 Parte comune:
-[ ] Login
+[X] Login
+[X] Logout
 [ ] Portare tutto su database
 [ ] ...
 

@@ -3,10 +3,16 @@ package it.unipv.utils;
 import java.io.File;
 
 /**
- *  Qua verranno impostate tutte le possibili stringhe utili al progetto
+ *  Classe dove vengono impostate tutte le possibili stringhe utili al progetto
  */
 public class StringReferences {
 
     public final static String PIANTINAFOLDERPATH = "piantine" + File.separator;
     public final static String FILMFOLDERPATH = "film" + File.separator +"lista film.csv";
+    public final static String USERFOLDERPATH = "utenti" + File.separator + "lista utenti.csv";
+    public static final String INFOUSERFILE = "utenti" + File.separator + "info.txt";
+
+
+    public final static String ADMINUSERNAME = "Admin";
+    public final static String ADMINPASSWORD = "Admin";
 }

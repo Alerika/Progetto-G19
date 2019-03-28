@@ -7,6 +7,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+/**
+ * Questa classe rappresenta il singolo posto a sedere:
+ *    è una JLabel che presenta un bordo quadrato blu
+ *    (che diventa viola [per ora] quando selezionato)
+ * Il singolo posto a sedere è trascinabile all'interno della piantina
+ * TODO: fare in modo che non possa essere trascinato all'esterno della piantina stessa
+ */
 public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotionListener {
     private int screenX = 0;
     private int screenY = 0;
@@ -37,7 +44,6 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
     }
 
     // Per ora non ha molto senso che il gestore possa selezionare il posto ma è un test
-    Point coord;
     @Override
     public void mouseClicked(MouseEvent e) {
 
@@ -84,8 +90,6 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
     }
 
     // È la parte che si occupa di trascinare il posto a sedere
-    double previousX;
-    double previousY;
     @Override
     public void mouseDragged(MouseEvent e) {
         if(isItDraggable) {
