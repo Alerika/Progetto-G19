@@ -1,7 +1,7 @@
 package it.unipv.conversion;
 
 import com.opencsv.CSVReader;
-import it.unipv.gui.common.User;
+import it.unipv.gui.login.User;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 

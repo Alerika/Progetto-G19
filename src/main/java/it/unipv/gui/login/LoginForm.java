@@ -6,9 +6,8 @@
 package it.unipv.gui.login;
 
 import it.unipv.conversion.CSVToUserList;
-import it.unipv.gui.common.User;
+import it.unipv.gui.common.MainCinemaUI;
 import it.unipv.gui.manager.ManagerForm;
-import it.unipv.gui.user.UserForm;
 import it.unipv.utils.StringReferences;
 
 import javax.swing.*;
@@ -92,23 +91,41 @@ public class LoginForm extends javax.swing.JFrame {
     private javax.swing.JTextField usernameTextField;
     // End of variables declaration//GEN-END:variables
 
-    private RegisterForm registerUI;
+    private RegisterForm registerForm;
     private List<User> userList;
     private User user;
     private boolean wasThereAlreadyAnUser = false;
+    private MainCinemaUI mainCinemaUI;
+    private boolean secretMode;
 
     /**
      * Costruttore del form: quando instanziato crea tutti i componenti
      */
-    public LoginForm() {
+    public LoginForm(MainCinemaUI mainCinemaUI) {
+        this.mainCinemaUI = mainCinemaUI;
         initComponents();
         init();
     }
 
+    public void setSecretMode(boolean secretMode) {
+        this.secretMode = secretMode;
+        if(secretMode) {
+            rememberCBox.setEnabled(false);
+            registerButton.setEnabled(false);
+        } else {
+            rememberCBox.setEnabled(true);
+            registerButton.setEnabled(true);
+        }
+        clearAllTextField(usernameTextField, passwordTextField);
+        rememberCBox.setSelected(false);
+    }
+
+    private void initUserListFromCSV() { userList = CSVToUserList.getUserListFromCSV(StringReferences.USERFOLDERPATH); }
+
     //Se esiste già un utente salvato nelle info, allora effettuo il login, altrimenti mostro il form login
     private void init() {
-        registerUI = new RegisterForm(this);
-        userList = CSVToUserList.getUserListFromCSV(StringReferences.USERFOLDERPATH);
+        registerForm = new RegisterForm(this);
+        initUserListFromCSV();
         initButtonListeners();
 
         if(checkIfThereIsAlreadyUserSaved()) {
@@ -146,7 +163,7 @@ public class LoginForm extends javax.swing.JFrame {
      *    apre il form di registrazione, nasconde quello di login e pulisce le textfield
      */
     private void goToRegisterFormEvent(LoginForm summoner) {
-        registerUI.setVisible(true);
+        registerForm.setVisible(true);
         summoner.setVisible(false);
         clearAllTextField(usernameTextField, passwordTextField);
         rememberCBox.setSelected(false);
@@ -194,39 +211,34 @@ public class LoginForm extends javax.swing.JFrame {
      * @param u -> è l'utente da loggare
      */
     private void doLogin(User u) {
-        boolean status = true;
-
-        if(wasThereAlreadyAnUser) {
-            /* Se entro qua vuol dire che esiste un file info.txt
-             *    Controllo nuovamente se è presente un utente del genere nella lista
-             */
-            if(checkIfItIsAValidUserFromUserList(u)) {
-                status = true;
-            } else {
-                status = false;
-            }
-        }
-
-        if(status) {
-            //Se entro qua dentro vuol dire che ho un utente da loggare, che sia stato salvato o appena impostato
+        if(secretMode) {
             if(checkIfItIsManagerOrNormalUser(u)) {
-                //Se entro qua vuol dire che è un gestore
                 setVisible(false);
-                new ManagerForm(this, u.getName());
+                new ManagerForm(mainCinemaUI);
             } else {
-                //Se entro qua vuol dire che è un utente
-                setVisible(false);
-                new UserForm(this, u.getName());
+                JOptionPane.showMessageDialog(this, "L'utente inserito non ha i privilegi di admin!");
+                clearAllTextField(usernameTextField, passwordTextField);
             }
         } else {
-            //Se entro qua vuol dire che c'è un problema con i dati salvati all'interno del file info.txt
-            JOptionPane.showMessageDialog(this, "Nome utente o password errati!");
-            clearAllTextField(usernameTextField, passwordTextField);
-            if(wasThereAlreadyAnUser) {
-                initFrame();
-                UserInfo.deleteUserInfoFileInUserDir();
+            if(checkIfItIsAValidUserFromUserList(u)) {
+                if(!checkIfItIsManagerOrNormalUser(u)) {
+                    setVisible(false);
+                    mainCinemaUI.triggerLoginEvent(u.getName());
+                } else {
+                    //In realtà sarebbero credenziali giuste da admin, ma l'utente non lo deve sapere!
+                    JOptionPane.showMessageDialog(this, "Nome utente o password errati!");
+                    clearAllTextField(usernameTextField, passwordTextField);
+                    rememberCBox.setSelected(false);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Nome utente o password errati!");
+                clearAllTextField(usernameTextField, passwordTextField);
+                if(wasThereAlreadyAnUser) {
+                    initFrame();
+                    UserInfo.deleteUserInfoFileInUserDir();
+                }
+                System.err.println("Login non riuscito!");
             }
-            System.err.println("Login non riuscito!");
         }
     }
 
@@ -257,11 +269,7 @@ public class LoginForm extends javax.swing.JFrame {
             }
         }
 
-        if(flag) {
-            return true;
-        } else {
-            return false;
-        }
+        return flag;
     }
 
     /**
@@ -270,12 +278,8 @@ public class LoginForm extends javax.swing.JFrame {
      * @return -> true se è un gestore, altrimenti false
      */
     private boolean checkIfItIsManagerOrNormalUser(User u) {
-        if (u.getName().trim().equals(StringReferences.ADMINUSERNAME)
-                && u.getPassword().trim().equals(StringReferences.ADMINPASSWORD)) {
-            return true;
-        } else {
-            return false;
-        }
+        return u.getName().trim().equals(StringReferences.ADMINUSERNAME)
+            && u.getPassword().trim().equals(StringReferences.ADMINPASSWORD);
     }
 
     /**
@@ -283,9 +287,7 @@ public class LoginForm extends javax.swing.JFrame {
      * @param toClear -> le varie textfield da pulire
      */
     private void clearAllTextField(JTextField... toClear) {
-        for(JTextField jtf : toClear) {
-            jtf.setText("");
-        }
+        for(JTextField jtf : toClear) { jtf.setText(""); }
     }
 
     /**
@@ -293,8 +295,10 @@ public class LoginForm extends javax.swing.JFrame {
      */
     private void initFrame() {
         setTitle("Login");
-        setVisible(true);
+        setVisible(false);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
+
+    void triggerNewUser() { initUserListFromCSV(); }
 }

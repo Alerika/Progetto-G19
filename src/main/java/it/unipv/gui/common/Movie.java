@@ -10,6 +10,7 @@ public class Movie {
     private String codice;
     private String locandinaPath;
     private String titolo;
+    private String genere;
     private String regia;
     private String cast;
     private String durata;
@@ -27,6 +28,10 @@ public class Movie {
     public String getTitolo() { return titolo; }
 
     public void setTitolo(String titolo) { this.titolo = titolo; }
+
+    public String getGenere() { return genere; }
+
+    public void setGenere(String genere) { this.genere = genere; }
 
     public String getRegia() { return regia; }
 

@@ -77,7 +77,7 @@ class HallEditor extends JFrame {
                                                                , StringReferences.PIANTINAFOLDERPATH + nomeSala +".csv"
                                                                , false);
             JOptionPane.showMessageDialog(this, "Piantina salvata con successo!");
-            summoner.repaintHallTable();
+            summoner.triggerModificationToHallList();
         });
 
         JMenu editMenu = new JMenu("Modifica");

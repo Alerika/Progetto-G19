@@ -1,6 +1,5 @@
 package it.unipv.gui.login;
 
-import it.unipv.gui.common.User;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.StringReferences;
@@ -24,7 +23,7 @@ public class UserInfo {
      * @param username -> nickname dell'utente
      * @param password -> password dell'utente
      */
-    public static void createUserInfoFileInUserDir(String username, String password) {
+    static void createUserInfoFileInUserDir(String username, String password) {
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(StringReferences.INFOUSERFILE, "UTF-8");
@@ -42,7 +41,7 @@ public class UserInfo {
     /**
      * Metodo utilizzato per rimuovere il file di informazioni salvate, se esiste
      */
-    public static void deleteUserInfoFileInUserDir() {
+    static void deleteUserInfoFileInUserDir() {
         File info = new File(StringReferences.INFOUSERFILE);
         if(info.exists()) {
             if(info.delete()) {
@@ -57,7 +56,7 @@ public class UserInfo {
      * Metodo utilizzato per verificare l'esistenza del file di info
      * @return -> true se esiste, false altrimenti
      */
-    public static boolean checkIfUserInfoFileExists() {
+    static boolean checkIfUserInfoFileExists() {
         return new File(StringReferences.INFOUSERFILE).exists();
     }
 

@@ -1,4 +1,4 @@
-import it.unipv.gui.common.User;
+import it.unipv.gui.login.User;
 import it.unipv.gui.login.UserInfo;
 import junit.framework.TestCase;
 import org.junit.Test;

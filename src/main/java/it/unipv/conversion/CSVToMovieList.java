@@ -55,11 +55,12 @@ public class CSVToMovieList {
      *    line[0] -> codice del film
      *    line[1] -> percorso della locandina
      *    line[2] -> titolo
-     *    line[3] -> regia
-     *    line[4] -> cast
-     *    line[5] -> durata
-     *    line[6] -> anno
-     *    line[7] -> trama
+     *    line[3] -> genere
+     *    line[4] -> regia
+     *    line[5] -> cast
+     *    line[6] -> durata
+     *    line[7] -> anno
+     *    line[8] -> trama
      * @param line -> singola riga del .csv da cui trarre le informazioni
      * @return -> film inizializzato con le informazioni della singola riga
      */
@@ -68,11 +69,12 @@ public class CSVToMovieList {
         res.setCodice(line[0]);
         res.setLocandinaPath(line[1]);
         res.setTitolo(line[2]);
-        res.setRegia(line[3]);
-        res.setCast(line[4]);
-        res.setDurata(line[5]);
-        res.setAnno(line[6]);
-        res.setTrama(line[7]);
+        res.setGenere(line[3]);
+        res.setRegia(line[4]);
+        res.setCast(line[5]);
+        res.setDurata(line[8]);
+        res.setAnno(line[7]);
+        res.setTrama(line[8]);
         return res;
     }
 }

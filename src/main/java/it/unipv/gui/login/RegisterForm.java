@@ -7,7 +7,6 @@ package it.unipv.gui.login;
 
 import it.unipv.conversion.CSVToUserList;
 import it.unipv.conversion.UserToCSV;
-import it.unipv.gui.common.User;
 import it.unipv.utils.StringReferences;
 
 import javax.swing.*;
@@ -19,7 +18,7 @@ import java.util.List;
  *    "RegisterForm.form" associato è possibile vederlo/modificarlo
  *    correttamente solamente da NetBeans stesso.
  */
-public class RegisterForm extends javax.swing.JFrame {
+class RegisterForm extends javax.swing.JFrame {
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -96,7 +95,7 @@ public class RegisterForm extends javax.swing.JFrame {
      * Costruttore del form; quando inizializzato crea il form di registrazione
      * @param loginForm -> viene utilizzato per ritornare al form principale di login
      */
-    public RegisterForm(LoginForm loginForm) {
+    RegisterForm(LoginForm loginForm) {
         this.loginForm = loginForm;
         users = CSVToUserList.getUserListFromCSV(StringReferences.USERFOLDERPATH);
         initComponents();
@@ -154,6 +153,7 @@ public class RegisterForm extends javax.swing.JFrame {
             clearAllTextField(usernameTextField, passwordTextField);
             setVisible(false);
             loginForm.setVisible(true);
+            loginForm.triggerNewUser();
         } else {
             //Se entro qua vuol dire che esiste già un utente con quel determinato username, quindi non può essere registrato
             JOptionPane.showMessageDialog(this, "Utente già esistente!");

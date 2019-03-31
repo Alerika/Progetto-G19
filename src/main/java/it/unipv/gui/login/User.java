@@ -1,4 +1,4 @@
-package it.unipv.gui.common;
+package it.unipv.gui.login;
 
 /**
  * Oggetto che rappresenta il singolo utente.
@@ -10,7 +10,7 @@ public class User {
     private String name;
     private String password;
 
-    public User() {}
+    User() {}
 
     public User(String name, String password) {
         this.name = name;
@@ -19,11 +19,11 @@ public class User {
 
     public String getName() { return name; }
 
-    public void setName(String name) { this.name = name; }
+    void setName(String name) { this.name = name; }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) { this.password = password; }
+    void setPassword(String password) { this.password = password; }
 }

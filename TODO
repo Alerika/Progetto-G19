@@ -17,6 +17,7 @@ Parte gestore:
 [ ] ...
 
 Parte cliente
+[ ] Implementare l'area riservata
 [ ] Implementare la prenotazione del posto a sedere
 [ ] Implementare la prenotazione del film
 [ ] Implementare la visualizzazione dell'ordine (quindi far vedere i posti selezionati)

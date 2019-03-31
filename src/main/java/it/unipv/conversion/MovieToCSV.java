@@ -102,6 +102,7 @@ public class MovieToCSV {
         csvRow.add(movie.getCodice());
         csvRow.add(stringWrapper(movie.getLocandinaPath()));
         csvRow.add(movie.getTitolo());
+        csvRow.add(movie.getGenere());
         csvRow.add(movie.getRegia());
         csvRow.add(movie.getCast());
         csvRow.add(movie.getDurata());

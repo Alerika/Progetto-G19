@@ -40,6 +40,8 @@ public class MovieEditor extends JFrame {
         searchButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         plotTextArea = new javax.swing.JTextArea();
+        genreLabel = new javax.swing.JLabel();
+        genreTextField = new javax.swing.JTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         saveItem = new javax.swing.JMenuItem();
@@ -64,6 +66,8 @@ public class MovieEditor extends JFrame {
         plotTextArea.setColumns(20);
         plotTextArea.setRows(5);
         jScrollPane1.setViewportView(plotTextArea);
+
+        genreLabel.setText("Genere");
 
         jMenu1.setText("File");
 
@@ -90,9 +94,11 @@ public class MovieEditor extends JFrame {
                             .addComponent(directionLabel)
                             .addComponent(castLabel)
                             .addComponent(timeLabel)
-                            .addComponent(yearLabel))
+                            .addComponent(yearLabel)
+                            .addComponent(genreLabel))
                         .addGap(102, 102, 102)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(genreTextField)
                             .addComponent(castTextField)
                             .addComponent(timeTextField)
                             .addComponent(yearTextField)
@@ -108,14 +114,18 @@ public class MovieEditor extends JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(imgLabel)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(imgTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(imgLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(titleLabel)
                     .addComponent(titleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(5, 5, 5)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(genreLabel)
+                    .addComponent(genreTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(directionLabel)
@@ -132,7 +142,7 @@ public class MovieEditor extends JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(yearLabel)
                     .addComponent(yearTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -147,6 +157,8 @@ public class MovieEditor extends JFrame {
     private javax.swing.JTextField castTextField;
     private javax.swing.JLabel directionLabel;
     private javax.swing.JTextField directionTextField;
+    private javax.swing.JLabel genreLabel;
+    private javax.swing.JTextField genreTextField;
     private javax.swing.JLabel imgLabel;
     private javax.swing.JTextField imgTextField;
     private javax.swing.JMenu jMenu1;
@@ -164,14 +176,15 @@ public class MovieEditor extends JFrame {
     // End of variables declaration//GEN-END:variables
 
     private boolean wasItAlreadyCreated;
-    private MovieListViewer parentFrame;
+    private ManagerForm movieListViewer;
     private Movie movie;
 
     /**
      * Costruttore del form utilizzato quando il film viene creato da zero
      */
-    public MovieEditor() {
+    MovieEditor(ManagerForm movieListViewer) {
         wasItAlreadyCreated = false;
+        this.movieListViewer = movieListViewer;
         initComponents();
         setFileChooser(this);
         setSaveItem();
@@ -183,11 +196,11 @@ public class MovieEditor extends JFrame {
      * @param movie -> film da modificare
      * @param movieListViewer -> il form della lista dei film
      */
-    public MovieEditor( Movie movie
-                      , MovieListViewer movieListViewer) {
+    MovieEditor(Movie movie
+            , ManagerForm movieListViewer) {
         wasItAlreadyCreated = true;
         this.movie = movie;
-        this.parentFrame = movieListViewer;
+        this.movieListViewer = movieListViewer;
         initComponents();
         setComponents();
         setFileChooser(this);
@@ -202,6 +215,7 @@ public class MovieEditor extends JFrame {
     private void setComponents() {
         imgTextField.setText(movie.getLocandinaPath());
         titleTextField.setText(movie.getTitolo());
+        genreTextField.setText(movie.getGenere());
         directionTextField.setText(movie.getRegia());
         castTextField.setText(movie.getCast());
         timeTextField.setText(movie.getDurata());
@@ -227,6 +241,7 @@ public class MovieEditor extends JFrame {
         saveItem.addActionListener( e -> {
             if( imgTextField.getText().trim().equalsIgnoreCase("")
              && titleTextField.getText().trim().equalsIgnoreCase("")
+             && genreTextField.getText().trim().equalsIgnoreCase("")
              && directionTextField.getText().trim().equalsIgnoreCase("")
              && castTextField.getText().trim().equalsIgnoreCase("")
              && timeTextField.getText().trim().equalsIgnoreCase("")
@@ -235,8 +250,9 @@ public class MovieEditor extends JFrame {
             } else {
                 if(!wasItAlreadyCreated) {
                     MovieToCSV.appendInfoMovieToCSV(getMovieFromTextFields(), StringReferences.FILMFOLDERPATH, true);
+                    movieListViewer.triggerNewMovieEvent();
                 } else {
-                    parentFrame.triggerOverwriteMovieEvent(getMovieFromTextFields());
+                    movieListViewer.triggerOverwriteMovieEvent(getMovieFromTextFields());
                 }
             }
         });
@@ -247,20 +263,21 @@ public class MovieEditor extends JFrame {
      * @return -> instanza del film riempito con le informazioni inserite nelle textfield
      */
     private Movie getMovieFromTextFields() {
-        Movie f = new Movie();
-        f.setLocandinaPath(imgTextField.getText());
-        f.setTitolo(titleTextField.getText());
-        f.setRegia(directionTextField.getText());
-        f.setCast(castTextField.getText());
-        f.setDurata(timeTextField.getText());
-        f.setAnno(yearTextField.getText());
-        f.setTrama(plotTextArea.getText());
+        Movie m = new Movie();
+        m.setLocandinaPath(imgTextField.getText());
+        m.setTitolo(titleTextField.getText());
+        m.setGenere(genreTextField.getText());
+        m.setRegia(directionTextField.getText());
+        m.setCast(castTextField.getText());
+        m.setDurata(timeTextField.getText());
+        m.setAnno(yearTextField.getText());
+        m.setTrama(plotTextArea.getText());
         if(!wasItAlreadyCreated) {
-            f.setCodice(ApplicationUtils.getUUID());
+            m.setCodice(ApplicationUtils.getUUID());
         } else {
-            f.setCodice(movie.getCodice());
+            m.setCodice(movie.getCodice());
         }
-        return f;
+        return m;
     }
 
     private JFileChooser fileChooser;
@@ -288,7 +305,7 @@ public class MovieEditor extends JFrame {
      * @param extension -> estensione da aggiungere
      * @param description -> descrizione dell'estensione da aggiungere
      */
-    public void addFileTypeFilter(String extension, String description) {
+    private void addFileTypeFilter(String extension, String description) {
         FileTypeFilter filter = new FileTypeFilter(extension, description);
         fileChooser.addChoosableFileFilter(filter);
     }
