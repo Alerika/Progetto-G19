@@ -240,12 +240,12 @@ public class MovieEditor extends JFrame {
     private void setSaveItem() {
         saveItem.addActionListener( e -> {
             if( imgTextField.getText().trim().equalsIgnoreCase("")
-             && titleTextField.getText().trim().equalsIgnoreCase("")
-             && genreTextField.getText().trim().equalsIgnoreCase("")
-             && directionTextField.getText().trim().equalsIgnoreCase("")
-             && castTextField.getText().trim().equalsIgnoreCase("")
-             && timeTextField.getText().trim().equalsIgnoreCase("")
-             && yearTextField.getText().trim().equalsIgnoreCase("")) {
+             || titleTextField.getText().trim().equalsIgnoreCase("")
+             || genreTextField.getText().trim().equalsIgnoreCase("")
+             || directionTextField.getText().trim().equalsIgnoreCase("")
+             || castTextField.getText().trim().equalsIgnoreCase("")
+             || timeTextField.getText().trim().equalsIgnoreCase("")
+             || yearTextField.getText().trim().equalsIgnoreCase("")) {
                 JOptionPane.showMessageDialog(this, "Devi compilare tutti i campi!");
             } else {
                 if(!wasItAlreadyCreated) {

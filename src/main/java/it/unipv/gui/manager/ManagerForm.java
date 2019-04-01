@@ -5,9 +5,7 @@
  */
 package it.unipv.gui.manager;
 
-import it.unipv.conversion.CSVToMovieList;
-import it.unipv.conversion.FileToHallList;
-import it.unipv.conversion.MovieToCSV;
+import it.unipv.conversion.*;
 import it.unipv.gui.common.HallViewer;
 import it.unipv.gui.common.MainCinemaUI;
 import it.unipv.gui.common.Movie;
@@ -16,6 +14,7 @@ import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.StringReferences;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -35,12 +34,26 @@ public class ManagerForm extends javax.swing.JFrame {
         mainContentPanel = new javax.swing.JPanel();
         hallTableContainer = new javax.swing.JScrollPane();
         movieTableContainer = new javax.swing.JScrollPane();
+        scheduleContainer = new javax.swing.JPanel();
         menuBar = new javax.swing.JMenuBar();
         addMenu = new javax.swing.JMenu();
         newHallItem = new javax.swing.JMenuItem();
         newMovieItem = new javax.swing.JMenuItem();
+        modifyMenu = new javax.swing.JMenu();
+        pricesItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        javax.swing.GroupLayout scheduleContainerLayout = new javax.swing.GroupLayout(scheduleContainer);
+        scheduleContainer.setLayout(scheduleContainerLayout);
+        scheduleContainerLayout.setHorizontalGroup(
+            scheduleContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        scheduleContainerLayout.setVerticalGroup(
+            scheduleContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout mainContentPanelLayout = new javax.swing.GroupLayout(mainContentPanel);
         mainContentPanel.setLayout(mainContentPanelLayout);
@@ -48,15 +61,22 @@ public class ManagerForm extends javax.swing.JFrame {
             mainContentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainContentPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(hallTableContainer, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                .addComponent(hallTableContainer, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addComponent(movieTableContainer, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
+                .addComponent(movieTableContainer, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(scheduleContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         mainContentPanelLayout.setVerticalGroup(
             mainContentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(hallTableContainer, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
-            .addComponent(movieTableContainer)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainContentPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(mainContentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(scheduleContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(movieTableContainer, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(hallTableContainer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         addMenu.setText("Nuovo");
@@ -69,6 +89,13 @@ public class ManagerForm extends javax.swing.JFrame {
 
         menuBar.add(addMenu);
 
+        modifyMenu.setText("Modifica");
+
+        pricesItem.setText("Prezzi");
+        modifyMenu.add(pricesItem);
+
+        menuBar.add(modifyMenu);
+
         setJMenuBar(menuBar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -77,12 +104,11 @@ public class ManagerForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(mainContentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(mainContentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(mainContentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -97,9 +123,12 @@ public class ManagerForm extends javax.swing.JFrame {
     private javax.swing.JScrollPane hallTableContainer;
     private javax.swing.JPanel mainContentPanel;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenu modifyMenu;
     private javax.swing.JScrollPane movieTableContainer;
     private javax.swing.JMenuItem newHallItem;
     private javax.swing.JMenuItem newMovieItem;
+    private javax.swing.JMenuItem pricesItem;
+    private javax.swing.JPanel scheduleContainer;
     // End of variables declaration//GEN-END:variables
 
     private MainCinemaUI mainCinemaUI;
@@ -146,9 +175,38 @@ public class ManagerForm extends javax.swing.JFrame {
         movieTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new MovieViewer(movies.get(movieTable.rowAtPoint(e.getPoint())));
+                int row = movieTable.rowAtPoint(e.getPoint());
+                if(e.getClickCount()==1) {
+                    repaintScheduleScrollPanel(movies.get(row).getCodice(), movies.get(row).getTitolo());
+                }
+                if(e.getClickCount()==2) {
+                    new MovieViewer(movies.get(movieTable.rowAtPoint(e.getPoint())));
+                }
             }
         });
+    }
+
+    private void repaintScheduleScrollPanel(String movieCode, String movieTitle){
+        scheduleContainer.removeAll();
+        scheduleContainer.setVisible(true);
+        scheduleContainer.add(new MovieScheduleViewer(movieCode, movieTitle), BorderLayout.CENTER);
+        scheduleContainer.validate();
+        scheduleContainer.repaint();
+        validate();
+        repaint();
+    }
+
+    public void triggerNewScheduleEvent(String movieCode) {
+        Movie movie = null;
+        for(Movie m : movies) {
+            if(m.getCodice().equalsIgnoreCase(movieCode)) {
+                movie = m;
+                break;
+            }
+        }
+        if(movie!=null) {
+            repaintScheduleScrollPanel(movie.getCodice(), movie.getTitolo());
+        }
     }
 
     private DefaultTableModel initDTM(Object[][] rowData, Object[] columnNames) {
@@ -213,6 +271,17 @@ public class ManagerForm extends javax.swing.JFrame {
     private JPopupMenu initJPopupMenuForMovieTable(JTable movieTable) {
         JPopupMenu popupMenu = new JPopupMenu();
 
+        JMenuItem viewItem = new JMenuItem("Visualizza");
+        viewItem.addActionListener(e -> new MovieViewer(movies.get(selectedMovieTableRow)));
+        popupMenu.add(viewItem);
+
+        JMenuItem programItem = new JMenuItem("Programma");
+        programItem.addActionListener(e-> new MovieScheduleEditor( this
+                                                                 , movies.get(selectedMovieTableRow).getTitolo()
+                                                                 , movies.get(selectedMovieTableRow).getCodice()
+                                                                 , hallNames));
+        popupMenu.add(programItem);
+
         JMenuItem modifyItem = new JMenuItem("Modifica");
         modifyItem.addActionListener(e -> new MovieEditor(movies.get(selectedMovieTableRow), this));
         popupMenu.add(modifyItem);
@@ -223,6 +292,7 @@ public class ManagerForm extends javax.swing.JFrame {
                     JOptionPane.showConfirmDialog(null
                                                 , "Sei sicuro di voler eliminare dalla lista il film " + movies.get(selectedMovieTableRow).getTitolo() +"?");
             if(reply == JOptionPane.YES_OPTION) {
+                removeAssociatedSchedules(movies.get(selectedMovieTableRow));
                 movies.remove(selectedMovieTableRow);
                 MovieToCSV.createCSVFromMovieList(movies, StringReferences.FILMFOLDERPATH, false);
                 movieTableDTM.removeRow(selectedMovieTableRow);
@@ -253,6 +323,23 @@ public class ManagerForm extends javax.swing.JFrame {
             }
         });
         return popupMenu;
+    }
+
+    private void removeAssociatedSchedules(Movie movie) {
+        List<MovieSchedule> movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(StringReferences.MOVIESCHEDULEFILEPATH);
+        List<MovieSchedule> toRemove = new ArrayList<>();
+        for(MovieSchedule ms : movieSchedules) {
+            if(movie.getCodice().equalsIgnoreCase(ms.getMovieCode())) {
+                toRemove.add(ms);
+            }
+        }
+        if(toRemove.size()!=0) {
+            for(MovieSchedule ms : toRemove) {
+                movieSchedules.remove(ms);
+            }
+            MovieScheduleToCSV.createCSVFromMovieScheduleList(movieSchedules, StringReferences.MOVIESCHEDULEFILEPATH, false);
+            scheduleContainer.setVisible(false);
+        }
     }
 
     private Object[][] getRowDataForHallTable() {
@@ -332,6 +419,8 @@ public class ManagerForm extends javax.swing.JFrame {
         });
 
         newMovieItem.addActionListener(e -> new MovieEditor(this));
+
+        pricesItem.addActionListener(e -> new PricesEditor());
     }
 
     private void initFrame() {
@@ -339,5 +428,8 @@ public class ManagerForm extends javax.swing.JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+        scheduleContainer.setLayout(new GridLayout(1,1));
+        scheduleContainer.setVisible(false);
     }
+
 }

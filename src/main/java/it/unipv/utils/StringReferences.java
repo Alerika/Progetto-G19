@@ -11,6 +11,8 @@ public class StringReferences {
     public final static String FILMFOLDERPATH = "data" + File.separator + "film" + File.separator +"lista film.csv";
     public final static String USERFOLDERPATH = "data" + File.separator + "utenti" + File.separator + "lista utenti.csv";
     public static final String INFOUSERFILE = "data" + File.separator + "utenti" + File.separator + "info.txt";
+    public static final String PRICESFILEPATH = "data" + File.separator + "prezzi" + File.separator + "prezzi.csv";
+    public static final String MOVIESCHEDULEFILEPATH = "data" + File.separator + "programmazione" + File.separator + "programmazione.csv";
 
 
     public final static String ADMINUSERNAME = "Admin";
