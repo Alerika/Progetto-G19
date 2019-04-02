@@ -1,6 +1,6 @@
 package it.unipv.conversion;
 
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -19,7 +19,7 @@ public class FileToHallList {
 
     public static List<String> getHallList() {
         List<String> hallNames = new ArrayList<>();
-        File folder = new File(StringReferences.PIANTINAFOLDERPATH);
+        File folder = new File(DataReferences.PIANTINAFOLDERPATH);
 
         for(File f : Objects.requireNonNull(folder.listFiles())) {
             if(f.isFile()) {

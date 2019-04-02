@@ -72,7 +72,7 @@ public class CSVToMovieList {
         res.setGenere(line[3]);
         res.setRegia(line[4]);
         res.setCast(line[5]);
-        res.setDurata(line[8]);
+        res.setDurata(line[6]);
         res.setAnno(line[7]);
         res.setTrama(line[8]);
         return res;

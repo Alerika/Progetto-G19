@@ -7,7 +7,7 @@ package it.unipv.gui.manager;
 
 import it.unipv.conversion.CSVToPrices;
 import it.unipv.conversion.PricesToCSV;
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 
@@ -118,7 +118,7 @@ public class PricesEditor extends javax.swing.JFrame {
     }
 
     private void initPricesIfExists(){
-        prices = CSVToPrices.getPricesFromCSV(StringReferences.PRICESFILEPATH);
+        prices = CSVToPrices.getPricesFromCSV(DataReferences.PRICESFILEPATH);
     }
 
     private void setComponentIfPricesExists(){
@@ -149,7 +149,7 @@ public class PricesEditor extends javax.swing.JFrame {
                                        , Double.parseDouble(threeDTextField.getText())
                                        , Double.parseDouble(reducedTextField.getText()));
                 }
-                PricesToCSV.createCSVFromPrices(prices, StringReferences.PRICESFILEPATH, false);
+                PricesToCSV.createCSVFromPrices(prices, DataReferences.PRICESFILEPATH, false);
             }
         });
     }

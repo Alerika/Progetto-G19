@@ -1,7 +1,7 @@
 package it.unipv.gui.common;
 
 import it.unipv.conversion.CSVToDraggableSeats;
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +33,7 @@ public class HallViewer extends JFrame {
      *   le informazioni riguardanti i posti a sedere e li salvo in una lista
      */
     private void initDraggableSeatsList() {
-        draggableSeats = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(StringReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
+        draggableSeats = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
     }
 
     /* Inizializzo il JPanel che all'interno ospiterà i posti a sedere;

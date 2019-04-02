@@ -3,7 +3,7 @@ package it.unipv.gui.manager;
 import it.unipv.conversion.CSVToDraggableSeats;
 import it.unipv.conversion.DraggableSeatsToCSV;
 import it.unipv.gui.common.MyDraggableSeat;
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +48,7 @@ class HallEditor extends JFrame {
      *    quindi vado a leggerli da file e a disegnarli di conseguenza.
     */
     private void initDraggableSeatsList() {
-        draggableSeatsList = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(StringReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
+        draggableSeatsList = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
         for(MyDraggableSeat mds : draggableSeatsList) {
             draggableSeatsPanel.add(mds);
             createdSeatsName.add(mds.getText());
@@ -74,7 +74,7 @@ class HallEditor extends JFrame {
         fileMenu.add(saveItem);
         saveItem.addActionListener( e -> {
             DraggableSeatsToCSV.createCSVFromDraggableSeatsList( draggableSeatsList
-                                                               , StringReferences.PIANTINAFOLDERPATH + nomeSala +".csv"
+                                                               , DataReferences.PIANTINAFOLDERPATH + nomeSala +".csv"
                                                                , false);
             JOptionPane.showMessageDialog(this, "Piantina salvata con successo!");
             summoner.triggerModificationToHallList();

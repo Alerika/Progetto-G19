@@ -7,7 +7,7 @@ package it.unipv.gui.login;
 
 import it.unipv.conversion.CSVToUserList;
 import it.unipv.conversion.UserToCSV;
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 import java.util.List;
@@ -97,7 +97,7 @@ class RegisterForm extends javax.swing.JFrame {
      */
     RegisterForm(LoginForm loginForm) {
         this.loginForm = loginForm;
-        users = CSVToUserList.getUserListFromCSV(StringReferences.USERFOLDERPATH);
+        users = CSVToUserList.getUserListFromCSV(DataReferences.USERFOLDERPATH);
         initComponents();
         initButtonListeners();
         initFrame();
@@ -147,7 +147,7 @@ class RegisterForm extends javax.swing.JFrame {
             //Se entro qua vuol dire che non esiste un utente con quel determinato username, quindi può essere registrato
             UserToCSV.appendUserToCSV( new User( usernameTextField.getText()
                                                , String.valueOf(passwordTextField.getPassword()))
-                                     , StringReferences.USERFOLDERPATH
+                                     , DataReferences.USERFOLDERPATH
                                      , true );
             JOptionPane.showMessageDialog(this, "Registrazione avvenuta con successo!");
             clearAllTextField(usernameTextField, passwordTextField);

@@ -8,7 +8,7 @@ package it.unipv.gui.login;
 import it.unipv.conversion.CSVToUserList;
 import it.unipv.gui.common.MainCinemaUI;
 import it.unipv.gui.manager.ManagerForm;
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 import java.util.List;
@@ -120,7 +120,7 @@ public class LoginForm extends javax.swing.JFrame {
         rememberCBox.setSelected(false);
     }
 
-    private void initUserListFromCSV() { userList = CSVToUserList.getUserListFromCSV(StringReferences.USERFOLDERPATH); }
+    private void initUserListFromCSV() { userList = CSVToUserList.getUserListFromCSV(DataReferences.USERFOLDERPATH); }
 
     //Se esiste già un utente salvato nelle info, allora effettuo il login, altrimenti mostro il form login
     private void init() {
@@ -278,8 +278,8 @@ public class LoginForm extends javax.swing.JFrame {
      * @return -> true se è un gestore, altrimenti false
      */
     private boolean checkIfItIsManagerOrNormalUser(User u) {
-        return u.getName().trim().equals(StringReferences.ADMINUSERNAME)
-            && u.getPassword().trim().equals(StringReferences.ADMINPASSWORD);
+        return u.getName().trim().equals(DataReferences.ADMINUSERNAME)
+            && u.getPassword().trim().equals(DataReferences.ADMINPASSWORD);
     }
 
     /**

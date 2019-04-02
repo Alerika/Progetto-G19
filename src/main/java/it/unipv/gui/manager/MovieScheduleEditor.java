@@ -5,9 +5,12 @@
  */
 package it.unipv.gui.manager;
 
+import it.unipv.conversion.CSVToMovieScheduleList;
 import it.unipv.conversion.MovieScheduleToCSV;
+import it.unipv.gui.common.Movie;
+import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DateLabelFormatter;
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -15,11 +18,10 @@ import org.jdatepicker.impl.UtilDateModel;
 import javax.swing.*;
 import javax.swing.text.DateFormatter;
 import java.awt.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
 
 public class MovieScheduleEditor extends javax.swing.JFrame {
 
@@ -136,35 +138,98 @@ public class MovieScheduleEditor extends javax.swing.JFrame {
     private JDatePickerImpl datePicker;
     private JSpinner timePicker;
     private ManagerForm managerForm;
+    private Movie movie;
 
     public MovieScheduleEditor( ManagerForm managerForm
-                              , String movieName
-                              , String movieCode
-                              ,  List<String> hallNames) {
+                              , Movie movie
+                              , List<String> hallNames) {
         this.managerForm = managerForm;
+        this.movie = movie;
         initComponents();
         initDatePicker();
         initTimePicker();
         initHallSelector(hallNames);
-        initSaveItem(movieCode);
-        initFrame(movieName);
+        initSaveItem();
+        initFrame();
     }
 
-    private void initSaveItem(String movieCode) {
+    private void initSaveItem() {
         saveItem.addActionListener(e->{
-            if(datePicker.getJFormattedTextField().getText().trim().equalsIgnoreCase("")){
+            String date = datePicker.getJFormattedTextField().getText();
+            String time = getTimeFromTimePickerSpinner();
+            String hall = Objects.requireNonNull(hallComboBox.getSelectedItem().toString());
+
+            if(date.trim().equalsIgnoreCase("")){
                 JOptionPane.showMessageDialog(this, "Devi inserire una data!");
+            } else if (checkIfDateIsPassed(date)) {
+                JOptionPane.showMessageDialog(this, "Non puoi programmare un film nel passato!");
+            } else if(checkIfItAlreasyExistsInThatTime(date, hall, time) ) {
+                JOptionPane.showMessageDialog(this, "C'è già una programmazione in questo periodo!");
             } else {
                 MovieSchedule movieSchedule = new MovieSchedule();
-                movieSchedule.setMovieCode(movieCode);
-                movieSchedule.setDate(datePicker.getJFormattedTextField().getText());
-                movieSchedule.setTime(getTimeFromTimePickerSpinner());
-                movieSchedule.setHallName(Objects.requireNonNull(hallComboBox.getSelectedItem()).toString());
-                MovieScheduleToCSV.createCSVFromMovieSchedule(movieSchedule, StringReferences.MOVIESCHEDULEFILEPATH, true);
-                managerForm.triggerNewScheduleEvent(movieCode);
+                movieSchedule.setMovieCode(movie.getCodice());
+                movieSchedule.setDate(date);
+                movieSchedule.setTime(time);
+                movieSchedule.setHallName(hall);
+                MovieScheduleToCSV.createCSVFromMovieSchedule(movieSchedule, DataReferences.MOVIESCHEDULEFILEPATH, true);
+                managerForm.triggerNewScheduleEvent(movie.getCodice());
                 JOptionPane.showMessageDialog(this, "Salvataggio riuscito correttamente!");
             }
         });
+    }
+
+    private boolean checkIfItAlreasyExistsInThatTime(String dateToCheck, String hall, String time) {
+        for(MovieSchedule ms : CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH)) {
+            if( ms.getTime().trim().equalsIgnoreCase(time)
+             && ms.getHallName().trim().equalsIgnoreCase(hall)
+             && ms.getDate().trim().equalsIgnoreCase(dateToCheck)) {
+                return true;
+            } else if( checkIfTimeIsBetweenPreviousTimeAndGap(ms.getTime(), Integer.parseInt(movie.getDurata()), time)
+                    && ms.getHallName().trim().equalsIgnoreCase(hall)
+                    && ms.getDate().trim().equalsIgnoreCase(dateToCheck)) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    private Calendar gapCalculator(String myTime, int movieTime) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        Calendar cal = Calendar.getInstance();
+        try {
+            cal.setTime(sdf.parse((myTime)));
+        } catch (ParseException e) {
+            throw new ApplicationException(e);
+        }
+        cal.add(Calendar.MINUTE, movieTime);
+        cal.add(Calendar.MINUTE, DataReferences.PAUSEAFTERMOVIE);
+        return cal;
+    }
+
+    private boolean checkIfTimeIsBetweenPreviousTimeAndGap(String previousTime, int movieTime, String myTime) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        Calendar previousActualTime = Calendar.getInstance();
+        Calendar gapActualTime = gapCalculator(previousTime, movieTime);
+        Calendar myActualTime = Calendar.getInstance();
+        try {
+            previousActualTime.setTime(sdf.parse((previousTime)));
+            myActualTime.setTime(sdf.parse(myTime));
+        } catch (ParseException e) {
+            throw new ApplicationException(e);
+        }
+        return myActualTime.after(previousActualTime) && myActualTime.before(gapActualTime);
+    }
+
+    private boolean checkIfDateIsPassed(String toCheck){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date dateToCheck;
+        try {
+            dateToCheck = sdf.parse(toCheck);
+        } catch (ParseException e) {
+            throw new ApplicationException(e);
+        }
+        return dateToCheck.before(new Date());
     }
 
     private String getTimeFromTimePickerSpinner() {
@@ -208,8 +273,8 @@ public class MovieScheduleEditor extends javax.swing.JFrame {
         hallComboBox.setModel(new DefaultComboBoxModel(hallNames.toArray()));
     }
 
-    private void initFrame(String movieName) {
-        setTitle("Programmazione " + movieName);
+    private void initFrame() {
+        setTitle("Programmazione " + movie.getTitolo());
         setVisible(true);
         pack();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

@@ -9,7 +9,7 @@ import java.awt.*;
  */
 public class Core {
 
-    public static void main(String args []) {
+    public static void main(String[] args) {
         EventQueue.invokeLater(MainCinemaUI::new);
     }
 

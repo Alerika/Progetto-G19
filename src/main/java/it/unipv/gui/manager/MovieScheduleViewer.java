@@ -2,7 +2,7 @@ package it.unipv.gui.manager;
 
 import it.unipv.conversion.CSVToMovieScheduleList;
 import it.unipv.conversion.MovieScheduleToCSV;
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -29,7 +29,7 @@ public class MovieScheduleViewer extends JScrollPane {
     }
 
     private void initMovieSchedulesList() {
-        movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(StringReferences.MOVIESCHEDULEFILEPATH);
+        movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH);
     }
 
     private void initScheduleTable(Object[][] rowData, Object[] columnNames) {
@@ -48,7 +48,7 @@ public class MovieScheduleViewer extends JScrollPane {
             if(reply == JOptionPane.YES_OPTION) {
                 movieSchedules.remove(realDisplayedSchedules.get(selectedRow));
                 realDisplayedSchedules.remove(selectedRow);
-                MovieScheduleToCSV.createCSVFromMovieScheduleList(movieSchedules, StringReferences.MOVIESCHEDULEFILEPATH, false);
+                MovieScheduleToCSV.createCSVFromMovieScheduleList(movieSchedules, DataReferences.MOVIESCHEDULEFILEPATH, false);
                 schedulesTableDTM.removeRow(selectedRow);
                 schedulesTableDTM.setDataVector(getRowData(), getColumnNames());
                 schedulesTableDTM.fireTableDataChanged();

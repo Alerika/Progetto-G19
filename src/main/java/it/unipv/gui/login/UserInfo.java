@@ -2,7 +2,7 @@ package it.unipv.gui.login;
 
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -26,11 +26,11 @@ public class UserInfo {
     static void createUserInfoFileInUserDir(String username, String password) {
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter(StringReferences.INFOUSERFILE, "UTF-8");
+            writer = new PrintWriter(DataReferences.INFOUSERFILE, "UTF-8");
             writer.println(username);
             writer.println(password);
         } catch (FileNotFoundException e) {
-            throw new ApplicationException("File " + StringReferences.INFOUSERFILE + " non trovato!", e);
+            throw new ApplicationException("File " + DataReferences.INFOUSERFILE + " non trovato!", e);
         } catch (UnsupportedEncodingException e) {
             throw new ApplicationException(e);
         } finally {
@@ -42,7 +42,7 @@ public class UserInfo {
      * Metodo utilizzato per rimuovere il file di informazioni salvate, se esiste
      */
     static void deleteUserInfoFileInUserDir() {
-        File info = new File(StringReferences.INFOUSERFILE);
+        File info = new File(DataReferences.INFOUSERFILE);
         if(info.exists()) {
             if(info.delete()) {
                 System.out.println("File " + info.getPath() + " rimosso con successo!");
@@ -57,7 +57,7 @@ public class UserInfo {
      * @return -> true se esiste, false altrimenti
      */
     static boolean checkIfUserInfoFileExists() {
-        return new File(StringReferences.INFOUSERFILE).exists();
+        return new File(DataReferences.INFOUSERFILE).exists();
     }
 
     /**
@@ -70,7 +70,7 @@ public class UserInfo {
         FileInputStream fis = null;
         try {
             User res = new User();
-            fis = new FileInputStream(StringReferences.INFOUSERFILE);
+            fis = new FileInputStream(DataReferences.INFOUSERFILE);
             isr = new InputStreamReader(fis, "UTF-8");
             br = new BufferedReader(isr);
             List<String> infoFromFile = new ArrayList<>();

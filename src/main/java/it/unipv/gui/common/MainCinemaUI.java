@@ -7,7 +7,7 @@ package it.unipv.gui.common;
 
 import it.unipv.conversion.CSVToMovieList;
 import it.unipv.gui.login.LoginForm;
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -218,7 +218,7 @@ public class MainCinemaUI extends javax.swing.JFrame {
      * Metodo per instanziare la lista dei film dal file .csv
      */
     private void initFilmList() {
-        movies = CSVToMovieList.getMovieListFromCSV(StringReferences.FILMFOLDERPATH);
+        movies = CSVToMovieList.getMovieListFromCSV(DataReferences.FILMFOLDERPATH);
     }
 
     /**

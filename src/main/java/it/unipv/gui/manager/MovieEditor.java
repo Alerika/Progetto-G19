@@ -8,7 +8,7 @@ package it.unipv.gui.manager;
 import it.unipv.conversion.MovieToCSV;
 import it.unipv.gui.common.Movie;
 import it.unipv.utils.ApplicationUtils;
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 
@@ -249,7 +249,7 @@ public class MovieEditor extends JFrame {
                 JOptionPane.showMessageDialog(this, "Devi compilare tutti i campi!");
             } else {
                 if(!wasItAlreadyCreated) {
-                    MovieToCSV.appendInfoMovieToCSV(getMovieFromTextFields(), StringReferences.FILMFOLDERPATH, true);
+                    MovieToCSV.appendInfoMovieToCSV(getMovieFromTextFields(), DataReferences.FILMFOLDERPATH, true);
                     movieListViewer.triggerNewMovieEvent();
                 } else {
                     movieListViewer.triggerOverwriteMovieEvent(getMovieFromTextFields());

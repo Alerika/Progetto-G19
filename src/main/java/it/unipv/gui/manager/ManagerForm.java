@@ -11,10 +11,9 @@ import it.unipv.gui.common.MainCinemaUI;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieViewer;
 import it.unipv.utils.ApplicationUtils;
-import it.unipv.utils.StringReferences;
+import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -152,7 +151,7 @@ public class ManagerForm extends javax.swing.JFrame {
         hallNames = FileToHallList.getHallList();
     }
     private void initMovieList() {
-        movies = CSVToMovieList.getMovieListFromCSV(StringReferences.FILMFOLDERPATH);
+        movies = CSVToMovieList.getMovieListFromCSV(DataReferences.FILMFOLDERPATH);
     }
 
     private void initHallTable(Object[][] rowData, Object[] columnNames) {
@@ -239,7 +238,7 @@ public class ManagerForm extends javax.swing.JFrame {
         deleteItem.addActionListener(e -> {
             int reply = JOptionPane.showConfirmDialog(this, "Vuoi davvero eliminare la piantina " + hallNames.get(selectedHallTableRow) + " ?");
             if (reply == JOptionPane.YES_OPTION) {
-                ApplicationUtils.removeFileFromPath(StringReferences.PIANTINAFOLDERPATH + hallNames.get(selectedHallTableRow) + ".csv");
+                ApplicationUtils.removeFileFromPath(DataReferences.PIANTINAFOLDERPATH + hallNames.get(selectedHallTableRow) + ".csv");
                 hallNames.remove(selectedHallTableRow);
                 repaintAndUpdateTable(hallTableDTM, getRowDataForHallTable(), getColumnNames());
             }
@@ -277,8 +276,7 @@ public class ManagerForm extends javax.swing.JFrame {
 
         JMenuItem programItem = new JMenuItem("Programma");
         programItem.addActionListener(e-> new MovieScheduleEditor( this
-                                                                 , movies.get(selectedMovieTableRow).getTitolo()
-                                                                 , movies.get(selectedMovieTableRow).getCodice()
+                                                                 , movies.get(selectedMovieTableRow)
                                                                  , hallNames));
         popupMenu.add(programItem);
 
@@ -294,7 +292,7 @@ public class ManagerForm extends javax.swing.JFrame {
             if(reply == JOptionPane.YES_OPTION) {
                 removeAssociatedSchedules(movies.get(selectedMovieTableRow));
                 movies.remove(selectedMovieTableRow);
-                MovieToCSV.createCSVFromMovieList(movies, StringReferences.FILMFOLDERPATH, false);
+                MovieToCSV.createCSVFromMovieList(movies, DataReferences.FILMFOLDERPATH, false);
                 movieTableDTM.removeRow(selectedMovieTableRow);
                 mainCinemaUI.triggerModificationToFilmList();
                 repaintAndUpdateTable(movieTableDTM, getRowDataForMovieTable(), getColumnNames());
@@ -326,7 +324,7 @@ public class ManagerForm extends javax.swing.JFrame {
     }
 
     private void removeAssociatedSchedules(Movie movie) {
-        List<MovieSchedule> movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(StringReferences.MOVIESCHEDULEFILEPATH);
+        List<MovieSchedule> movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH);
         List<MovieSchedule> toRemove = new ArrayList<>();
         for(MovieSchedule ms : movieSchedules) {
             if(movie.getCodice().equalsIgnoreCase(ms.getMovieCode())) {
@@ -337,7 +335,7 @@ public class ManagerForm extends javax.swing.JFrame {
             for(MovieSchedule ms : toRemove) {
                 movieSchedules.remove(ms);
             }
-            MovieScheduleToCSV.createCSVFromMovieScheduleList(movieSchedules, StringReferences.MOVIESCHEDULEFILEPATH, false);
+            MovieScheduleToCSV.createCSVFromMovieScheduleList(movieSchedules, DataReferences.MOVIESCHEDULEFILEPATH, false);
             scheduleContainer.setVisible(false);
         }
     }
@@ -382,7 +380,7 @@ public class ManagerForm extends javax.swing.JFrame {
         if(toRemove!=null) {
             movies.remove(toRemove);
             movies.add(movie);
-            MovieToCSV.createCSVFromMovieList(movies, StringReferences.FILMFOLDERPATH, false);
+            MovieToCSV.createCSVFromMovieList(movies, DataReferences.FILMFOLDERPATH, false);
             mainCinemaUI.triggerModificationToFilmList();
             repaintAndUpdateTable(movieTableDTM, getRowDataForMovieTable(), getColumnNames());
         }
