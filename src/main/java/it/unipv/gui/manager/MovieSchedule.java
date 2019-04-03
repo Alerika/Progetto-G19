@@ -1,6 +1,12 @@
 package it.unipv.gui.manager;
 
-public class MovieSchedule {
+import it.unipv.utils.ApplicationException;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+public class MovieSchedule implements Comparable<MovieSchedule> {
     private String movieCode;
     private String date;
     private String time;
@@ -21,4 +27,18 @@ public class MovieSchedule {
     public String getHallName() { return hall; }
 
     public void setHallName(String hall) { this.hall = hall; }
+
+    @Override
+    public int compareTo(MovieSchedule o) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        try {
+            cal1.setTime(sdf.parse(this.getDate() + " " + this.getTime()));
+            cal2.setTime(sdf.parse(o.getDate() + " " + o.getTime()));
+        } catch (ParseException e) {
+            throw new ApplicationException(e);
+        }
+        return cal1.compareTo(cal2);
+    }
 }

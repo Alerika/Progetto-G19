@@ -16,7 +16,7 @@ Parte gestore:
 [X] Fare in modo che se si cancella un film si cancellano anche le programmazioni ad esso associato
 [X] Fare in modo che si possano cancellare le programmazioni
 [X] Fare controlli sulla data delle programmazioni (no film nello stesso giorno, stessa ora, stessa sala)
-[ ] Far riordinare le programmazioni in ordine cronologico
+[X] Far riordinare le programmazioni in ordine cronologico
 [ ] Fare modificare nome sala e riordinarli in ordine crescente
 [ ] Risolvere bug con l'andata a capo delle textarea (trama film) (anche se non credo ci sarà bisogno con un ipotetico db)
 [ ] Fare in modo che i posti a sedere non possano essere trascinati all'esterno della finestra

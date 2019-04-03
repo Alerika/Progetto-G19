@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MovieScheduleViewer extends JScrollPane {
@@ -30,6 +31,7 @@ public class MovieScheduleViewer extends JScrollPane {
 
     private void initMovieSchedulesList() {
         movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH);
+        Collections.sort(movieSchedules);
     }
 
     private void initScheduleTable(Object[][] rowData, Object[] columnNames) {

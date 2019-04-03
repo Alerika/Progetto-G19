@@ -1,3 +1,4 @@
+import it.unipv.gui.manager.MovieSchedule;
 import it.unipv.utils.ApplicationException;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -13,8 +14,24 @@ import java.util.Date;
 public class TestUtils extends TestCase {
 
     @Test
-    public void test() {
-        assertTrue(checkIfTimeIsBetweenPreviousTimeAndGap("00:00", 130, 30, "00:00"));
+    public void testIfMyTimeIsBetweenMovieTimeAndGap() {
+        assertTrue(checkIfTimeIsBetweenPreviousTimeAndGap("00:00", 130, 30, "02:00"));
+    }
+
+    @Test
+    public void testIfDateIsPassed() {
+        assertTrue(checkIfDateIsPassed("02/04/2019"));
+    }
+
+    @Test
+    public void testMovieScheduleDateAndTimeComparator() {
+        MovieSchedule m1 = new MovieSchedule();
+        MovieSchedule m2 = new MovieSchedule();
+        m1.setDate("03/04/2019");
+        m1.setTime("22:00");
+        m2.setDate("03/04/2019");
+        m2.setTime("21:00");
+        assertEquals(1, movieScheduleDateAndTimeComparator(m1,m2));
     }
 
     private boolean checkIfDateIsPassed(String toCheck){
@@ -28,6 +45,19 @@ public class TestUtils extends TestCase {
         return dateToCheck.before(new Date());
     }
 
+    private int movieScheduleDateAndTimeComparator(MovieSchedule m1, MovieSchedule m2){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        try {
+            cal1.setTime(sdf.parse(m1.getDate() + " " + m1.getTime()));
+            cal2.setTime(sdf.parse(m2.getDate() + " " + m2.getTime()));
+        } catch (ParseException e) {
+            throw new ApplicationException(e);
+        }
+        return cal1.compareTo(cal2);
+    }
+
 
     private Calendar gapCalculator(String myTime, int movieTime, int cleanTime) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -39,7 +69,6 @@ public class TestUtils extends TestCase {
         }
         cal.add(Calendar.MINUTE, movieTime);
         cal.add(Calendar.MINUTE, cleanTime);
-        System.out.println(cal.getTime());
         return cal;
     }
 
@@ -55,7 +84,6 @@ public class TestUtils extends TestCase {
             throw new ApplicationException(e);
         }
 
-        System.out.println(previousActualTime.getTime() + " < " + myActualTime.getTime() + " < " + gapActualTime.getTime());
         return myActualTime.after(previousActualTime) && myActualTime.before(gapActualTime);
     }
 }
