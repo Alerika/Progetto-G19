@@ -15,7 +15,10 @@ public class TestUtils extends TestCase {
 
     @Test
     public void testIfMyTimeIsBetweenMovieTimeAndGap() {
-        assertTrue(checkIfTimeIsBetweenPreviousTimeAndGap("00:00", 130, 30, "02:00"));
+        assertTrue(checkIfTimeIsBetweenPreviousTimeAndGap("26/04/2019 00:00", 130, 30, "26/04/2019 02:00", true));
+        assertTrue(checkIfTimeIsBetweenPreviousTimeAndGap("26/04/2019 22:00", 130, 30, "26/04/2019 21:00", false));
+        assertTrue(checkIfTimeIsBetweenPreviousTimeAndGap("25/04/2019 22:00", 130, 30, "26/04/2019 00:00", true));
+        assertTrue(checkIfTimeIsBetweenPreviousTimeAndGap("26/04/2019 00:00", 130, 30, "25/04/2019 22:00", false));
     }
 
     @Test
@@ -59,23 +62,29 @@ public class TestUtils extends TestCase {
     }
 
 
-    private Calendar gapCalculator(String myTime, int movieTime, int cleanTime) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    private Calendar gapCalculator(String myTime, int movieTime, int cleanTime, boolean toAddOrNot) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Calendar cal = Calendar.getInstance();
         try {
             cal.setTime(sdf.parse((myTime)));
         } catch (ParseException e) {
             throw new ApplicationException(e);
         }
-        cal.add(Calendar.MINUTE, movieTime);
-        cal.add(Calendar.MINUTE, cleanTime);
+        if(toAddOrNot) {
+            cal.add(Calendar.MINUTE, movieTime);
+            cal.add(Calendar.MINUTE, cleanTime);
+        } else {
+            cal.add(Calendar.MINUTE, -movieTime);
+            cal.add(Calendar.MINUTE, -cleanTime);
+        }
+
         return cal;
     }
 
-    private boolean checkIfTimeIsBetweenPreviousTimeAndGap(String previousTime, int movieTime, int cleanTime, String myTime) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    private boolean checkIfTimeIsBetweenPreviousTimeAndGap(String previousTime, int movieTime, int cleanTime, String myTime, boolean toAddOrNot) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Calendar previousActualTime = Calendar.getInstance();
-        Calendar gapActualTime = gapCalculator(previousTime, movieTime, cleanTime);
+        Calendar gapActualTime = gapCalculator(previousTime, movieTime, cleanTime, toAddOrNot);
         Calendar myActualTime = Calendar.getInstance();
         try {
             previousActualTime.setTime(sdf.parse((previousTime)));
@@ -83,7 +92,11 @@ public class TestUtils extends TestCase {
         } catch (ParseException e) {
             throw new ApplicationException(e);
         }
+        if(toAddOrNot) {
+            return myActualTime.after(previousActualTime) && myActualTime.before(gapActualTime);
+        } else {
+            return myActualTime.before(previousActualTime) && myActualTime.after(gapActualTime);
 
-        return myActualTime.after(previousActualTime) && myActualTime.before(gapActualTime);
+        }
     }
 }

@@ -179,38 +179,49 @@ public class MovieScheduleEditor extends javax.swing.JFrame {
     }
 
     private boolean checkIfItAlreasyExistsInThatTime(String dateToCheck, String hall, String time) {
-        for(MovieSchedule ms : CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH)) {
-            if( ms.getTime().trim().equalsIgnoreCase(time)
-             && ms.getHallName().trim().equalsIgnoreCase(hall)
-             && ms.getDate().trim().equalsIgnoreCase(dateToCheck)) {
-                return true;
-            } else if( checkIfTimeIsBetweenPreviousTimeAndGap(ms.getTime(), Integer.parseInt(movie.getDurata()), time)
-                    && ms.getHallName().trim().equalsIgnoreCase(hall)
-                    && ms.getDate().trim().equalsIgnoreCase(dateToCheck)) {
-                return true;
+        for (MovieSchedule ms : CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH)) {
+            if ( (ms.getDate().trim().equalsIgnoreCase(dateToCheck) && ms.getHallName().trim().equalsIgnoreCase(hall))
+              || (ms.getHallName().trim().equalsIgnoreCase(hall))) {
+                if (ms.getTime().trim().equalsIgnoreCase(time)) {
+                    return true;
+                } else if ( checkIfTimeIsBetweenPreviousTimeAndGap(ms.getDate() + " " + ms.getTime()
+                          , Integer.parseInt(movie.getDurata())
+                          , dateToCheck + " " + time
+                          , true)) {
+                    return true;
+                } else if ( checkIfTimeIsBetweenPreviousTimeAndGap(ms.getDate() + " " + ms.getTime()
+                          , Integer.parseInt(movie.getDurata())
+                          , dateToCheck + " " + time
+                          , false)) {
+                    return true;
+                }
             }
-
         }
         return false;
     }
 
-    private Calendar gapCalculator(String myTime, int movieTime) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    private Calendar gapCalculator(String myTime, int movieTime, boolean isItToBeAdded) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Calendar cal = Calendar.getInstance();
         try {
             cal.setTime(sdf.parse((myTime)));
         } catch (ParseException e) {
             throw new ApplicationException(e);
         }
-        cal.add(Calendar.MINUTE, movieTime);
-        cal.add(Calendar.MINUTE, DataReferences.PAUSEAFTERMOVIE);
+        if(isItToBeAdded) {
+            cal.add(Calendar.MINUTE, movieTime);
+            cal.add(Calendar.MINUTE, DataReferences.PAUSEAFTERMOVIE);
+        } else {
+            cal.add(Calendar.MINUTE, -movieTime);
+            cal.add(Calendar.MINUTE, -DataReferences.PAUSEAFTERMOVIE);
+        }
         return cal;
     }
 
-    private boolean checkIfTimeIsBetweenPreviousTimeAndGap(String previousTime, int movieTime, String myTime) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    private boolean checkIfTimeIsBetweenPreviousTimeAndGap(String previousTime, int movieTime, String myTime, boolean isItToBeAdded) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Calendar previousActualTime = Calendar.getInstance();
-        Calendar gapActualTime = gapCalculator(previousTime, movieTime);
+        Calendar gapActualTime = gapCalculator(previousTime, movieTime, isItToBeAdded);
         Calendar myActualTime = Calendar.getInstance();
         try {
             previousActualTime.setTime(sdf.parse((previousTime)));
@@ -218,7 +229,12 @@ public class MovieScheduleEditor extends javax.swing.JFrame {
         } catch (ParseException e) {
             throw new ApplicationException(e);
         }
-        return myActualTime.after(previousActualTime) && myActualTime.before(gapActualTime);
+
+        if(isItToBeAdded) {
+            return myActualTime.after(previousActualTime) && myActualTime.before(gapActualTime);
+        } else {
+            return myActualTime.before(previousActualTime) && myActualTime.after(gapActualTime);
+        }
     }
 
     private boolean checkIfDateIsPassed(String toCheck){
