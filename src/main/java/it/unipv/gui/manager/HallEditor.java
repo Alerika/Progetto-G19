@@ -7,6 +7,7 @@ import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,13 +73,7 @@ class HallEditor extends JFrame {
 
         JMenuItem saveItem = new JMenuItem("Salva");
         fileMenu.add(saveItem);
-        saveItem.addActionListener( e -> {
-            DraggableSeatsToCSV.createCSVFromDraggableSeatsList( draggableSeatsList
-                                                               , DataReferences.PIANTINAFOLDERPATH + nomeSala +".csv"
-                                                               , false);
-            JOptionPane.showMessageDialog(this, "Piantina salvata con successo!");
-            summoner.triggerModificationToHallList();
-        });
+        saveItem.addActionListener(e -> doSave());
 
         JMenu editMenu = new JMenu("Modifica");
         menuBar.add(editMenu);
@@ -91,6 +86,14 @@ class HallEditor extends JFrame {
             draggableSeatsList.add(mc);
             repaint();
         });
+    }
+
+    private void doSave() {
+        DraggableSeatsToCSV.createCSVFromDraggableSeatsList( draggableSeatsList
+                                                           , DataReferences.PIANTINAFOLDERPATH + nomeSala +".csv"
+                                                           , false);
+        JOptionPane.showMessageDialog(this, "Piantina salvata con successo!");
+        summoner.triggerModificationToHallList();
     }
 
     /**
@@ -185,11 +188,32 @@ class HallEditor extends JFrame {
      */
     private void initFrame() {
         setTitle("Editor " + nomeSala);
+        addWindowListener(new WindowAdapter() {
+            @Override public void windowClosing(WindowEvent e) { doDisposeOnExit(); }
+        });
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new GridLayout(1,1));
         add(draggableSeatsPanel);
         setSize(700,500);
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    private void doDisposeOnExit() {
+        boolean flag = false;
+        for(MyDraggableSeat mds : draggableSeatsList) {
+            if(mds.isSomethingChanged()) {
+                flag = true;
+                break;
+            }
+        }
+        if(flag) {
+            if(JOptionPane.showConfirmDialog(null, "Salvare le modifiche prima di uscire?") == JOptionPane.YES_OPTION) {
+                doSave();
+            }
+            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        } else {
+            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        }
     }
 }

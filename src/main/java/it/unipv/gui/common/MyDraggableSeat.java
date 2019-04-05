@@ -3,9 +3,7 @@ package it.unipv.gui.common;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 
 /**
  * Questa classe rappresenta il singolo posto a sedere:
@@ -20,6 +18,7 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
     private int myX = 0;
     private int myY = 0;
     private boolean isItDraggable;
+    private boolean somethingChanged = false;
 
     public MyDraggableSeat(int x, int y) {
         setBorder(new LineBorder(Color.BLUE, 3));
@@ -46,7 +45,6 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
     // Per ora non ha molto senso che il gestore possa selezionare il posto ma è un test
     @Override
     public void mouseClicked(MouseEvent e) {
-
         if(e.getClickCount()==2) {
             if(getBackground().equals(Color.WHITE)) {
                 setBackground(Color.GREEN);
@@ -68,7 +66,6 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
     }
 
     /* Se siamo nella situazione di posto trascinabile
@@ -96,6 +93,7 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
             int deltaX = e.getXOnScreen() - screenX;
             int deltaY = e.getYOnScreen() - screenY;
             setLocation(myX + deltaX, myY + deltaY);
+            somethingChanged = true;
         }
     }
 
@@ -103,4 +101,6 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
     public void mouseMoved(MouseEvent e) {
 
     }
+
+    public boolean isSomethingChanged() { return somethingChanged; }
 }
