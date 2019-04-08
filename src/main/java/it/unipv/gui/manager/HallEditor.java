@@ -89,6 +89,7 @@ class HallEditor extends JFrame {
         setSize(700, 500);
         setLocationRelativeTo(null);
         setVisible(true);
+        addKeyListener(keyHandler);
     }
 
     private void doDisposeOnExit() {
@@ -100,11 +101,17 @@ class HallEditor extends JFrame {
         }
     }
 
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-    }
+    private KeyListener keyHandler = new KeyAdapter() {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_DELETE) {
+                draggableSeatsPanel.removeSelectedSeats();
+            }
+        }
+    };
 
+
+    /***********************************************************************************************************************************************************************/
     private class DraggableSeatPanel extends JPanel {
 
         private List<String> createdSeatsName = new ArrayList<>();
@@ -178,6 +185,21 @@ class HallEditor extends JFrame {
             }
         }
 
+        private void removeSelectedSeats() {
+            if (selectedMDSList.size() > 0) {
+                for (MyDraggableSeat mds : selectedMDSList) {
+                    if (((LineBorder) mds.getBorder()).getLineColor() == Color.CYAN) {
+                        createdSeatsName.remove(mds.getText());
+                        draggableSeatsList.remove(mds);
+                        remove(mds);
+                        isSomethingChanged = true;
+                        repaint();
+                    }
+                }
+            }
+            selectedMDSList.clear();
+        }
+
         private void createNewDraggableSeat() {
             MyDraggableSeat mds;
 
@@ -201,6 +223,7 @@ class HallEditor extends JFrame {
                         configureMDS(mds, name);
                         draggableSeatsList.add(mds);
                         isSomethingChanged = true;
+                        repaint();
                         killLoop = true;
                     } else {
                         JOptionPane.showMessageDialog(this, "Nome già esistente!");
