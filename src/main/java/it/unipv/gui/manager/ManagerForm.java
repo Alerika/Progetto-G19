@@ -406,19 +406,49 @@ public class ManagerForm extends javax.swing.JFrame {
         hallTableContainer.setColumnHeader(null);
     }
 
+    private int rows;
+    private int columns;
+    private boolean canceled;
     private void addListenerToMenuItem() {
         newHallItem.addActionListener(e->{
             String nomeSala = JOptionPane.showInputDialog(this, "Inserisci il nome della sala");
             if(nomeSala.equalsIgnoreCase("") || nomeSala.trim().length()==0) {
                 JOptionPane.showMessageDialog(this, "Devi inserire un nome!");
             } else if(!nomeSala.equalsIgnoreCase("")) {
-                new HallEditor(nomeSala, this, false);
+                int reply = JOptionPane.showConfirmDialog(this, "Vuoi creare una griglia preimpostata?","Scegli una opzione", JOptionPane.YES_NO_OPTION);
+                if(reply == JOptionPane.NO_OPTION) {
+                    new HallEditor(nomeSala, this, false);
+                } else {
+                    configureGridJOptionPaneMenu();
+                    if(!canceled) {
+                        new HallEditor(nomeSala, this, rows, columns);
+                    }
+                }
+
             }
         });
 
         newMovieItem.addActionListener(e -> new MovieEditor(this));
 
         pricesItem.addActionListener(e -> new PricesEditor());
+    }
+
+    private void configureGridJOptionPaneMenu() {
+        JTextField rows = new JTextField();
+        JTextField columns = new JTextField();
+        Object[] message = {
+                "Righe:", rows,
+                "Colonne:", columns
+        };
+
+        int option = JOptionPane.showConfirmDialog(null, message, "Inserisci numero di righe e colonne", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            this.rows = Integer.parseInt(rows.getText());
+            this.columns = Integer.parseInt(columns.getText());
+            canceled = false;
+        } else {
+            canceled = true;
+        }
     }
 
     private void initFrame() {

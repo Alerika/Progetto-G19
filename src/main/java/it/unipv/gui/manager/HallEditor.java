@@ -6,64 +6,45 @@ import it.unipv.gui.common.MyDraggableSeat;
 import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- *  Questa classe viene utilizzata principalmente per creare/modificare la piantina di una sala.
- */
 class HallEditor extends JFrame {
-    private List<String> createdSeatsName = new ArrayList<>();
-    private JPanel draggableSeatsPanel;
-    private List<MyDraggableSeat> draggableSeatsList = new ArrayList<>();
+
+    private DraggableSeatPanel draggableSeatsPanel;
+    private boolean isSomethingChanged = false;
     private String nomeSala;
     private ManagerForm summoner;
 
-    /**
-     * @param nomeSala -> viene utilizzato per il nome del file e per il titolo del frame;
-     * @param summoner -> viene utilizzato per triggerare l'evento di update della tabella
-     * @param wasItAlreadyCreated -> viene utilizzato per stabilire se si è in modalità nuova sala o modifica sala esistente
-     */
+
     HallEditor( String nomeSala
-              , ManagerForm summoner
-              , boolean wasItAlreadyCreated) {
+            , ManagerForm summoner
+            , boolean wasItAlreadyCreated) {
         this.nomeSala = nomeSala;
         this.summoner = summoner;
 
         initMenuBar();
-        initDraggableSeatsPanel();
+        initDraggableSeatsPanel(wasItAlreadyCreated);
         initFrame();
-
-        if(wasItAlreadyCreated) {
-            initDraggableSeatsList();
-        }
-
     }
 
-    /**
-     * Metodo utilizzato per instanziare la lista dei posti a sedere, se esistono posti in precedenza
-     * Se la sala è già stata creata vuol dire che esistono dei posti in precedenza,
-     *    quindi vado a leggerli da file e a disegnarli di conseguenza.
-    */
-    private void initDraggableSeatsList() {
-        draggableSeatsList = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
-        for(MyDraggableSeat mds : draggableSeatsList) {
-            draggableSeatsPanel.add(mds);
-            createdSeatsName.add(mds.getText());
-            mds.setIsItDraggable(true);
-            repaint();
-        }
+    HallEditor( String nomeSala
+            , ManagerForm summoner
+            , int rows
+            , int columns) {
+        this.nomeSala = nomeSala;
+        this.summoner = summoner;
+        initMenuBar();
+        initDraggableSeatsPanel(rows, columns);
+        initFrame();
+        isSomethingChanged = true;
     }
 
-    /**
-     * Metodo utilizzato per la creazione del menuBar
-     *   File -> Salva, permette di salvare all'interno del CSV le posizioni dei posti a sedere creati
-     *      il nome del file viene impostato grazie a "nomeSala".
-     *   Modifica -> Aggiungi, permette di aggiungere un nuovo posto e di trascinarlo dove si vuole nella piantina
-    */
+
     private void initMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
@@ -73,147 +54,311 @@ class HallEditor extends JFrame {
 
         JMenuItem saveItem = new JMenuItem("Salva");
         fileMenu.add(saveItem);
-        saveItem.addActionListener(e -> doSave());
+        saveItem.addActionListener(e -> draggableSeatsPanel.doSave());
 
         JMenu editMenu = new JMenu("Modifica");
         menuBar.add(editMenu);
 
         JMenuItem insertNewSeatItem = new JMenuItem("Aggiungi");
         editMenu.add(insertNewSeatItem);
-        insertNewSeatItem.addActionListener(e -> {
-            MyDraggableSeat mc = createNewDraggableSeat();
-            draggableSeatsPanel.add(mc);
-            draggableSeatsList.add(mc);
-            repaint();
-        });
+        insertNewSeatItem.addActionListener(e -> draggableSeatsPanel.createNewDraggableSeat());
     }
 
-    private void doSave() {
-        DraggableSeatsToCSV.createCSVFromDraggableSeatsList( draggableSeatsList
-                                                           , DataReferences.PIANTINAFOLDERPATH + nomeSala +".csv"
-                                                           , false);
-        JOptionPane.showMessageDialog(this, "Piantina salvata con successo!");
-        summoner.triggerModificationToHallList();
+
+
+    private void initDraggableSeatsPanel(boolean wasItAlreayCreated) {
+        draggableSeatsPanel = new DraggableSeatPanel(wasItAlreayCreated);
     }
 
-    /**
-     * Inizializzazione del pannnello che rappresenterà la piantina
-     */
-    private void initDraggableSeatsPanel() {
-        draggableSeatsPanel = new JPanel();
-        draggableSeatsPanel.setMinimumSize(new Dimension(300, 150));
-        draggableSeatsPanel.setLayout(null);
+    private void initDraggableSeatsPanel(int rows, int columns) {
+        draggableSeatsPanel = new DraggableSeatPanel(rows, columns);
     }
 
-    /**
-     * Metodo per la creazione del nuovo posto a sedere.
-     * Quando si crea un nuovo posto a sedere viene chiesto il nome:
-     *    se il nome è già stato usato, non viene impostato, oppure è una stringa
-     *    vuota o di soli spazi, viene ritenuto non opportuno.
-     * Ad ogni posto a sedere viene impostato un menu apribile con un
-     *    click destro del mouse; questo menu contiene la possibilità di eliminare
-     *    il posto a sedere selezionato.
-    */
-    private MyDraggableSeat createNewDraggableSeat() {
-        MyDraggableSeat mc = new MyDraggableSeat(0,0);
-        mc.setIsItDraggable(true);
 
-        boolean killLoop = false;
-        while(!killLoop) {
-            boolean alreadyThere = false;
-            boolean isAGoodName = false;
-
-            String name = JOptionPane.showInputDialog(this, "Inserisci il nome del posto");
-            if(!name.equalsIgnoreCase("") || name.trim().length()!=0) {
-                isAGoodName=true;
-            }
-            for(String s : createdSeatsName) {
-                if(name.trim().toLowerCase().equalsIgnoreCase(s.trim().toLowerCase())) {
-                    alreadyThere = true;
-                }
-            }
-            if(isAGoodName) {
-                if(!alreadyThere) {
-                    mc.setText(name);
-                    mc.setComponentPopupMenu(initJPopupMenu(name));
-                    createdSeatsName.add(name);
-                    killLoop = true;
-                } else {
-                    JOptionPane.showMessageDialog(this, "Nome già esistente!");
-                    killLoop = false;
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Inserisci un nome!");
-                killLoop = false;
-            }
-
-        }
-        return mc;
-    }
-
-    /**
-     * Inizializzazione menu richiamabile con un click destro sul posto a sedere
-     */
-    private JPopupMenu initJPopupMenu(String name) {
-        JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem deleteItem = new JMenuItem("Rimuovi Posto");
-        deleteItem.addActionListener(e -> rimuoviPosto(name));
-        popupMenu.add(deleteItem);
-        return popupMenu;
-    }
-
-    /**
-     * Metodo per la rimozione effettiva del posto a sedere
-     */
-    private void rimuoviPosto(String name) {
-        boolean status = false;
-        MyDraggableSeat toRemove = null;
-        for(MyDraggableSeat djl : draggableSeatsList) {
-            if(name.trim().equalsIgnoreCase(djl.getText().trim())) {
-                status = true;
-                toRemove = djl;
-                break;
-            }
-        }
-        if(status) {
-            createdSeatsName.remove(name);
-            draggableSeatsList.remove(toRemove);
-            draggableSeatsPanel.remove(toRemove);
-            repaint();
-        }
-    }
-
-    /**
-     * Inizializzazione dei parametri di base del frame
-     */
     private void initFrame() {
         setTitle("Editor " + nomeSala);
         addWindowListener(new WindowAdapter() {
-            @Override public void windowClosing(WindowEvent e) { doDisposeOnExit(); }
+            @Override
+            public void windowClosing(WindowEvent e) {
+                doDisposeOnExit();
+            }
         });
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new GridLayout(1,1));
+        setLayout(new GridLayout(1, 1));
         add(draggableSeatsPanel);
-        setSize(700,500);
+        setSize(700, 500);
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
     private void doDisposeOnExit() {
-        boolean flag = false;
-        for(MyDraggableSeat mds : draggableSeatsList) {
-            if(mds.isSomethingChanged()) {
-                flag = true;
-                break;
+        if(isSomethingChanged) {
+            int reply = JOptionPane.showConfirmDialog(null, "Salvare le modifiche prima di uscire?", "", JOptionPane.YES_NO_OPTION);
+            if(reply == JOptionPane.YES_OPTION) {
+                draggableSeatsPanel.doSave();
             }
         }
-        if(flag) {
-            if(JOptionPane.showConfirmDialog(null, "Salvare le modifiche prima di uscire?") == JOptionPane.YES_OPTION) {
-                doSave();
-            }
-            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        } else {
-            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+    }
+
+    private class DraggableSeatPanel extends JPanel {
+
+        private List<String> createdSeatsName = new ArrayList<>();
+        private List<MyDraggableSeat> draggableSeatsList = new ArrayList<>();
+
+        DraggableSeatPanel(boolean wasItAlreadyCreated) {
+            if(wasItAlreadyCreated) { initDraggableSeatsList(); }
+            addMouseListener(mouseHandler);
+            addMouseMotionListener(mouseMotionHandler);
+            setOpaque(false);
+            setLayout(null);
         }
+
+        DraggableSeatPanel(int rows, int columns) {
+            initDraggableSeatsGrid(rows, columns);
+            addMouseListener(mouseHandler);
+            addMouseMotionListener(mouseMotionHandler);
+            setOpaque(false);
+            setLayout(null);
+        }
+
+        private void initDraggableSeatsGrid(int rows, int columns) {
+            int x = 5;
+            int y = 5;
+            int cont = 0;
+            for(int i=0; i<rows; i++) {
+                if(i>0) {
+                    y += DataReferences.MYDRAGGABLESEATHEIGTH + 5;
+                    x = 5;
+                }
+                if(cont>25) { cont = 0; }
+                for(int j=0; j<columns; j++) {
+                    if(j>0) { x += DataReferences.MYDRAGGABLESEATWIDTH+5; }
+                    MyDraggableSeat mds = new MyDraggableSeat(x,y);
+                    configureMDS(mds, DataReferences.ALPHABET[cont]+""+(j+1));
+                    draggableSeatsList.add(mds);
+                }
+                cont++;
+            }
+        }
+
+        private void initDraggableSeatsList() {
+            draggableSeatsList = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
+            for(MyDraggableSeat mds : draggableSeatsList) {
+                configureMDS(mds, mds.getText());
+            }
+        }
+
+        private void configureMDS(MyDraggableSeat mds, String name) {
+            createdSeatsName.add(mds.getText());
+            mds.setText(name);
+            mds.setComponentPopupMenu(initJPopupMenu(name));
+            initMouseListenerForMDS(mds);
+            add(mds);
+        }
+
+        private void removeSeat(String name) {
+            MyDraggableSeat toRemove = null;
+            for(MyDraggableSeat mds : draggableSeatsList) {
+                if(name.trim().equalsIgnoreCase(mds.getText().trim())) {
+                    toRemove = mds;
+                    break;
+                }
+            }
+            if(toRemove!=null) {
+                createdSeatsName.remove(name);
+                draggableSeatsList.remove(toRemove);
+                remove(toRemove);
+                isSomethingChanged = true;
+                repaint();
+            }
+        }
+
+        private void createNewDraggableSeat() {
+            MyDraggableSeat mds;
+
+            boolean killLoop = false;
+            while(!killLoop) {
+                boolean alreadyThere = false;
+                boolean isAGoodName = false;
+
+                String name = JOptionPane.showInputDialog(this, "Inserisci il nome del posto");
+                if(!name.equalsIgnoreCase("") || name.trim().length()!=0) {
+                    isAGoodName=true;
+                }
+                for(String s : createdSeatsName) {
+                    if(name.trim().toLowerCase().equalsIgnoreCase(s.trim().toLowerCase())) {
+                        alreadyThere = true;
+                    }
+                }
+                if(isAGoodName) {
+                    if(!alreadyThere) {
+                        mds = new MyDraggableSeat(0,0);
+                        configureMDS(mds, name);
+                        draggableSeatsList.add(mds);
+                        isSomethingChanged = true;
+                        killLoop = true;
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Nome già esistente!");
+                        killLoop = false;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Inserisci un nome!");
+                    killLoop = false;
+                }
+            }
+        }
+
+        private JPopupMenu initJPopupMenu(String name) {
+            JPopupMenu popupMenu = new JPopupMenu();
+            JMenuItem deleteItem = new JMenuItem("Rimuovi Posto");
+            deleteItem.addActionListener(e -> removeSeat(name));
+            popupMenu.add(deleteItem);
+            return popupMenu;
+        }
+
+
+        private void doSave() {
+            DraggableSeatsToCSV.createCSVFromDraggableSeatsList( draggableSeatsList
+                    , DataReferences.PIANTINAFOLDERPATH + nomeSala +".csv"
+                    , false);
+            JOptionPane.showMessageDialog(this, "Piantina salvata con successo!");
+            summoner.triggerModificationToHallList();
+            isSomethingChanged = false;
+        }
+
+        private int screenX = 0;
+        private int screenY = 0;
+        private int myX = 0;
+        private int myY = 0;
+        private List<Integer> myXList = new ArrayList<>();
+        private List<Integer> myYList = new ArrayList<>();
+        private void initMouseListenerForMDS(MyDraggableSeat mds) {
+            mds.addMouseListener(new MouseAdapter() {
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    screenX = e.getXOnScreen();
+                    screenY = e.getYOnScreen();
+                    myX = mds.getX();
+                    myY = mds.getY();
+                    myXList.clear();
+                    myYList.clear();
+                    for(MyDraggableSeat mds : selectedMDSList) {
+                        myXList.add(mds.getX());
+                        myYList.add(mds.getY());
+                    }
+                }
+            });
+
+            mds.addMouseMotionListener(new MouseAdapter() {
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    int deltaX = e.getXOnScreen() - screenX;
+                    int deltaY = e.getYOnScreen() - screenY;
+
+                    if(selectedMDSList.size()==0) {
+                        mds.setLocation(myX + deltaX, myY + deltaY);
+                    } else {
+                        for(int i = 0; i<selectedMDSList.size(); i++) {
+                            if(((LineBorder)selectedMDSList.get(i).getBorder()).getLineColor()== Color.CYAN) {
+                                selectedMDSList.get(i).setLocation(myXList.get(i) + deltaX, myYList.get(i) + deltaY);
+                            }
+                        }
+                    }
+                    isSomethingChanged = true;
+                }
+            });
+        }
+
+        private boolean dontCreateBox = false;
+        private boolean isNewRect = false;
+        private Rectangle mouseRect = new Rectangle();
+        private Point mousePt = new Point();
+        private List<MyDraggableSeat> selectedMDSList = new ArrayList<>();
+
+        private MouseListener mouseHandler = new MouseAdapter() {
+            @Override
+            public  void mouseClicked(MouseEvent e) {
+                for(MyDraggableSeat mds : selectedMDSList) {
+                    if(((LineBorder)mds.getBorder()).getLineColor()== Color.CYAN) {
+                        mds.setBorder(new LineBorder(Color.BLUE, 3));
+                    }
+                }
+                selectedMDSList.clear();
+                dontCreateBox = false;
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if(!dontCreateBox) {
+                    isNewRect = true;
+                    mousePt = e.getPoint();
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if(!dontCreateBox) {
+                    isNewRect = true;
+                    mouseRect.setBounds(0, 0, 0, 0);
+                    repaint();
+                }
+
+                for(MyDraggableSeat mds : draggableSeatsList) {
+                    if(((LineBorder)mds.getBorder()).getLineColor()== Color.CYAN) {
+                        selectedMDSList.remove(mds);
+                    }
+                }
+
+            }
+        };
+
+        private MouseMotionListener mouseMotionHandler = new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if(!dontCreateBox) {
+                    isNewRect = false;
+                    mouseRect.setBounds(
+                            Math.min(mousePt.x, e.getX()),
+                            Math.min(mousePt.y, e.getY()),
+                            Math.abs(mousePt.x - e.getX()),
+                            Math.abs(mousePt.y - e.getY()));
+
+                    Rectangle selectionBox = new Rectangle(mouseRect.x, mouseRect.y, mouseRect.width, mouseRect.height);
+                    for(MyDraggableSeat mds : draggableSeatsList) {
+                        if(selectionBox.intersects(mds.getX(), mds.getY(), mds.getWidth(), mds.getHeight())){
+                            selectedMDSList.add(mds);
+                            mds.setBorder(new LineBorder(Color.CYAN, 3));
+                        } else {
+                            selectedMDSList.remove(mds);
+                            mds.setBorder(new LineBorder(Color.BLUE, 3));
+                        }
+                    }
+                    repaint();
+                }
+            }
+        };
+
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2D = (Graphics2D) g;
+            Composite originalComposite = g2D.getComposite();
+            g2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+            g2D.setColor(new Color(0x0073b5e9));
+
+            if (!isNewRect && !dontCreateBox) {
+                g2D.fill(new Rectangle(mouseRect.x, mouseRect.y,mouseRect.width, mouseRect.height));
+                super.paintComponent(g2D);
+            }
+
+            g2D.setComposite(originalComposite);
+        }
+
     }
 }

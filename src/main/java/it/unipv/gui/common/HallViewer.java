@@ -5,6 +5,8 @@ import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -47,7 +49,6 @@ public class HallViewer extends JFrame {
 
         for(MyDraggableSeat mds : draggableSeats) {
             undraggableSeatsPanel.add(mds);
-            mds.setIsItDraggable(false);
             repaint();
         }
     }

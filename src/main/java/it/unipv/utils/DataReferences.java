@@ -18,4 +18,8 @@ public class DataReferences {
 
     public final static String ADMINUSERNAME = "Admin";
     public final static String ADMINPASSWORD = "Admin";
+
+    public final static int MYDRAGGABLESEATWIDTH = 30;
+    public final static int MYDRAGGABLESEATHEIGTH = 25;
+    public final static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 }
