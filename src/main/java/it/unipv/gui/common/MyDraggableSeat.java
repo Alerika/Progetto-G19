@@ -16,6 +16,9 @@ import java.awt.event.*;
  */
 public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotionListener {
 
+    private boolean amISelected;
+    private boolean amICopied;
+
     public MyDraggableSeat(int x, int y) {
         setBorder(new LineBorder(Color.BLUE, 3));
         setBackground(Color.WHITE);
@@ -28,6 +31,14 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
         addMouseListener(this);
         addMouseMotionListener(this);
     }
+
+    public void setIsSelected(boolean selected) { amISelected = selected; }
+
+    public boolean getIsSelected() { return amISelected; }
+
+    public boolean getIsCopied() { return amICopied; }
+
+    public void setIsCopied(boolean amICopied) { this.amICopied = amICopied; }
 
     // Per ora non ha molto senso che il gestore possa selezionare il posto ma è un test
     @Override

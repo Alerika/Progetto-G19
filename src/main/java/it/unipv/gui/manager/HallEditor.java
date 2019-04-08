@@ -107,6 +107,14 @@ class HallEditor extends JFrame {
             if(e.getKeyCode() == KeyEvent.VK_DELETE) {
                 draggableSeatsPanel.removeSelectedSeats();
             }
+
+            if((e.getKeyCode() == KeyEvent.VK_C) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+                draggableSeatsPanel.copySelectedSeats();
+            }
+
+            if((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+                draggableSeatsPanel.pasteCopiedSeats();
+            }
         }
     };
 
@@ -192,12 +200,57 @@ class HallEditor extends JFrame {
                         createdSeatsName.remove(mds.getText());
                         draggableSeatsList.remove(mds);
                         remove(mds);
-                        isSomethingChanged = true;
                         repaint();
                     }
                 }
             }
+            isSomethingChanged = true;
             selectedMDSList.clear();
+        }
+
+        private List<MyDraggableSeat> mdsToPaste = new ArrayList<>();
+        private void copySelectedSeats() {
+            if(selectedMDSList.size()>0) {
+                for(MyDraggableSeat mds : selectedMDSList) {
+                    if (((LineBorder) mds.getBorder()).getLineColor() == Color.CYAN) {
+                        if(!mds.getIsCopied()) {
+                            mdsToPaste.add(mds);
+                            mds.setIsCopied(true);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void pasteCopiedSeats() {
+            List<MyDraggableSeat> pasted = new ArrayList<>();
+            if(mdsToPaste.size()>0) {
+                for(MyDraggableSeat mds : mdsToPaste) {
+                    MyDraggableSeat copy = new MyDraggableSeat(mds.getX()-15, mds.getY()-15);
+                    configureMDS(copy, mds.getText()+" copy");
+                    repaint();
+                    mds.setIsCopied(false);
+                    pasted.add(copy);
+                }
+            }
+
+            if(selectedMDSList.size()>0) {
+                for(MyDraggableSeat mds : selectedMDSList) {
+                    mds.setBorder(new LineBorder(Color.BLUE, 3));
+                }
+                selectedMDSList.clear();
+            }
+
+            for(MyDraggableSeat mds : pasted) {
+                selectedMDSList.add(mds);
+                mds.setBorder(new LineBorder(Color.CYAN, 3));
+            }
+
+            isNewRect = true;
+            isSomethingChanged = true;
+            draggableSeatsList.addAll(pasted);
+            mdsToPaste.clear();
+            pasted.clear();
         }
 
         private void createNewDraggableSeat() {
@@ -331,13 +384,6 @@ class HallEditor extends JFrame {
                     mouseRect.setBounds(0, 0, 0, 0);
                     repaint();
                 }
-
-                for(MyDraggableSeat mds : draggableSeatsList) {
-                    if(((LineBorder)mds.getBorder()).getLineColor()== Color.CYAN) {
-                        selectedMDSList.remove(mds);
-                    }
-                }
-
             }
         };
 
@@ -355,13 +401,20 @@ class HallEditor extends JFrame {
                     Rectangle selectionBox = new Rectangle(mouseRect.x, mouseRect.y, mouseRect.width, mouseRect.height);
                     for(MyDraggableSeat mds : draggableSeatsList) {
                         if(selectionBox.intersects(mds.getX(), mds.getY(), mds.getWidth(), mds.getHeight())){
-                            selectedMDSList.add(mds);
-                            mds.setBorder(new LineBorder(Color.CYAN, 3));
+                            if(!mds.getIsSelected()) {
+                                mds.setIsSelected(true);
+                                mds.setBorder(new LineBorder(Color.CYAN, 3));
+                                selectedMDSList.add(mds);
+                            }
                         } else {
-                            selectedMDSList.remove(mds);
-                            mds.setBorder(new LineBorder(Color.BLUE, 3));
+                            if(mds.getIsSelected()) {
+                                selectedMDSList.remove(mds);
+                                mds.setIsSelected(false);
+                                mds.setBorder(new LineBorder(Color.BLUE, 3));
+                            }
                         }
                     }
+
                     repaint();
                 }
             }
