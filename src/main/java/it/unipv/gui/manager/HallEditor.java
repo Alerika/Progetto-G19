@@ -18,14 +18,15 @@ class HallEditor extends JFrame {
     private DraggableSeatPanel draggableSeatsPanel;
     private boolean isSomethingChanged = false;
     private String nomeSala;
-    private ManagerForm summoner;
+    private ManagerForm managerForm;
+    private HallEditor hallEditor = this;
 
 
     HallEditor( String nomeSala
-            , ManagerForm summoner
+            , ManagerForm managerForm
             , boolean wasItAlreadyCreated) {
         this.nomeSala = nomeSala;
-        this.summoner = summoner;
+        this.managerForm = managerForm;
 
         initMenuBar();
         initDraggableSeatsPanel(wasItAlreadyCreated);
@@ -33,11 +34,11 @@ class HallEditor extends JFrame {
     }
 
     HallEditor( String nomeSala
-            , ManagerForm summoner
+            , ManagerForm managerForm
             , int rows
             , int columns) {
         this.nomeSala = nomeSala;
-        this.summoner = summoner;
+        this.managerForm = managerForm;
         initMenuBar();
         initDraggableSeatsPanel(rows, columns);
         initFrame();
@@ -62,6 +63,10 @@ class HallEditor extends JFrame {
         JMenuItem insertNewSeatItem = new JMenuItem("Aggiungi");
         editMenu.add(insertNewSeatItem);
         insertNewSeatItem.addActionListener(e -> draggableSeatsPanel.createNewDraggableSeat());
+
+        JMenuItem insertMultipleSeatItem = new JMenuItem("Aggiungi griglia");
+        editMenu.add(insertMultipleSeatItem);
+        insertMultipleSeatItem.addActionListener(e -> draggableSeatsPanel.addMultipleSeats());
     }
 
 
@@ -86,7 +91,7 @@ class HallEditor extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new GridLayout(1, 1));
         add(draggableSeatsPanel);
-        setSize(700, 500);
+        setSize(1200, 720);
         setLocationRelativeTo(null);
         setVisible(true);
         addKeyListener(keyHandler);
@@ -94,7 +99,7 @@ class HallEditor extends JFrame {
 
     private void doDisposeOnExit() {
         if(isSomethingChanged) {
-            int reply = JOptionPane.showConfirmDialog(null, "Salvare le modifiche prima di uscire?", "", JOptionPane.YES_NO_OPTION);
+            int reply = JOptionPane.showConfirmDialog(hallEditor, "Salvare le modifiche prima di uscire?", "", JOptionPane.YES_NO_OPTION);
             if(reply == JOptionPane.YES_OPTION) {
                 draggableSeatsPanel.doSave();
             }
@@ -142,6 +147,11 @@ class HallEditor extends JFrame {
         }
 
         private void initDraggableSeatsGrid(int rows, int columns) {
+            draggableSeatsList.addAll(initGrid(rows, columns, true));
+        }
+
+        private List<MyDraggableSeat> initGrid(int rows, int columns, boolean doYouWantName) {
+            List<MyDraggableSeat> res = new ArrayList<>();
             int x = 5;
             int y = 5;
             int cont = 0;
@@ -150,42 +160,44 @@ class HallEditor extends JFrame {
                     y += DataReferences.MYDRAGGABLESEATHEIGTH + 5;
                     x = 5;
                 }
-                if(cont>25) { cont = 0; }
                 for(int j=0; j<columns; j++) {
                     if(j>0) { x += DataReferences.MYDRAGGABLESEATWIDTH+5; }
                     MyDraggableSeat mds = new MyDraggableSeat(x,y);
-                    configureMDS(mds, DataReferences.ALPHABET[cont]+""+(j+1));
-                    draggableSeatsList.add(mds);
+                    configureMDS(mds, DataReferences.ALPHABET[cont]+""+(j+1), doYouWantName);
+                    res.add(mds);
                 }
                 cont++;
             }
+            return res;
         }
 
         private void initDraggableSeatsList() {
             draggableSeatsList = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
             for(MyDraggableSeat mds : draggableSeatsList) {
-                configureMDS(mds, mds.getText());
+                configureMDS(mds, mds.getText(), true);
             }
         }
 
-        private void configureMDS(MyDraggableSeat mds, String name) {
-            createdSeatsName.add(mds.getText());
-            mds.setText(name);
-            mds.setComponentPopupMenu(initJPopupMenu(name));
+        private void configureMDS(MyDraggableSeat mds, String name, boolean doYouWantName) {
+            if(doYouWantName) {
+                createdSeatsName.add(mds.getText());
+                mds.setText(name);
+            }
+            mds.setComponentPopupMenu(initJPopupMenu(mds));
             initMouseListenerForMDS(mds);
             add(mds);
         }
 
-        private void removeSeat(String name) {
+        private void removeSeat(int x, int y) {
             MyDraggableSeat toRemove = null;
             for(MyDraggableSeat mds : draggableSeatsList) {
-                if(name.trim().equalsIgnoreCase(mds.getText().trim())) {
+                if((x==mds.getX())&&(y==mds.getY())) {
                     toRemove = mds;
                     break;
                 }
             }
             if(toRemove!=null) {
-                createdSeatsName.remove(name);
+                createdSeatsName.remove(toRemove.getText());
                 draggableSeatsList.remove(toRemove);
                 remove(toRemove);
                 isSomethingChanged = true;
@@ -227,7 +239,7 @@ class HallEditor extends JFrame {
             if(mdsToPaste.size()>0) {
                 for(MyDraggableSeat mds : mdsToPaste) {
                     MyDraggableSeat copy = new MyDraggableSeat(mds.getX()-15, mds.getY()-15);
-                    configureMDS(copy, mds.getText()+" copy");
+                    configureMDS(copy, mds.getText()+" copy", true);
                     repaint();
                     mds.setIsCopied(false);
                     pasted.add(copy);
@@ -254,47 +266,53 @@ class HallEditor extends JFrame {
         }
 
         private void createNewDraggableSeat() {
-            MyDraggableSeat mds;
-
-            boolean killLoop = false;
-            while(!killLoop) {
-                boolean alreadyThere = false;
-                boolean isAGoodName = false;
-
-                String name = JOptionPane.showInputDialog(this, "Inserisci il nome del posto");
-                if(!name.equalsIgnoreCase("") || name.trim().length()!=0) {
-                    isAGoodName=true;
-                }
-                for(String s : createdSeatsName) {
-                    if(name.trim().toLowerCase().equalsIgnoreCase(s.trim().toLowerCase())) {
-                        alreadyThere = true;
-                    }
-                }
-                if(isAGoodName) {
-                    if(!alreadyThere) {
-                        mds = new MyDraggableSeat(0,0);
-                        configureMDS(mds, name);
-                        draggableSeatsList.add(mds);
-                        isSomethingChanged = true;
-                        repaint();
-                        killLoop = true;
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Nome già esistente!");
-                        killLoop = false;
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, "Inserisci un nome!");
-                    killLoop = false;
-                }
-            }
+            MyDraggableSeat mds = new MyDraggableSeat(0,0);
+            configureMDS(mds, "", false);
+            selectedMDSList.clear();
+            mds.setBorder(new LineBorder(Color.CYAN, 3));
+            selectedMDSList.add(mds);
+            draggableSeatsList.add(mds);
+            isSomethingChanged = true;
+            repaint();
         }
 
-        private JPopupMenu initJPopupMenu(String name) {
+        private JPopupMenu initJPopupMenu(MyDraggableSeat mds) {
             JPopupMenu popupMenu = new JPopupMenu();
-            JMenuItem deleteItem = new JMenuItem("Rimuovi Posto");
-            deleteItem.addActionListener(e -> removeSeat(name));
+
+            JMenuItem deleteItem = new JMenuItem("Rimuovi");
+            deleteItem.addActionListener(e -> removeSeat(mds.getX(), mds.getY()));
             popupMenu.add(deleteItem);
+
+            JMenuItem renameItem = new JMenuItem("Rinomina");
+            renameItem.addActionListener(e -> renameSeat(mds) );
+            popupMenu.add(renameItem);
             return popupMenu;
+        }
+
+        private void renameSeat(MyDraggableSeat mds) {
+            String name = JOptionPane.showInputDialog(hallEditor, "Rinomina il posto!");
+            if(name!=null) {
+                if(!name.trim().equalsIgnoreCase("")) {
+                    boolean alreadyThere = false;
+                    for(String s : createdSeatsName) {
+                        if(s.trim().equalsIgnoreCase(name)) {
+                            alreadyThere = true;
+                            break;
+                        }
+                    }
+                    if(!alreadyThere) {
+                        createdSeatsName.remove(mds.getText());
+                        mds.setText(name);
+                        createdSeatsName.add(name);
+                        isSomethingChanged = true;
+                    } else {
+                        JOptionPane.showMessageDialog(hallEditor, "Nome già esistente!");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(hallEditor, "Devi inserire un nome!");
+                }
+                isSomethingChanged = false;
+            }
         }
 
 
@@ -302,8 +320,8 @@ class HallEditor extends JFrame {
             DraggableSeatsToCSV.createCSVFromDraggableSeatsList( draggableSeatsList
                     , DataReferences.PIANTINAFOLDERPATH + nomeSala +".csv"
                     , false);
-            JOptionPane.showMessageDialog(this, "Piantina salvata con successo!");
-            summoner.triggerModificationToHallList();
+            JOptionPane.showMessageDialog(hallEditor, "Piantina salvata con successo!");
+            managerForm.triggerModificationToHallList();
             isSomethingChanged = false;
         }
 
@@ -436,5 +454,44 @@ class HallEditor extends JFrame {
             g2D.setComposite(originalComposite);
         }
 
+        int rows;
+        int columns;
+        boolean canceled;
+        public void addMultipleSeats() {
+            configureGridJOptionPaneMenu();
+            if(!canceled) {
+                List<MyDraggableSeat> grid = initGrid(rows, columns, false);
+                draggableSeatsList.addAll(grid);
+                for(MyDraggableSeat mds : selectedMDSList) {
+                    if (((LineBorder) mds.getBorder()).getLineColor() == Color.CYAN) {
+                        mds.setBorder(new LineBorder(Color.BLUE, 3));
+                    }
+                }
+                selectedMDSList.clear();
+                for(MyDraggableSeat mds : grid) {
+                    mds.setBorder(new LineBorder(Color.CYAN, 3));
+                }
+                selectedMDSList.addAll(grid);
+            }
+            repaint();
+        }
+
+        private void configureGridJOptionPaneMenu() {
+            JTextField rows = new JTextField();
+            JTextField columns = new JTextField();
+            Object[] message = {
+                    "Righe:", rows,
+                    "Colonne:", columns
+            };
+
+            int option = JOptionPane.showConfirmDialog(hallEditor, message, "Inserisci numero di righe e colonne", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                this.rows = Integer.parseInt(rows.getText());
+                this.columns = Integer.parseInt(columns.getText());
+                canceled = false;
+            } else {
+                canceled = true;
+            }
+        }
     }
 }
