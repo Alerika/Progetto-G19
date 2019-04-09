@@ -21,6 +21,7 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
 
     public MyDraggableSeat(int x, int y) {
         setBorder(new LineBorder(Color.BLUE, 3));
+        setFont(this.getFont().deriveFont(9f));
         setBackground(Color.WHITE);
         setBounds(x, y, DataReferences.MYDRAGGABLESEATWIDTH, DataReferences.MYDRAGGABLESEATHEIGTH);
         setSize(DataReferences.MYDRAGGABLESEATWIDTH, DataReferences.MYDRAGGABLESEATHEIGTH);
