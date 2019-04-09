@@ -412,19 +412,25 @@ public class ManagerForm extends javax.swing.JFrame {
     private void addListenerToMenuItem() {
         newHallItem.addActionListener(e->{
             String nomeSala = JOptionPane.showInputDialog(this, "Inserisci il nome della sala");
-            if(nomeSala.equalsIgnoreCase("") || nomeSala.trim().length()==0) {
-                JOptionPane.showMessageDialog(this, "Devi inserire un nome!");
-            } else if(!nomeSala.equalsIgnoreCase("")) {
-                int reply = JOptionPane.showConfirmDialog(this, "Vuoi creare una griglia preimpostata?","Scegli una opzione", JOptionPane.YES_NO_OPTION);
-                if(reply == JOptionPane.NO_OPTION) {
-                    new HallEditor(nomeSala, this, false);
-                } else {
-                    configureGridJOptionPaneMenu();
-                    if(!canceled) {
-                        new HallEditor(nomeSala, this, rows, columns);
+            if(nomeSala!=null) {
+                if(nomeSala.equalsIgnoreCase("") || nomeSala.trim().length()==0) {
+                    JOptionPane.showMessageDialog(this, "Devi inserire un nome!");
+                } else if(!nomeSala.equalsIgnoreCase("")) {
+                    int reply = JOptionPane.showConfirmDialog(this, "Vuoi creare una griglia preimpostata?","Scegli una opzione", JOptionPane.YES_NO_OPTION);
+                    if(reply == JOptionPane.NO_OPTION) {
+                        new HallEditor(nomeSala, this, false);
+                    } else {
+                        configureGridJOptionPaneMenu();
+                        if(!canceled) {
+                            if(rows<27) {
+                                new HallEditor(nomeSala, this, rows, columns);
+                            } else {
+                                JOptionPane.showMessageDialog(this, "Numero massimo di righe 26!");
+                            }
+                        }
                     }
-                }
 
+                }
             }
         });
 
