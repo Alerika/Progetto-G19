@@ -64,7 +64,7 @@ public class HallViewer extends JFrame {
         });
         setLayout(new GridLayout(1,1));
         add(undraggableSeatsPanel);
-        setSize(700,500);
+        setSize(1200,720);
         setLocationRelativeTo(null);
         setVisible(true);
     }
