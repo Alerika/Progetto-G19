@@ -24,6 +24,7 @@ Parte gestore:
 [X] Implementare modifica del nome del posto
 [X] Implementare aggiunta griglia posti nell'editor stesso
 [X] Implementare possibilità di modificare nome della sala
+[ ] Implementare tipologia del posto (normale, vip, disabile, prenotato, ecc...)
 [ ] Risolvere bug con l'andata a capo delle textarea (trama film) (anche se non credo ci sarà bisogno con un ipotetico db)
 [ ] Fare in modo che i posti a sedere non possano essere trascinati all'esterno della finestra
 [ ] ...
