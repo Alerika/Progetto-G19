@@ -127,6 +127,7 @@ public class LoginForm extends javax.swing.JFrame {
         registerForm = new RegisterForm(this);
         initUserListFromCSV();
         initButtonListeners();
+        getRootPane().setDefaultButton(loginButton);
 
         if(checkIfThereIsAlreadyUserSaved()) {
             wasThereAlreadyAnUser = true;
