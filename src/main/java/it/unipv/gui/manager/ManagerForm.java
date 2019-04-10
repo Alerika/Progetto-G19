@@ -21,7 +21,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,9 +82,11 @@ public class ManagerForm extends javax.swing.JFrame {
 
         newHallItem.setText("Sala");
         addMenu.add(newHallItem);
+        newHallItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
 
         newMovieItem.setText("Film");
         addMenu.add(newMovieItem);
+        newMovieItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.CTRL_MASK));
 
         menuBar.add(addMenu);
 
@@ -93,6 +94,7 @@ public class ManagerForm extends javax.swing.JFrame {
 
         pricesItem.setText("Prezzi");
         modifyMenu.add(pricesItem);
+        pricesItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
 
         menuBar.add(modifyMenu);
 
@@ -196,7 +198,7 @@ public class ManagerForm extends javax.swing.JFrame {
         repaint();
     }
 
-    public void triggerNewScheduleEvent(String movieCode) {
+    void triggerNewScheduleEvent(String movieCode) {
         Movie movie = null;
         for(Movie m : movies) {
             if(m.getCodice().equalsIgnoreCase(movieCode)) {
@@ -319,6 +321,7 @@ public class ManagerForm extends javax.swing.JFrame {
                 movieTableDTM.removeRow(selectedMovieTableRow);
                 mainCinemaUI.triggerModificationToFilmList();
                 repaintAndUpdateTable(movieTableDTM, getRowDataForMovieTable(), getColumnNames());
+                scheduleContainer.setVisible(false);
             }
         });
         popupMenu.add(deleteItem);

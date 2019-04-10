@@ -56,6 +56,7 @@ class HallEditor extends JFrame {
         JMenuItem saveItem = new JMenuItem("Salva");
         fileMenu.add(saveItem);
         saveItem.addActionListener(e -> draggableSeatsPanel.doSave());
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 
         JMenu editMenu = new JMenu("Modifica");
         menuBar.add(editMenu);
@@ -63,10 +64,12 @@ class HallEditor extends JFrame {
         JMenuItem insertNewSeatItem = new JMenuItem("Aggiungi");
         editMenu.add(insertNewSeatItem);
         insertNewSeatItem.addActionListener(e -> draggableSeatsPanel.createNewDraggableSeat());
+        insertNewSeatItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
 
         JMenuItem insertMultipleSeatItem = new JMenuItem("Aggiungi griglia");
         editMenu.add(insertMultipleSeatItem);
         insertMultipleSeatItem.addActionListener(e -> draggableSeatsPanel.addMultipleSeats());
+        insertMultipleSeatItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK));
     }
 
 

@@ -150,8 +150,10 @@ public class PricesEditor extends javax.swing.JFrame {
                                        , Double.parseDouble(reducedTextField.getText()));
                 }
                 PricesToCSV.createCSVFromPrices(prices, DataReferences.PRICESFILEPATH, false);
+                JOptionPane.showMessageDialog(this, "Salvataggio prezzi riuscito con successo!");
             }
         });
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
     }
 
     private void initFrame() {

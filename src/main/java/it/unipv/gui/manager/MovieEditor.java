@@ -196,8 +196,8 @@ public class MovieEditor extends JFrame {
      * @param movie -> film da modificare
      * @param movieListViewer -> il form della lista dei film
      */
-    MovieEditor(Movie movie
-            , ManagerForm movieListViewer) {
+    MovieEditor( Movie movie
+               , ManagerForm movieListViewer) {
         wasItAlreadyCreated = true;
         this.movie = movie;
         this.movieListViewer = movieListViewer;
@@ -254,8 +254,10 @@ public class MovieEditor extends JFrame {
                 } else {
                     movieListViewer.triggerOverwriteMovieEvent(getMovieFromTextFields());
                 }
+                JOptionPane.showMessageDialog(this, "Salvataggio film riuscito con successo!");
             }
         });
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
     }
 
     /**

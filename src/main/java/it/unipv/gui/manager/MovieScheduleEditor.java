@@ -140,7 +140,7 @@ public class MovieScheduleEditor extends javax.swing.JFrame {
     private ManagerForm managerForm;
     private Movie movie;
 
-    public MovieScheduleEditor( ManagerForm managerForm
+    MovieScheduleEditor( ManagerForm managerForm
                               , Movie movie
                               , List<String> hallNames) {
         this.managerForm = managerForm;
@@ -176,6 +176,7 @@ public class MovieScheduleEditor extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Salvataggio riuscito correttamente!");
             }
         });
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
     }
 
     private boolean checkIfItAlreasyExistsInThatTime(String dateToCheck, String hall, String time) {
