@@ -279,6 +279,46 @@ class HallEditor extends JFrame {
             repaint();
         }
 
+        int rows;
+        int columns;
+        boolean canceled;
+        void addMultipleSeats() {
+            configureGridJOptionPaneMenu();
+            if(!canceled) {
+                List<MyDraggableSeat> grid = initGrid(rows, columns, false);
+                draggableSeatsList.addAll(grid);
+                for(MyDraggableSeat mds : selectedMDSList) {
+                    if (((LineBorder) mds.getBorder()).getLineColor() == Color.CYAN) {
+                        mds.setBorder(new LineBorder(Color.BLUE, 3));
+                    }
+                }
+                selectedMDSList.clear();
+                for(MyDraggableSeat mds : grid) {
+                    mds.setBorder(new LineBorder(Color.CYAN, 3));
+                }
+                selectedMDSList.addAll(grid);
+            }
+            repaint();
+        }
+
+        private void configureGridJOptionPaneMenu() {
+            JTextField rows = new JTextField();
+            JTextField columns = new JTextField();
+            Object[] message = {
+                    "Righe:", rows,
+                    "Colonne:", columns
+            };
+
+            int option = JOptionPane.showConfirmDialog(hallEditor, message, "Inserisci numero di righe e colonne", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                this.rows = Integer.parseInt(rows.getText());
+                this.columns = Integer.parseInt(columns.getText());
+                canceled = false;
+            } else {
+                canceled = true;
+            }
+        }
+
         private JPopupMenu initJPopupMenu(MyDraggableSeat mds) {
             JPopupMenu popupMenu = new JPopupMenu();
 
@@ -441,9 +481,10 @@ class HallEditor extends JFrame {
             }
         };
 
+        //Override di Paint e non PaintComponent perché se no disegna il selection box sotto ai posti e non sopra
         @Override
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
+        public void paint(Graphics g) {
+            super.paint(g);
             Graphics2D g2D = (Graphics2D) g;
             Composite originalComposite = g2D.getComposite();
             g2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
@@ -451,50 +492,10 @@ class HallEditor extends JFrame {
 
             if (!isNewRect && !dontCreateBox) {
                 g2D.fill(new Rectangle(mouseRect.x, mouseRect.y,mouseRect.width, mouseRect.height));
-                super.paintComponent(g2D);
+                super.paint(g2D);
             }
 
             g2D.setComposite(originalComposite);
-        }
-
-        int rows;
-        int columns;
-        boolean canceled;
-        public void addMultipleSeats() {
-            configureGridJOptionPaneMenu();
-            if(!canceled) {
-                List<MyDraggableSeat> grid = initGrid(rows, columns, false);
-                draggableSeatsList.addAll(grid);
-                for(MyDraggableSeat mds : selectedMDSList) {
-                    if (((LineBorder) mds.getBorder()).getLineColor() == Color.CYAN) {
-                        mds.setBorder(new LineBorder(Color.BLUE, 3));
-                    }
-                }
-                selectedMDSList.clear();
-                for(MyDraggableSeat mds : grid) {
-                    mds.setBorder(new LineBorder(Color.CYAN, 3));
-                }
-                selectedMDSList.addAll(grid);
-            }
-            repaint();
-        }
-
-        private void configureGridJOptionPaneMenu() {
-            JTextField rows = new JTextField();
-            JTextField columns = new JTextField();
-            Object[] message = {
-                    "Righe:", rows,
-                    "Colonne:", columns
-            };
-
-            int option = JOptionPane.showConfirmDialog(hallEditor, message, "Inserisci numero di righe e colonne", JOptionPane.OK_CANCEL_OPTION);
-            if (option == JOptionPane.OK_OPTION) {
-                this.rows = Integer.parseInt(rows.getText());
-                this.columns = Integer.parseInt(columns.getText());
-                canceled = false;
-            } else {
-                canceled = true;
-            }
         }
     }
 }
