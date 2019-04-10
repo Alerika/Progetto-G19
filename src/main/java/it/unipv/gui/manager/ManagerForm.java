@@ -21,6 +21,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -234,6 +235,10 @@ public class ManagerForm extends javax.swing.JFrame {
         modifyItem.addActionListener(e -> new HallEditor(hallNames.get(selectedHallTableRow), this, true));
         popupMenu.add(modifyItem);
 
+        JMenuItem renameItem = new JMenuItem("Rinomina");
+        renameItem.addActionListener(e -> renameHall(hallNames.get(selectedHallTableRow)));
+        popupMenu.add(renameItem);
+
         JMenuItem deleteItem = new JMenuItem("Rimuovi");
         deleteItem.addActionListener(e -> {
             int reply = JOptionPane.showConfirmDialog(this, "Vuoi davvero eliminare la piantina " + hallNames.get(selectedHallTableRow) + " ?");
@@ -264,6 +269,24 @@ public class ManagerForm extends javax.swing.JFrame {
             }
         });
         return popupMenu;
+    }
+
+    private void renameHall(String hallToRename) {
+        String newFileName = JOptionPane.showInputDialog(this, "Inserisci il nuovo nome della sala: ");
+        if(newFileName!=null) {
+            if(!newFileName.trim().equalsIgnoreCase("")) {
+                if(ApplicationUtils.renameFile(DataReferences.PIANTINAFOLDERPATH + hallToRename+".csv"
+                                              , DataReferences.PIANTINAFOLDERPATH + newFileName+".csv")) {
+                    JOptionPane.showMessageDialog(this, "Sala rinominata con successo!");
+                    initHallNamesList();
+                    repaintAndUpdateTable(hallTableDTM, getRowDataForHallTable(), getColumnNames());
+                } else {
+                    JOptionPane.showMessageDialog(this, "Si è verificato un errore durante la procedura!");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Devi compilare il campo!");
+            }
+        }
     }
 
     private int selectedMovieTableRow;
