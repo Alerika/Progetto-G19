@@ -2,6 +2,7 @@ package it.unipv.conversion;
 
 import com.opencsv.CSVReader;
 import it.unipv.gui.common.MyDraggableSeat;
+import it.unipv.gui.common.SeatTYPE;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 
@@ -59,9 +60,30 @@ public class CSVToDraggableSeats {
      *               line[0] -> nome del posto a sedere
      *               line[1] -> coordinata x del posto a sedere
      *               line[2] -> coordinata y del posto a sedere
+     *               line[3] -> tipologia del posto a sedere
      */
     private static MyDraggableSeat setMyDraggableSeat(String[] line) {
-        MyDraggableSeat res = new MyDraggableSeat(Integer.parseInt(line[1]),Integer.parseInt(line[2]));
+        MyDraggableSeat res;
+        switch (line[3]) {
+            case "NORMALE":
+                res = new MyDraggableSeat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.NORMALE);
+                break;
+
+            case "VIP":
+                res = new MyDraggableSeat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.VIP);
+                break;
+
+            case "DISABILE":
+                res = new MyDraggableSeat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.DISABILE);
+                break;
+
+            case "OCCUPATO":
+                res = new MyDraggableSeat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.OCCUPATO);
+                break;
+
+                default:
+                    throw new ApplicationException("Tipo " + line[3] + " non riconosciuto!");
+        }
         res.setText(line[0]);
         return res;
     }

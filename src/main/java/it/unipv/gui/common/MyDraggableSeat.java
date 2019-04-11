@@ -1,25 +1,26 @@
 package it.unipv.gui.common;
 
+import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.*;
 
 /**
  * Questa classe rappresenta il singolo posto a sedere:
- * è una JLabel che presenta un bordo quadrato blu
- * (che diventa viola [per ora] quando selezionato)
+ * è una JLabel che presenta un bordo quadrato blu.
  * Il singolo posto a sedere è trascinabile all'interno della piantina
  * TODO: fare in modo che non possa essere trascinato all'esterno della piantina stessa
  */
-public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotionListener {
+public class MyDraggableSeat extends JLabel {
 
     private boolean amISelected;
     private boolean amICopied;
+    private SeatTYPE type;
 
-    public MyDraggableSeat(int x, int y) {
+    public MyDraggableSeat(int x, int y, SeatTYPE type) {
+        this.type = type;
         setBorder(new LineBorder(Color.BLUE, 3));
         setFont(this.getFont().deriveFont(9f));
         setBackground(Color.WHITE);
@@ -28,9 +29,7 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
         setOpaque(true);
         setHorizontalAlignment(JLabel.CENTER);
         setVerticalAlignment(JLabel.CENTER);
-
-        addMouseListener(this);
-        addMouseMotionListener(this);
+        setBackgroundPerType();
     }
 
     public void setIsSelected(boolean selected) { amISelected = selected; }
@@ -41,45 +40,32 @@ public class MyDraggableSeat extends JLabel implements MouseListener, MouseMotio
 
     public void setIsCopied(boolean amICopied) { this.amICopied = amICopied; }
 
-    // Per ora non ha molto senso che il gestore possa selezionare il posto ma è un test
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2) {
-            if (getBackground().equals(Color.WHITE)) {
-                setBackground(Color.GREEN);
-            } else {
-                setBackground(Color.WHITE);
-            }
+    public SeatTYPE getType() { return type; }
+
+    public void setType(SeatTYPE type) { this.type = type; }
+
+    public void updateBackgroundForChangingType() { setBackgroundPerType(); }
+
+    private void setBackgroundPerType() {
+        switch (type) {
+            case NORMALE:
+                setBackground(new Color(0x9CED9F));
+                break;
+
+            case VIP:
+                setBackground(new Color(0xE28FEF));
+                break;
+
+            case DISABILE:
+                setBackground(new Color(0xc6c6c6));
+                break;
+
+            case OCCUPATO:
+                setBackground(new Color(0xF97B84));
+                break;
+
+                default:
+                    throw new ApplicationException("Type " + type.name() + " non riconosciuto!");
         }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-
     }
 }

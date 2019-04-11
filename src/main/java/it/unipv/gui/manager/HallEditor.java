@@ -3,6 +3,7 @@ package it.unipv.gui.manager;
 import it.unipv.conversion.CSVToDraggableSeats;
 import it.unipv.conversion.DraggableSeatsToCSV;
 import it.unipv.gui.common.MyDraggableSeat;
+import it.unipv.gui.common.SeatTYPE;
 import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
@@ -135,18 +136,20 @@ class HallEditor extends JFrame {
 
         DraggableSeatPanel(boolean wasItAlreadyCreated) {
             if(wasItAlreadyCreated) { initDraggableSeatsList(); }
-            addMouseListener(mouseHandler);
-            addMouseMotionListener(mouseMotionHandler);
-            setOpaque(false);
-            setLayout(null);
+            initSeatPanel();
         }
 
         DraggableSeatPanel(int rows, int columns) {
             initDraggableSeatsGrid(rows, columns);
+            initSeatPanel();
+        }
+
+        private void initSeatPanel() {
             addMouseListener(mouseHandler);
             addMouseMotionListener(mouseMotionHandler);
             setOpaque(false);
             setLayout(null);
+            pack();
         }
 
         private void initDraggableSeatsGrid(int rows, int columns) {
@@ -165,7 +168,7 @@ class HallEditor extends JFrame {
                 }
                 for(int j=0; j<columns; j++) {
                     if(j>0) { x += DataReferences.MYDRAGGABLESEATWIDTH+5; }
-                    MyDraggableSeat mds = new MyDraggableSeat(x,y);
+                    MyDraggableSeat mds = new MyDraggableSeat(x,y, SeatTYPE.NORMALE);
                     configureMDS(mds, DataReferences.ALPHABET[cont]+""+(j+1), doYouWantName);
                     res.add(mds);
                 }
@@ -241,7 +244,7 @@ class HallEditor extends JFrame {
             List<MyDraggableSeat> pasted = new ArrayList<>();
             if(mdsToPaste.size()>0) {
                 for(MyDraggableSeat mds : mdsToPaste) {
-                    MyDraggableSeat copy = new MyDraggableSeat(mds.getX()-15, mds.getY()-15);
+                    MyDraggableSeat copy = new MyDraggableSeat(mds.getX()-15, mds.getY()-15, mds.getType());
                     configureMDS(copy, mds.getText()+" copy", true);
                     repaint();
                     mds.setIsCopied(false);
@@ -269,7 +272,7 @@ class HallEditor extends JFrame {
         }
 
         private void createNewDraggableSeat() {
-            MyDraggableSeat mds = new MyDraggableSeat(0,0);
+            MyDraggableSeat mds = new MyDraggableSeat(0,0, SeatTYPE.NORMALE);
             configureMDS(mds, "", false);
             selectedMDSList.clear();
             mds.setBorder(new LineBorder(Color.CYAN, 3));
@@ -329,7 +332,35 @@ class HallEditor extends JFrame {
             JMenuItem renameItem = new JMenuItem("Rinomina");
             renameItem.addActionListener(e -> renameSeat(mds) );
             popupMenu.add(renameItem);
+
+            JMenuItem modifySeatType = new JMenuItem("Modifica tipo");
+            modifySeatType.addActionListener(e -> updateSeatType(mds));
+            popupMenu.add(modifySeatType);
+
             return popupMenu;
+        }
+
+        private SeatTYPE type;
+        private void updateSeatType(MyDraggableSeat mds) {
+            configureTypeSelectionJOptionPaneMenu();
+            if(type!=null) {
+                mds.setType(type);
+                mds.updateBackgroundForChangingType();
+                isSomethingChanged = true;
+            }
+        }
+
+        private void configureTypeSelectionJOptionPaneMenu() {
+            JComboBox<SeatTYPE> typeSelector = new JComboBox<>(new SeatTYPE[] {SeatTYPE.NORMALE, SeatTYPE.VIP, SeatTYPE.DISABILE});
+            Object[] message = { "Tipo: ", typeSelector, };
+
+            int option = JOptionPane.showConfirmDialog(hallEditor, message, "Inserisci nuova tipologia del posto", JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                type = (SeatTYPE) typeSelector.getSelectedItem();
+                canceled = false;
+            } else {
+                canceled = true;
+            }
         }
 
         private void renameSeat(MyDraggableSeat mds) {

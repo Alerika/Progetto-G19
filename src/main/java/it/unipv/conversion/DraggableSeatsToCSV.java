@@ -46,6 +46,7 @@ public class DraggableSeatsToCSV {
                 csvRow.add(seat.getText());
                 csvRow.add(""+seat.getX());
                 csvRow.add(""+seat.getY());
+                csvRow.add(seat.getType().name());
                 String[] csvData = new String[csvRow.size()];
                 writer.writeNext(csvRow.toArray(csvData));
             }
