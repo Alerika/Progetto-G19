@@ -71,9 +71,33 @@ class HallEditor extends JFrame {
         editMenu.add(insertMultipleSeatItem);
         insertMultipleSeatItem.addActionListener(e -> draggableSeatsPanel.addMultipleSeats());
         insertMultipleSeatItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK));
+
+        JMenu questionMenu = new JMenu("?");
+        menuBar.add(questionMenu);
+
+        JMenuItem guideItem = new JMenuItem("Guida");
+        questionMenu.add(guideItem);
+        guideItem.addActionListener(e -> JOptionPane.showMessageDialog(hallEditor, usage(), "Guida all'Editor", JOptionPane.INFORMATION_MESSAGE));
+        guideItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, InputEvent.CTRL_MASK));
     }
 
-
+    private String usage() {
+        return
+                "Scorciatoie:\n"
+              + "   Salva:  CTRL+S\n"
+              + "   Inserisci singolo posto:    CTRL+N\n"
+              + "   Inserisci griglia posti:    CTRL+M\n"
+              + "   Cancellare più posti alla volta:    dopo averli selezionati, premere DEL (CANC)\n"
+              + "   Copia incolla di posti:    dopo averli selezionati premere, CTRL+C e successivamente CTRL+V\n"
+              + "   Settare a NORMALE più posti alla volta:    dopo averli selezionati, premere ALT+N\n"
+              + "   Settare a VIP più posti alla volta:    dopo averli selezionati premere, ALT+M\n"
+              + "   Settare a DISABILE più posti alla volta:    dopo averli selezionati premere, ALT+D\n"
+              + "\n"
+              + "Modifiche ai posti:\n"
+              + "   Rinominare un posto:    click destro sul posto e scegliere \"Rinomina\"\n"
+              + "   Eliminare un posto:    click destro sul posto e scegliere \"Elimina\"\n"
+              + "   Modifica tipologia di un posto:    click destro sul posto e scegliere \"Modifica tipo\"\n"  ;
+    }
 
     private void initDraggableSeatsPanel(boolean wasItAlreayCreated) {
         draggableSeatsPanel = new DraggableSeatPanel(wasItAlreayCreated);
@@ -123,6 +147,18 @@ class HallEditor extends JFrame {
 
             if((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
                 draggableSeatsPanel.pasteCopiedSeats();
+            }
+
+            if((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiers() & KeyEvent.ALT_MASK) != 0)) {
+                draggableSeatsPanel.updateSelectedSeatsType(SeatTYPE.VIP);
+            }
+
+            if((e.getKeyCode() == KeyEvent.VK_N) && ((e.getModifiers() & KeyEvent.ALT_MASK) != 0)) {
+                draggableSeatsPanel.updateSelectedSeatsType(SeatTYPE.NORMALE);
+            }
+
+            if((e.getKeyCode() == KeyEvent.VK_D) && ((e.getModifiers() & KeyEvent.ALT_MASK) != 0)) {
+                draggableSeatsPanel.updateSelectedSeatsType(SeatTYPE.DISABILE);
             }
         }
     };
@@ -325,7 +361,7 @@ class HallEditor extends JFrame {
         private JPopupMenu initJPopupMenu(MyDraggableSeat mds) {
             JPopupMenu popupMenu = new JPopupMenu();
 
-            JMenuItem deleteItem = new JMenuItem("Rimuovi");
+            JMenuItem deleteItem = new JMenuItem("Elimina");
             deleteItem.addActionListener(e -> removeSeat(mds.getX(), mds.getY()));
             popupMenu.add(deleteItem);
 
@@ -334,15 +370,13 @@ class HallEditor extends JFrame {
             popupMenu.add(renameItem);
 
             JMenuItem modifySeatType = new JMenuItem("Modifica tipo");
-            modifySeatType.addActionListener(e -> updateSeatType(mds));
+            modifySeatType.addActionListener(e -> updateSeatType(mds, configureTypeSelectionJOptionPaneMenu()));
             popupMenu.add(modifySeatType);
-
             return popupMenu;
         }
 
-        private SeatTYPE type;
-        private void updateSeatType(MyDraggableSeat mds) {
-            configureTypeSelectionJOptionPaneMenu();
+
+        private void updateSeatType(MyDraggableSeat mds, SeatTYPE type) {
             if(type!=null) {
                 mds.setType(type);
                 mds.updateBackgroundForChangingType();
@@ -350,16 +384,23 @@ class HallEditor extends JFrame {
             }
         }
 
-        private void configureTypeSelectionJOptionPaneMenu() {
+        private SeatTYPE configureTypeSelectionJOptionPaneMenu() {
             JComboBox<SeatTYPE> typeSelector = new JComboBox<>(new SeatTYPE[] {SeatTYPE.NORMALE, SeatTYPE.VIP, SeatTYPE.DISABILE});
             Object[] message = { "Tipo: ", typeSelector, };
 
             int option = JOptionPane.showConfirmDialog(hallEditor, message, "Inserisci nuova tipologia del posto", JOptionPane.OK_CANCEL_OPTION);
             if (option == JOptionPane.OK_OPTION) {
-                type = (SeatTYPE) typeSelector.getSelectedItem();
                 canceled = false;
+                return (SeatTYPE) typeSelector.getSelectedItem();
             } else {
                 canceled = true;
+                return null;
+            }
+        }
+
+        void updateSelectedSeatsType(SeatTYPE type) {
+            for(MyDraggableSeat mds : selectedMDSList) {
+                updateSeatType(mds, type);
             }
         }
 
