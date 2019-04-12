@@ -473,11 +473,16 @@ public class ManagerForm extends javax.swing.JFrame {
                 "Colonne:", columns
         };
 
-        int option = JOptionPane.showConfirmDialog(null, message, "Inserisci numero di righe e colonne", JOptionPane.OK_CANCEL_OPTION);
+        int option = JOptionPane.showConfirmDialog(this, message, "Inserisci numero di righe e colonne", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            this.rows = Integer.parseInt(rows.getText());
-            this.columns = Integer.parseInt(columns.getText());
-            canceled = false;
+            if(rows.getText().trim().equalsIgnoreCase("") || columns.getText().trim().equalsIgnoreCase("")) {
+                JOptionPane.showMessageDialog(this, "Devi inserire entrambi i dati!");
+                canceled = true;
+            } else {
+                this.rows = Integer.parseInt(rows.getText());
+                this.columns = Integer.parseInt(columns.getText());
+                canceled = false;
+            }
         } else {
             canceled = true;
         }

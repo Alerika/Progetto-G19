@@ -88,10 +88,10 @@ class HallEditor extends JFrame {
               + "   Inserisci singolo posto:    CTRL+N\n"
               + "   Inserisci griglia posti:    CTRL+M\n"
               + "   Cancellare più posti alla volta:    dopo averli selezionati, premere DEL (CANC)\n"
-              + "   Copia incolla di posti:    dopo averli selezionati premere, CTRL+C e successivamente CTRL+V\n"
+              + "   Copia incolla di posti:    dopo averli selezionati, premere CTRL+C e successivamente CTRL+V\n"
               + "   Settare a NORMALE più posti alla volta:    dopo averli selezionati, premere ALT+N\n"
-              + "   Settare a VIP più posti alla volta:    dopo averli selezionati premere, ALT+M\n"
-              + "   Settare a DISABILE più posti alla volta:    dopo averli selezionati premere, ALT+D\n"
+              + "   Settare a VIP più posti alla volta:    dopo averli selezionati, premere ALT+M\n"
+              + "   Settare a DISABILE più posti alla volta:    dopo averli selezionati, premere ALT+D\n"
               + "\n"
               + "Modifiche ai posti:\n"
               + "   Rinominare un posto:    click destro sul posto e scegliere \"Rinomina\"\n"
@@ -205,7 +205,9 @@ class HallEditor extends JFrame {
                 for(int j=0; j<columns; j++) {
                     if(j>0) { x += DataReferences.MYDRAGGABLESEATWIDTH+5; }
                     MyDraggableSeat mds = new MyDraggableSeat(x,y, SeatTYPE.NORMALE);
-                    configureMDS(mds, DataReferences.ALPHABET[cont]+""+(j+1), doYouWantName);
+                    configureMDS( mds
+                                , doYouWantName ? DataReferences.ALPHABET[cont]+""+(j+1) : ""
+                                , doYouWantName);
                     res.add(mds);
                 }
                 cont++;
@@ -250,12 +252,10 @@ class HallEditor extends JFrame {
         private void removeSelectedSeats() {
             if (selectedMDSList.size() > 0) {
                 for (MyDraggableSeat mds : selectedMDSList) {
-                    if (((LineBorder) mds.getBorder()).getLineColor() == Color.CYAN) {
-                        createdSeatsName.remove(mds.getText());
-                        draggableSeatsList.remove(mds);
-                        remove(mds);
-                        repaint();
-                    }
+                    createdSeatsName.remove(mds.getText());
+                    draggableSeatsList.remove(mds);
+                    remove(mds);
+                    repaint();
                 }
             }
             isSomethingChanged = true;
@@ -266,11 +266,9 @@ class HallEditor extends JFrame {
         private void copySelectedSeats() {
             if(selectedMDSList.size()>0) {
                 for(MyDraggableSeat mds : selectedMDSList) {
-                    if (((LineBorder) mds.getBorder()).getLineColor() == Color.CYAN) {
-                        if(!mds.getIsCopied()) {
-                            mdsToPaste.add(mds);
-                            mds.setIsCopied(true);
-                        }
+                    if(!mds.getIsCopied()) {
+                        mdsToPaste.add(mds);
+                        mds.setIsCopied(true);
                     }
                 }
             }
@@ -310,6 +308,9 @@ class HallEditor extends JFrame {
         private void createNewDraggableSeat() {
             MyDraggableSeat mds = new MyDraggableSeat(0,0, SeatTYPE.NORMALE);
             configureMDS(mds, "", false);
+            for(MyDraggableSeat m : selectedMDSList) {
+                m.setBorder(new LineBorder(Color.BLUE, 3));
+            }
             selectedMDSList.clear();
             mds.setBorder(new LineBorder(Color.CYAN, 3));
             selectedMDSList.add(mds);
@@ -318,21 +319,19 @@ class HallEditor extends JFrame {
             repaint();
         }
 
-        int rows;
-        int columns;
+        int rows = 0;
+        int columns = 0;
         boolean canceled;
         void addMultipleSeats() {
             configureGridJOptionPaneMenu();
             if(!canceled) {
                 List<MyDraggableSeat> grid = initGrid(rows, columns, false);
                 draggableSeatsList.addAll(grid);
-                for(MyDraggableSeat mds : selectedMDSList) {
-                    if (((LineBorder) mds.getBorder()).getLineColor() == Color.CYAN) {
-                        mds.setBorder(new LineBorder(Color.BLUE, 3));
-                    }
+                for (MyDraggableSeat mds : selectedMDSList) {
+                    mds.setBorder(new LineBorder(Color.BLUE, 3));
                 }
                 selectedMDSList.clear();
-                for(MyDraggableSeat mds : grid) {
+                for (MyDraggableSeat mds : grid) {
                     mds.setBorder(new LineBorder(Color.CYAN, 3));
                 }
                 selectedMDSList.addAll(grid);
@@ -350,9 +349,14 @@ class HallEditor extends JFrame {
 
             int option = JOptionPane.showConfirmDialog(hallEditor, message, "Inserisci numero di righe e colonne", JOptionPane.OK_CANCEL_OPTION);
             if (option == JOptionPane.OK_OPTION) {
-                this.rows = Integer.parseInt(rows.getText());
-                this.columns = Integer.parseInt(columns.getText());
-                canceled = false;
+                if(rows.getText().trim().equalsIgnoreCase("") || columns.getText().trim().equalsIgnoreCase("")) {
+                    JOptionPane.showMessageDialog(hallEditor, "Devi inserire entrambi i dati!");
+                    canceled = true;
+                } else {
+                    this.rows = Integer.parseInt(rows.getText());
+                    this.columns = Integer.parseInt(columns.getText());
+                    canceled = false;
+                }
             } else {
                 canceled = true;
             }
@@ -474,9 +478,8 @@ class HallEditor extends JFrame {
                         mds.setLocation(myX + deltaX, myY + deltaY);
                     } else {
                         for(int i = 0; i<selectedMDSList.size(); i++) {
-                            if(((LineBorder)selectedMDSList.get(i).getBorder()).getLineColor()== Color.CYAN) {
-                                selectedMDSList.get(i).setLocation(myXList.get(i) + deltaX, myYList.get(i) + deltaY);
-                            }
+                            selectedMDSList.get(i).setLocation(myXList.get(i) + deltaX, myYList.get(i) + deltaY);
+
                         }
                     }
                     isSomethingChanged = true;
@@ -494,9 +497,7 @@ class HallEditor extends JFrame {
             @Override
             public  void mouseClicked(MouseEvent e) {
                 for(MyDraggableSeat mds : selectedMDSList) {
-                    if(((LineBorder)mds.getBorder()).getLineColor()== Color.CYAN) {
-                        mds.setBorder(new LineBorder(Color.BLUE, 3));
-                    }
+                    mds.setBorder(new LineBorder(Color.BLUE, 3));
                 }
                 selectedMDSList.clear();
                 dontCreateBox = false;
