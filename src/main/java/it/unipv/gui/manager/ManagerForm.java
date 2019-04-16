@@ -273,17 +273,32 @@ public class ManagerForm extends javax.swing.JFrame {
         return popupMenu;
     }
 
+    private boolean checkIfItIsFree(String name) {
+        boolean status = true;
+        for(String s : hallNames) {
+            if(name.trim().equalsIgnoreCase(s)) {
+                status = false;
+                break;
+            }
+        }
+        return status;
+    }
+
     private void renameHall(String hallToRename) {
         String newFileName = JOptionPane.showInputDialog(this, "Inserisci il nuovo nome della sala: ");
         if(newFileName!=null) {
             if(!newFileName.trim().equalsIgnoreCase("")) {
-                if(ApplicationUtils.renameFile(DataReferences.PIANTINAFOLDERPATH + hallToRename+".csv"
-                                              , DataReferences.PIANTINAFOLDERPATH + newFileName+".csv")) {
-                    JOptionPane.showMessageDialog(this, "Sala rinominata con successo!");
-                    initHallNamesList();
-                    repaintAndUpdateTable(hallTableDTM, getRowDataForHallTable(), getColumnNames());
+                if(checkIfItIsFree(newFileName)) {
+                    if(ApplicationUtils.renameFile(DataReferences.PIANTINAFOLDERPATH + hallToRename+".csv"
+                            , DataReferences.PIANTINAFOLDERPATH + newFileName+".csv")) {
+                        JOptionPane.showMessageDialog(this, "Sala rinominata con successo!");
+                        initHallNamesList();
+                        repaintAndUpdateTable(hallTableDTM, getRowDataForHallTable(), getColumnNames());
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Si è verificato un errore durante la procedura!");
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(this, "Si è verificato un errore durante la procedura!");
+                    JOptionPane.showMessageDialog(this, "Esiste già una sala con questo nome!");
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Devi compilare il campo!");
@@ -442,19 +457,24 @@ public class ManagerForm extends javax.swing.JFrame {
                 if(nomeSala.equalsIgnoreCase("") || nomeSala.trim().length()==0) {
                     JOptionPane.showMessageDialog(this, "Devi inserire un nome!");
                 } else if(!nomeSala.equalsIgnoreCase("")) {
-                    int reply = JOptionPane.showConfirmDialog(this, "Vuoi creare una griglia preimpostata?","Scegli una opzione", JOptionPane.YES_NO_OPTION);
-                    if(reply == JOptionPane.NO_OPTION) {
-                        new HallEditor(nomeSala, this, false);
-                    } else {
-                        configureGridJOptionPaneMenu();
-                        if(!canceled) {
-                            if(rows<27) {
-                                new HallEditor(nomeSala, this, rows, columns);
-                            } else {
-                                JOptionPane.showMessageDialog(this, "Numero massimo di righe 26!");
+                    if(checkIfItIsFree(nomeSala)) {
+                        int reply = JOptionPane.showConfirmDialog(this, "Vuoi creare una griglia preimpostata?","Scegli una opzione", JOptionPane.YES_NO_OPTION);
+                        if(reply == JOptionPane.NO_OPTION) {
+                            new HallEditor(nomeSala, this, false);
+                        } else {
+                            configureGridJOptionPaneMenu();
+                            if(!canceled) {
+                                if(rows<27) {
+                                    new HallEditor(nomeSala, this, rows, columns);
+                                } else {
+                                    JOptionPane.showMessageDialog(this, "Numero massimo di righe 26!");
+                                }
                             }
                         }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Esiste già una sala con questo nome!");
                     }
+
 
                 }
             }
