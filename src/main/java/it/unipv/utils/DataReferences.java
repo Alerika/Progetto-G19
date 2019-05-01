@@ -22,4 +22,7 @@ public class DataReferences {
     public final static int MYDRAGGABLESEATWIDTH = 30;
     public final static int MYDRAGGABLESEATHEIGTH = 25;
     public final static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+
+    public final static String DBNAME = "z6xOH9WKhI";
+    public final static String DBPASS = "NSpPIYAmt3";
 }

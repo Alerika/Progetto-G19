@@ -6,6 +6,8 @@ public class Prices {
     private double threed;
     private double reduced;
 
+    public Prices() {}
+
     public Prices(double base, double vip, double threed, double reduced) {
         this.base = base;
         this.vip = vip;
@@ -28,5 +30,12 @@ public class Prices {
     public double getThreed() { return threed; }
 
     public double getReduced() { return reduced; }
+
+    public String toString() {
+        return   "Base: " + getBase() + "\n"
+               + "Vip: " + getVip()+ "\n"
+               + "3D: " + getThreed()+ "\n"
+               + "Ridotto: " + getReduced()+ "\n";
+    }
 
 }
