@@ -19,7 +19,7 @@ public class FileToHallList {
 
     public static List<String> getHallList() {
         List<String> hallNames = new ArrayList<>();
-        File folder = new File(DataReferences.PIANTINAFOLDERPATH);
+        File folder = new File(DataReferences.PIANTINEFOLDERPATH);
 
         for(File f : Objects.requireNonNull(folder.listFiles())) {
             if(f.isFile()) {

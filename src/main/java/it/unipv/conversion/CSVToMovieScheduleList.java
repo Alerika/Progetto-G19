@@ -1,7 +1,7 @@
 package it.unipv.conversion;
 
 import com.opencsv.CSVReader;
-import it.unipv.gui.manager.MovieSchedule;
+import it.unipv.gui.common.MovieSchedule;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 

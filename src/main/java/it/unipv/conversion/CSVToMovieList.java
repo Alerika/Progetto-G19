@@ -2,6 +2,7 @@ package it.unipv.conversion;
 
 import com.opencsv.CSVReader;
 import it.unipv.gui.common.Movie;
+import it.unipv.gui.common.MovieStatus;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 
@@ -61,6 +62,7 @@ public class CSVToMovieList {
      *    line[6] -> durata
      *    line[7] -> anno
      *    line[8] -> trama
+     *    line[9] -> status
      * @param line -> singola riga del .csv da cui trarre le informazioni
      * @return -> film inizializzato con le informazioni della singola riga
      */
@@ -75,6 +77,13 @@ public class CSVToMovieList {
         res.setDurata(line[6]);
         res.setAnno(line[7]);
         res.setTrama(line[8]);
+        if(line[9].equalsIgnoreCase("AVAILABLE")) {
+            res.setStatus(MovieStatus.AVAILABLE);
+        } else if(line[9].equalsIgnoreCase("NOT_AVAILABLE")) {
+            res.setStatus(MovieStatus.NOT_AVAILABLE);
+        } else {
+            res.setStatus(MovieStatus.NOT_RECOGNIZE);
+        }
         return res;
     }
 }

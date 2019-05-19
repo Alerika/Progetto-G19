@@ -6,8 +6,8 @@
 package it.unipv.gui.login;
 
 import it.unipv.conversion.CSVToUserList;
-import it.unipv.gui.common.MainCinemaUI;
-import it.unipv.gui.manager.ManagerForm;
+//import it.unipv.gui.common.MainCinemaUI;
+//import it.unipv.gui.manager.ManagerForm;
 import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
@@ -95,14 +95,14 @@ public class LoginForm extends javax.swing.JFrame {
     private List<User> userList;
     private User user;
     private boolean wasThereAlreadyAnUser = false;
-    private MainCinemaUI mainCinemaUI;
+    //private MainCinemaUI mainCinemaUI;
     private boolean secretMode;
 
     /**
      * Costruttore del form: quando instanziato crea tutti i componenti
      */
-    public LoginForm(MainCinemaUI mainCinemaUI) {
-        this.mainCinemaUI = mainCinemaUI;
+    public LoginForm(/*MainCinemaUI mainCinemaUI*/) {
+        //this.mainCinemaUI = mainCinemaUI;
         initComponents();
         init();
     }
@@ -120,7 +120,7 @@ public class LoginForm extends javax.swing.JFrame {
         rememberCBox.setSelected(false);
     }
 
-    private void initUserListFromCSV() { userList = CSVToUserList.getUserListFromCSV(DataReferences.USERFOLDERPATH); }
+    private void initUserListFromCSV() { userList = CSVToUserList.getUserListFromCSV(DataReferences.USERFILEPATH); }
 
     //Se esiste già un utente salvato nelle info, allora effettuo il login, altrimenti mostro il form login
     private void init() {
@@ -215,7 +215,7 @@ public class LoginForm extends javax.swing.JFrame {
         if(secretMode) {
             if(checkIfItIsManagerOrNormalUser(u)) {
                 setVisible(false);
-                new ManagerForm(mainCinemaUI);
+                //new ManagerForm(mainCinemaUI);
             } else {
                 JOptionPane.showMessageDialog(this, "L'utente inserito non ha i privilegi di admin!");
                 clearAllTextField(usernameTextField, passwordTextField);
@@ -224,7 +224,7 @@ public class LoginForm extends javax.swing.JFrame {
             if(checkIfItIsAValidUserFromUserList(u)) {
                 if(!checkIfItIsManagerOrNormalUser(u)) {
                     setVisible(false);
-                    mainCinemaUI.triggerLoginEvent(u.getName());
+                    //mainCinemaUI.triggerLoginEvent(u.getName());
                 } else {
                     //In realtà sarebbero credenziali giuste da admin, ma l'utente non lo deve sapere!
                     JOptionPane.showMessageDialog(this, "Nome utente o password errati!");

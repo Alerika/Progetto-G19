@@ -1,5 +1,5 @@
 import it.unipv.DB.PricesOperations;
-import it.unipv.gui.manager.Prices;
+import it.unipv.gui.common.Prices;
 import it.unipv.DB.DBConnection;
 import it.unipv.utils.ApplicationException;
 import junit.framework.TestCase;

@@ -1,4 +1,4 @@
-import it.unipv.gui.manager.MovieSchedule;
+import it.unipv.gui.common.MovieSchedule;
 import it.unipv.utils.ApplicationException;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -12,14 +12,6 @@ import java.util.Date;
 
 @RunWith(JUnit4.class)
 public class TestUtils extends TestCase {
-
-    @Test
-    public void testIfMyTimeIsBetweenMovieTimeAndGap() {
-        assertTrue(checkIfTimeIsBetweenPreviousTimeAndGap("26/04/2019 00:00", 130, 30, "26/04/2019 02:00", true));
-        assertTrue(checkIfTimeIsBetweenPreviousTimeAndGap("26/04/2019 22:00", 130, 30, "26/04/2019 21:00", false));
-        assertTrue(checkIfTimeIsBetweenPreviousTimeAndGap("25/04/2019 22:00", 130, 30, "26/04/2019 00:00", true));
-        assertTrue(checkIfTimeIsBetweenPreviousTimeAndGap("26/04/2019 00:00", 130, 30, "25/04/2019 22:00", false));
-    }
 
     @Test
     public void testIfDateIsPassed() {
@@ -61,42 +53,70 @@ public class TestUtils extends TestCase {
         return cal1.compareTo(cal2);
     }
 
-
-    private Calendar gapCalculator(String myTime, int movieTime, int cleanTime, boolean toAddOrNot) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        Calendar cal = Calendar.getInstance();
-        try {
-            cal.setTime(sdf.parse((myTime)));
-        } catch (ParseException e) {
-            throw new ApplicationException(e);
-        }
-        if(toAddOrNot) {
-            cal.add(Calendar.MINUTE, movieTime);
-            cal.add(Calendar.MINUTE, cleanTime);
-        } else {
-            cal.add(Calendar.MINUTE, -movieTime);
-            cal.add(Calendar.MINUTE, -cleanTime);
-        }
-
-        return cal;
+    @Test public void testDateFormatter() {
+        System.out.println(formatDate("2019-04-30"));
     }
 
-    private boolean checkIfTimeIsBetweenPreviousTimeAndGap(String previousTime, int movieTime, int cleanTime, String myTime, boolean toAddOrNot) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        Calendar previousActualTime = Calendar.getInstance();
-        Calendar gapActualTime = gapCalculator(previousTime, movieTime, cleanTime, toAddOrNot);
-        Calendar myActualTime = Calendar.getInstance();
+    @Test public void testTimeFormatter() {
+        System.out.println(formatTime("13:14"));
+    }
+
+    private String formatDate(String toFormat) {
         try {
-            previousActualTime.setTime(sdf.parse((previousTime)));
-            myActualTime.setTime(sdf.parse(myTime));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
+            return sdf1.format(sdf.parse(toFormat));
         } catch (ParseException e) {
             throw new ApplicationException(e);
         }
-        if(toAddOrNot) {
-            return myActualTime.after(previousActualTime) && myActualTime.before(gapActualTime);
-        } else {
-            return myActualTime.before(previousActualTime) && myActualTime.after(gapActualTime);
+    }
 
+    private String formatTime(String toFormat) {
+        String[] time = toFormat.split(":");
+        if(time.length>2) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+                SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm");
+                return sdf1.format(sdf.parse(toFormat));
+            } catch (ParseException e) {
+                throw new ApplicationException(e);
+            }
+        } else {
+            return toFormat;
         }
+    }
+
+    @Test
+    public void checkDateUtils() {
+        assertTrue(checkIfICanAddThisSchedule("17/05/2019 17:00", 60, 30, "17/05/2019 15:29", 60));
+        assertTrue(checkIfICanAddThisSchedule("17/05/2019 17:00", 60, 30, "17/05/2019 18:31", 60));
+
+    }
+
+
+    private boolean checkIfICanAddThisSchedule(String existingScheduleDate, int existingMovieDuration, int pause, String incomingScheduleDate, int incomingMovieDuration) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        Calendar realIncomingScheduleDate = Calendar.getInstance();
+        try {
+            realIncomingScheduleDate.setTime(sdf.parse(incomingScheduleDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return realIncomingScheduleDate.before(getTimeOccupiedBySchedule(existingScheduleDate, incomingMovieDuration, pause, false))
+            || realIncomingScheduleDate.after(getTimeOccupiedBySchedule(existingScheduleDate, existingMovieDuration, pause, true));
+    }
+
+    private Calendar getTimeOccupiedBySchedule(String existingScheduleDate, int movieDuration, int pause, boolean isItToAdd) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        Calendar result = Calendar.getInstance();
+        try {
+            result.setTime(sdf.parse((existingScheduleDate)));
+        } catch (ParseException e) {
+            throw new ApplicationException(e);
+        }
+        if(isItToAdd) { result.add(Calendar.MINUTE, movieDuration+pause); }
+        if(!isItToAdd) { result.add(Calendar.MINUTE, -(movieDuration+pause)); }
+        return result;
     }
 }

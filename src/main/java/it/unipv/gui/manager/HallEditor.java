@@ -4,7 +4,9 @@ import it.unipv.conversion.CSVToDraggableSeats;
 import it.unipv.conversion.DraggableSeatsToCSV;
 import it.unipv.gui.common.MyDraggableSeat;
 import it.unipv.gui.common.SeatTYPE;
+import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.DataReferences;
+import javafx.application.Platform;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -13,21 +15,20 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 class HallEditor extends JFrame {
 
     private DraggableSeatPanel draggableSeatsPanel;
     private boolean isSomethingChanged = false;
     private String nomeSala;
-    private ManagerForm managerForm;
+    private HallPanelController hallPanelController;
     private HallEditor hallEditor = this;
 
 
     HallEditor( String nomeSala
-            , ManagerForm managerForm
-            , boolean wasItAlreadyCreated) {
+              , HallPanelController hallPanelController
+              , boolean wasItAlreadyCreated) {
         this.nomeSala = nomeSala;
-        this.managerForm = managerForm;
+        this.hallPanelController = hallPanelController;
 
         initMenuBar();
         initDraggableSeatsPanel(wasItAlreadyCreated);
@@ -35,11 +36,11 @@ class HallEditor extends JFrame {
     }
 
     HallEditor( String nomeSala
-            , ManagerForm managerForm
-            , int rows
-            , int columns) {
+              , HallPanelController hallPanelController
+              , int rows
+              , int columns) {
         this.nomeSala = nomeSala;
-        this.managerForm = managerForm;
+        this.hallPanelController = hallPanelController;
         initMenuBar();
         initDraggableSeatsPanel(rows, columns);
         initFrame();
@@ -216,7 +217,7 @@ class HallEditor extends JFrame {
         }
 
         private void initDraggableSeatsList() {
-            draggableSeatsList = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINAFOLDERPATH+nomeSala+".csv");
+            draggableSeatsList = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINEFOLDERPATH +nomeSala+".csv");
             for(MyDraggableSeat mds : draggableSeatsList) {
                 configureMDS(mds, mds.getText(), true);
             }
@@ -437,10 +438,11 @@ class HallEditor extends JFrame {
 
         private void doSave() {
             DraggableSeatsToCSV.createCSVFromDraggableSeatsList( draggableSeatsList
-                    , DataReferences.PIANTINAFOLDERPATH + nomeSala +".csv"
+                    , DataReferences.PIANTINEFOLDERPATH + nomeSala +".csv"
                     , false);
             JOptionPane.showMessageDialog(hallEditor, "Piantina salvata con successo!");
-            managerForm.triggerModificationToHallList();
+            ApplicationUtils.saveSnapshot(DataReferences.PIANTINEPREVIEWSFOLDERPATH + nomeSala + ".jpg", this, "jpg");
+            Platform.runLater(() -> hallPanelController.triggerModificationToHallList());
             isSomethingChanged = false;
         }
 

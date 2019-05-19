@@ -1,6 +1,6 @@
 package it.unipv.DB;
 
-import it.unipv.gui.manager.Prices;
+import it.unipv.gui.common.Prices;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 

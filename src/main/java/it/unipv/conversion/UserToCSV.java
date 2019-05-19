@@ -19,6 +19,41 @@ import java.util.List;
 public class UserToCSV {
 
     /**
+     * @param users -> lista di utenti da salvare all'interno del file .csv
+     * @param pathCSV -> percorso dove trovare/creare il file .csv
+     * @param isItToAppend -> se true entra in modalità di scrittura append, altrimenti no.
+     */
+    public static void createCSVFromUserList(List<User> users, String pathCSV, boolean isItToAppend) {
+        CSVWriter writer = null;
+        FileWriter file = null;
+        try {
+            if(isItToAppend) {
+                file = new FileWriter(pathCSV, true);
+            } else {
+                file = new FileWriter(pathCSV, false);
+            }
+            file = new FileWriter(pathCSV,true);
+            writer = new CSVWriter( file
+                    ,';'
+                    , CSVWriter.NO_QUOTE_CHARACTER
+                    ,"\r\n");
+
+            for(User u : users) {
+                List<String> csvRow = new ArrayList<>();
+                writer.writeNext(csvRow.toArray(fullCsvRowWithUserInfo(u, csvRow)));
+            }
+
+
+        } catch (IOException ex) {
+            throw new ApplicationException(ex);
+        } finally {
+            CloseableUtils.flush(writer,file);
+            CloseableUtils.close(writer, file);
+            System.gc();
+        }
+    }
+
+    /**
      * @param user -> utente le cui informazioni verranno salvate all'interno del file .csv
      * @param pathCSV -> percorso dove trovare il file .csv dove salvare le informazioni
      * @param isItToAppend -> se true entra in modalità di scrittura append, altrimenti no.

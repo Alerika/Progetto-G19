@@ -6,7 +6,7 @@ package it.unipv.gui.common;
  *    (esempio: se devo modificare le informazioni di un film ci accedo e lo sovrascrivo
  *    tramite il codice).
  */
-public class Movie {
+public class Movie implements Comparable<Movie> {
     private String codice;
     private String locandinaPath;
     private String titolo;
@@ -16,6 +16,7 @@ public class Movie {
     private String durata;
     private String anno;
     private String trama;
+    private MovieStatus status;
 
     public String getCodice() { return codice; }
 
@@ -52,4 +53,13 @@ public class Movie {
     public String getTrama() { return trama; }
 
     public void setTrama(String trama) { this.trama = trama; }
+
+    public MovieStatus getStatus() { return status; }
+
+    public void setStatus(MovieStatus status) { this.status = status; }
+
+    @Override
+    public int compareTo(Movie o) {
+        return this.getTitolo().compareToIgnoreCase(o.getTitolo());
+    }
 }

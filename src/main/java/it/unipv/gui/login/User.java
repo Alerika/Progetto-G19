@@ -6,7 +6,7 @@ package it.unipv.gui.login;
  *       name -> il nickname che si sceglie al momento della registrazione
  *       password -> la password che si sceglie al momento della registrazione
  */
-public class User {
+public class User implements Comparable<User> {
     private String name;
     private String password;
 
@@ -19,11 +19,16 @@ public class User {
 
     public String getName() { return name; }
 
-    void setName(String name) { this.name = name; }
+    public void setName(String name) { this.name = name; }
 
     public String getPassword() {
         return password;
     }
 
-    void setPassword(String password) { this.password = password; }
+    public void setPassword(String password) { this.password = password; }
+
+    @Override
+    public int compareTo(User o) {
+        return this.getName().compareToIgnoreCase(o.getName());
+    }
 }

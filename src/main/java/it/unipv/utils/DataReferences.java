@@ -7,9 +7,10 @@ import java.io.File;
  */
 public class DataReferences {
 
-    public final static String PIANTINAFOLDERPATH = "data" + File.separator + "piantine" + File.separator;
-    public final static String FILMFOLDERPATH = "data" + File.separator + "film" + File.separator +"lista film.csv";
-    public final static String USERFOLDERPATH = "data" + File.separator + "utenti" + File.separator + "lista utenti.csv";
+    public final static String PIANTINEFOLDERPATH = "data" + File.separator + "piantine" + File.separator;
+    public final static String PIANTINEPREVIEWSFOLDERPATH = "data" + File.separator + "piantine" + File.separator + "previews" + File.separator;
+    public final static String MOVIEFILEPATH = "data" + File.separator + "film" + File.separator +"lista film.csv";
+    public final static String USERFILEPATH = "data" + File.separator + "utenti" + File.separator + "lista utenti.csv";
     public static final String INFOUSERFILE = "data" + File.separator + "utenti" + File.separator + "info.txt";
     public static final String PRICESFILEPATH = "data" + File.separator + "prezzi" + File.separator + "prezzi.csv";
     public static final String MOVIESCHEDULEFILEPATH = "data" + File.separator + "programmazione" + File.separator + "programmazione.csv";
