@@ -33,7 +33,7 @@ public class ManagerHomeController implements Initializable {
     @FXML
     public void filterByOptions(MouseEvent event){
         Label label = (Label)event.getSource();
-       
+
         TranslateTransition transition = new TranslateTransition(javafx.util.Duration.seconds(0.2), rectangleOptions);
         Timeline timelineWidth = new Timeline(
                 new KeyFrame( javafx.util.Duration.seconds(0.3)
@@ -49,7 +49,7 @@ public class ManagerHomeController implements Initializable {
         }
         timelineWidth.play();
         transition.play();
-        
+
 
         switch(label.getText()) {
             case "MODIFICA SALE": {
@@ -67,7 +67,7 @@ public class ManagerHomeController implements Initializable {
                 }
                 break;
             }
-              
+
             case "PROGRAMMAZIONE":
                 try {
                     if(!openedPane.equals("PROGRAMMAZIONE")) {
@@ -97,7 +97,7 @@ public class ManagerHomeController implements Initializable {
                     throw new ApplicationException(e);
                 }
                 break;
-                
+
             case "LISTA UTENTI":
                 try {
                     if(!openedPane.equals("LISTA UTENTI")){
@@ -112,7 +112,7 @@ public class ManagerHomeController implements Initializable {
                     throw new ApplicationException(e);
                 }
                 break;
-                
+
             case "MODIFICA PREZZI":
                 try {
                     if(!openedPane.equals("MODIFICA PREZZI")){
@@ -127,12 +127,12 @@ public class ManagerHomeController implements Initializable {
                     throw new ApplicationException(e);
                 }
                 break;
-                
+
             case "ESCI":
                 System.exit(0);
                 break;
-                
-            default: 
+
+            default:
                 break;
         }
     }

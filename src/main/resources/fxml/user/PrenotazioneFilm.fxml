@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="873.0" prefWidth="1200.0" style="-fx-background-color: #f2f2f2;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipv.gui.user.PrenotazioneFilmController">
+   <children>
+      <AnchorPane prefHeight="157.0" prefWidth="1200.0" style="-fx-background-color: #db8f00;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <ImageView fx:id="logo" fitHeight="123.0" fitWidth="161.0" layoutX="523.0" layoutY="17.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/Cinema Logo.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+      <ScrollPane fx:id="scrollPrenotazioni" hbarPolicy="NEVER" layoutY="157.0" prefHeight="716.0" prefWidth="1200.0" stylesheets="@../../css/ScrollBarStyle.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="157.0" />
+      <Rectangle fx:id="confermaPrenotazioneRectangle" arcHeight="14.0" arcWidth="14.0" fill="#db8f00" height="49.0" layoutX="675.0" layoutY="599.0" stroke="BLACK" strokeType="INSIDE" style="-fx-cursor: hand;" width="215.0" AnchorPane.bottomAnchor="92.0" />
+      <Rectangle fx:id="annullaRectangle" arcHeight="14.0" arcWidth="14.0" fill="#d98d0000" height="49.0" layoutX="371.0" layoutY="599.0" onMouseClicked="#closeStage" stroke="BLACK" strokeType="INSIDE" style="-fx-cursor: hand;" width="200.0" AnchorPane.bottomAnchor="92.0" />
+      <Label fx:id="annulla" layoutX="438.0" layoutY="608.0" onMouseClicked="#closeStage" prefHeight="31.0" prefWidth="66.0" style="-fx-cursor: hand;" text="Annulla" AnchorPane.bottomAnchor="100.0">
+         <font>
+            <Font name="Bebas Neue Regular" size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="confermaPrenotazione" layoutX="689.0" layoutY="611.0" onMouseClicked="#prenotazionePopUp" style="-fx-cursor: hand;" text="Conferma prenotazione" AnchorPane.bottomAnchor="100.0">
+         <font>
+            <Font name="Bebas Neue Regular" size="24.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
