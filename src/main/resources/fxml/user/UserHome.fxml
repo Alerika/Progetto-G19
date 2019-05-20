@@ -219,7 +219,7 @@
                               <Font name="Bebas Neue Regular" size="24.0" />
                            </font>
                         </Label>
-                        <Label fx:id="infoEOrari" alignment="CENTER" contentDisplay="CENTER" layoutX="73.0" layoutY="155.0" prefHeight="31.0" prefWidth="93.0" style="-fx-cursor: hand;" text="info e orari" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="73.0">
+                        <Label fx:id="infoEOrari" alignment="CENTER" contentDisplay="CENTER" layoutX="73.0" layoutY="155.0" onMouseClicked="#infoPaneClick" prefHeight="31.0" prefWidth="93.0" style="-fx-cursor: hand;" text="info e orari" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="73.0">
                            <font>
                               <Font name="Bebas Neue Regular" size="24.0" />
                            </font>
@@ -235,6 +235,76 @@
                         <Label fx:id="registrati" alignment="CENTER" contentDisplay="CENTER" layoutX="139.0" layoutY="201.0" onMouseClicked="#registrationWindow" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="registrati" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="139.0">
                            <font>
                               <Font name="Bebas Neue Regular" size="18.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane fx:id="anchorInfo" layoutY="97.0" prefHeight="762.0" prefWidth="1600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label alignment="CENTER" layoutX="326.0" layoutY="149.0" prefHeight="85.0" prefWidth="1321.0" text="INFO UTILI" textFill="#db8f00">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="43.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="333.0" layoutY="277.0" prefHeight="78.0" prefWidth="62.0" text="Orari:" textFill="#db8f00">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="24.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="429.0" layoutY="277.0" prefHeight="78.0" prefWidth="168.0" text="lun-gio 15:00-00:00" textFill="WHITE">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="24.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="429.0" layoutY="327.0" prefHeight="57.0" prefWidth="168.0" text="ven-dom 15:00-02:00" textFill="WHITE">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="24.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="333.0" layoutY="387.0" prefHeight="78.0" prefWidth="62.0" text="E-mail:" textFill="#db8f00">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="24.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="333.0" layoutY="447.0" prefHeight="78.0" prefWidth="86.0" text="telefono:" textFill="#db8f00">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="24.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="333.0" layoutY="507.0" prefHeight="78.0" prefWidth="80.0" text="indirizzo:" textFill="#db8f00">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="24.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="429.0" layoutY="387.0" prefHeight="78.0" prefWidth="217.0" text="studio@goldenmovie.com" textFill="WHITE">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="24.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="429.0" layoutY="447.0" prefHeight="78.0" prefWidth="113.0" text="0256914783" textFill="WHITE">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="24.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="429.0" layoutY="507.0" prefHeight="78.0" prefWidth="238.0" text="via augusto 13, 20141 milano" textFill="WHITE">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="24.0" />
+                           </font>
+                        </Label>
+                        <Rectangle arcHeight="20.0" arcWidth="20.0" fill="#381200" height="95.0" layoutX="333.0" layoutY="666.0" stroke="BLACK" strokeType="INSIDE" width="1119.0" />
+                        <Label layoutX="358.0" layoutY="704.0" prefHeight="57.0" prefWidth="1075.0" text="Per cellulari verificare il proprio piano tariffario (costo max € 1,41 al minuto, IVA inclusa). Non anteporre alcun prefisso al numero del Call Center indicato." textFill="#db8f00">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="20.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="358.0" layoutY="684.0" prefHeight="57.0" prefWidth="1295.0" text="Prezzi IVA inclusa. Per l'accesso da rete fissa potrebbe essere necessario richiedere l'abilitazione chiamando il numero clienti del proprio gestore telefonico." textFill="#db8f00">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="20.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="358.0" layoutY="664.0" prefHeight="57.0" prefWidth="838.0" text="Costi del servizio Call Center: il costo della chiamata da rete fissa è di € 0,96 al minuto con addebito alla risposta di € 0,12. " textFill="#db8f00">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="20.0" />
                            </font>
                         </Label>
                      </children>

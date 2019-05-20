@@ -44,7 +44,7 @@ public class HomeController implements Initializable {
     private Rectangle rectangleMenu, rectangleGenere, rectangle2D3D, rectangleDays;
     
     @FXML
-    private AnchorPane menuWindow, genereWindow, anchorLunedi, anchorMartedi, anchorMercoledi, anchorGiovedi, anchorVenerdi, anchorSabato, anchorDomenica, usernamePane;
+    private AnchorPane menuWindow, genereWindow, anchorLunedi, anchorMartedi, anchorMercoledi, anchorGiovedi, anchorVenerdi, anchorSabato, anchorDomenica, usernamePane, anchorInfo;
     
     @FXML
     private ScrollPane filmScrollLun;
@@ -200,6 +200,11 @@ public class HomeController implements Initializable {
         anchorVenerdi.setVisible(false);
         anchorSabato.setVisible(false);
         anchorDomenica.setVisible(false);
+        anchorInfo.setVisible(false);
+    }
+
+    public void infoPaneClick() {
+        anchorInfo.setVisible(true);
     }
     
     public void filterByDay(MouseEvent event){

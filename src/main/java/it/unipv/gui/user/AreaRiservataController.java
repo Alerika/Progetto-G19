@@ -8,7 +8,6 @@ package it.unipv.gui.user;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import it.unipv.main.UserHome;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -23,7 +22,7 @@ import javafx.scene.shape.Rectangle;
  *
  * @author Fede
  */
-public class AreaRiservataController extends UserHome implements Initializable{
+public class AreaRiservataController implements Initializable{
 
     public AnchorPane redRectangle;
 
