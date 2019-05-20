@@ -2,7 +2,8 @@ package it.unipv.conversion;
 
 import com.opencsv.CSVReader;
 import it.unipv.gui.common.Movie;
-import it.unipv.gui.common.MovieStatus;
+import it.unipv.gui.common.MovieStatusTYPE;
+import it.unipv.gui.common.MovieTYPE;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 
@@ -76,13 +77,23 @@ public class CSVToMovieList {
         res.setCast(line[5]);
         res.setDurata(line[6]);
         res.setAnno(line[7]);
-        res.setTrama(line[8]);
-        if(line[9].equalsIgnoreCase("AVAILABLE")) {
-            res.setStatus(MovieStatus.AVAILABLE);
-        } else if(line[9].equalsIgnoreCase("NOT_AVAILABLE")) {
-            res.setStatus(MovieStatus.NOT_AVAILABLE);
+
+        if(line[8].equalsIgnoreCase("TWOD")) {
+            res.setTipo(MovieTYPE.TWOD);
+        } else if(line[8].equalsIgnoreCase("THREED")) {
+            res.setTipo(MovieTYPE.THREED);
         } else {
-            res.setStatus(MovieStatus.NOT_RECOGNIZE);
+            res.setTipo(MovieTYPE.NOTRECOGNIZED);
+        }
+
+        res.setTrama(line[9]);
+
+        if(line[10].equalsIgnoreCase("AVAILABLE")) {
+            res.setStatus(MovieStatusTYPE.AVAILABLE);
+        } else if(line[10].equalsIgnoreCase("NOT_AVAILABLE")) {
+            res.setStatus(MovieStatusTYPE.NOT_AVAILABLE);
+        } else {
+            res.setStatus(MovieStatusTYPE.NOT_RECOGNIZE);
         }
         return res;
     }

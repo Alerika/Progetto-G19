@@ -107,6 +107,7 @@ public class MovieToCSV {
         csvRow.add(movie.getCast());
         csvRow.add(movie.getDurata());
         csvRow.add(movie.getAnno());
+        csvRow.add(movie.getTipo().name());
         csvRow.add(movie.getTrama());
         csvRow.add(movie.getStatus().name());
         return new String[csvRow.size()];

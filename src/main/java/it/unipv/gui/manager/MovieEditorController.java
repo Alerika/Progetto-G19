@@ -2,21 +2,22 @@ package it.unipv.gui.manager;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import it.unipv.conversion.MovieToCSV;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.Movie;
-import it.unipv.gui.common.MovieStatus;
+import it.unipv.gui.common.MovieStatusTYPE;
+import it.unipv.gui.common.MovieTYPE;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.DataReferences;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 
 import javax.swing.*;
@@ -33,6 +34,7 @@ public class MovieEditorController implements Initializable {
     @FXML TextField castTextField;
     @FXML TextField timeTextField;
     @FXML TextField yearTextField;
+    @FXML ComboBox movieTypeComboBox;
     @FXML TextArea plotTextArea;
     @FXML Label saveButton;
     private boolean wasItAlreadyCreated;
@@ -47,6 +49,7 @@ public class MovieEditorController implements Initializable {
     void init(ProgrammationPanelController programmationPanelController) {
         this.programmationPanelController = programmationPanelController;
         wasItAlreadyCreated = false;
+        initMovieTypeComboBox();
         GUIUtils.setScaleTransitionOnControl(saveButton);
         setFileChooser();
     }
@@ -56,6 +59,7 @@ public class MovieEditorController implements Initializable {
         this.movie = movie;
         wasItAlreadyCreated = true;
         GUIUtils.setScaleTransitionOnControl(saveButton);
+        initMovieTypeComboBox();
         setComponents();
         setFileChooser();
     }
@@ -65,8 +69,14 @@ public class MovieEditorController implements Initializable {
         this.movie = movie;
         wasItAlreadyCreated = true;
         GUIUtils.setScaleTransitionOnControl(saveButton);
+        initMovieTypeComboBox();
         setComponents();
         setFileChooser();
+    }
+
+    private void initMovieTypeComboBox() {
+        movieTypeComboBox.getItems().clear();
+        movieTypeComboBox.setItems(FXCollections.observableList(Arrays.asList("2D", "3D")));
     }
 
     private void setComponents() {
@@ -77,6 +87,11 @@ public class MovieEditorController implements Initializable {
         castTextField.setText(movie.getCast());
         timeTextField.setText(movie.getDurata());
         yearTextField.setText(movie.getAnno());
+        if(movie.getTipo().equals(MovieTYPE.TWOD)) {
+            movieTypeComboBox.getSelectionModel().select("2D");
+        } else {
+            movieTypeComboBox.getSelectionModel().select("3D");
+        }
         plotTextArea.setText(movie.getTrama());
     }
 
@@ -102,7 +117,9 @@ public class MovieEditorController implements Initializable {
          || directionTextField.getText().trim().equalsIgnoreCase("")
          || castTextField.getText().trim().equalsIgnoreCase("")
          || timeTextField.getText().trim().equalsIgnoreCase("")
-         || yearTextField.getText().trim().equalsIgnoreCase("")) {
+         || yearTextField.getText().trim().equalsIgnoreCase("")
+         || movieTypeComboBox.getValue() == null
+         || plotTextArea.getText().trim().equalsIgnoreCase("")){
             JOptionPane.showMessageDialog(null, "Devi compilare tutti i campi!");
         } else {
             if(!wasItAlreadyCreated) {
@@ -134,8 +151,14 @@ public class MovieEditorController implements Initializable {
         m.setDurata(timeTextField.getText());
         m.setAnno(yearTextField.getText());
         m.setTrama(plotTextArea.getText());
+        if(movieTypeComboBox.getValue().toString().equalsIgnoreCase("2D")) {
+            m.setTipo(MovieTYPE.TWOD);
+        } else if(movieTypeComboBox.getValue().toString().equalsIgnoreCase("3D")){
+            m.setTipo(MovieTYPE.THREED);
+        }
+
         if(!wasItAlreadyCreated) {
-            m.setStatus(MovieStatus.AVAILABLE);
+            m.setStatus(MovieStatusTYPE.AVAILABLE);
             m.setCodice(ApplicationUtils.getUUID());
         } else {
             m.setStatus(movie.getStatus());

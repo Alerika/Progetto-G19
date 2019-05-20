@@ -11,7 +11,7 @@ import it.unipv.conversion.MovieToCSV;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieSchedule;
-import it.unipv.gui.common.MovieStatus;
+import it.unipv.gui.common.MovieStatusTYPE;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
@@ -32,7 +32,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -61,7 +60,7 @@ public class ProgrammationPanelController implements Initializable {
         initMoviesList();
 
         for (Movie movie : movies) {
-            if(movie.getStatus().equals(MovieStatus.AVAILABLE)) {
+            if(movie.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
                 createViewFromMoviesList(movie);
             }
         }
@@ -94,7 +93,7 @@ public class ProgrammationPanelController implements Initializable {
                     mec.init(movie, this);
                     Stage stage = new Stage();
                     stage.setScene(new Scene(p));
-                    stage.setTitle("Modifica a: " + movie.getTitolo());
+                    stage.setTitle("Modifica: " + movie.getTitolo());
                     stage.show();
                 } catch (IOException ex) {
                     throw new ApplicationException(ex);
@@ -158,7 +157,7 @@ public class ProgrammationPanelController implements Initializable {
                 int reply = JOptionPane.showConfirmDialog( null
                                                          , "Sei sicuro di voler nascondere " + movie.getTitolo() + " dai film programmabili?");
                 if(reply == JOptionPane.YES_OPTION) {
-                    movies.get(movies.indexOf(movie)).setStatus(MovieStatus.NOT_AVAILABLE);
+                    movies.get(movies.indexOf(movie)).setStatus(MovieStatusTYPE.NOT_AVAILABLE);
                     MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
                     refreshUI();
                 }

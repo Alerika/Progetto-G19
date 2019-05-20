@@ -1,7 +1,6 @@
 package it.unipv.gui.manager;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,9 +14,8 @@ import it.unipv.conversion.MovieToCSV;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieSchedule;
-import it.unipv.gui.common.MovieStatus;
+import it.unipv.gui.common.MovieStatusTYPE;
 import it.unipv.utils.ApplicationException;
-import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,7 +26,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -113,7 +110,7 @@ public class MovieListPanelController implements Initializable {
             int reply = JOptionPane.showConfirmDialog( null
                                                      , "Sei sicuro di voler rendere " + movie.getTitolo() + " programmabile?");
             if(reply == JOptionPane.YES_OPTION) {
-                movies.get(movies.indexOf(movie)).setStatus(MovieStatus.AVAILABLE);
+                movies.get(movies.indexOf(movie)).setStatus(MovieStatusTYPE.AVAILABLE);
                 MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
                 refreshUI();
             }
@@ -152,7 +149,7 @@ public class MovieListPanelController implements Initializable {
         });
 
         pane.getChildren().addAll(movieTitleLabel);
-        if(!movie.getStatus().equals(MovieStatus.AVAILABLE)) {
+        if(!movie.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
             pane.getChildren().addAll(setVisibleIconView);
         }
         pane.getChildren().addAll(editIconView);

@@ -16,7 +16,8 @@ public class Movie implements Comparable<Movie> {
     private String durata;
     private String anno;
     private String trama;
-    private MovieStatus status;
+    private MovieTYPE tipo;
+    private MovieStatusTYPE status;
 
     public String getCodice() { return codice; }
 
@@ -54,9 +55,13 @@ public class Movie implements Comparable<Movie> {
 
     public void setTrama(String trama) { this.trama = trama; }
 
-    public MovieStatus getStatus() { return status; }
+    public MovieTYPE getTipo() { return tipo; }
 
-    public void setStatus(MovieStatus status) { this.status = status; }
+    public void setTipo(MovieTYPE tipo) { this.tipo = tipo; }
+
+    public MovieStatusTYPE getStatus() { return status; }
+
+    public void setStatus(MovieStatusTYPE status) { this.status = status; }
 
     @Override
     public int compareTo(Movie o) {
