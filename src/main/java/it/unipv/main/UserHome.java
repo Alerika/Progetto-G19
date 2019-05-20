@@ -25,6 +25,7 @@ public class UserHome extends Application {
         Scene scene = new Scene(root);
         
         stage.setScene(scene);
+        stage.setTitle("Golden Movie Studio");
         stage.setResizable(false);
         stage.setMaximized(true);
         stage.show();

@@ -58,6 +58,7 @@ public class LoginController implements Initializable {
                     Stage stage = new Stage();
                     stage.setScene(new Scene(root));
                     stage.setResizable(false);
+                    stage.setTitle("Area Manager");
                     stage.show();
                 } catch (IOException e) {
                     throw new ApplicationException(e);
