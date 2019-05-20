@@ -67,6 +67,32 @@
       </AnchorPane>
    </left>
    <center>
-      <AnchorPane fx:id="mainPanel" prefHeight="526.0" prefWidth="692.0" style="-fx-background-color: black;" BorderPane.alignment="CENTER" />
+      <AnchorPane fx:id="mainPanel" prefHeight="526.0" prefWidth="692.0" style="-fx-background-color: black;" BorderPane.alignment="CENTER">
+         <children>
+            <BorderPane prefHeight="660.0" prefWidth="854.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <top>
+                  <AnchorPane prefHeight="317.0" prefWidth="854.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Label alignment="BOTTOM_CENTER" layoutX="413.0" layoutY="150.0" prefHeight="317.0" prefWidth="854.0" text="Benvenuti nell'Area Manager" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <font>
+                              <Font size="50.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </top>
+               <center>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Label alignment="TOP_CENTER" layoutX="413.0" layoutY="155.0" prefHeight="343.0" prefWidth="854.0" text="Per iniziare, clicca su una categoria a sinistra" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </center>
+            </BorderPane>
+         </children></AnchorPane>
    </center>
 </BorderPane>
