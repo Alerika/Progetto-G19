@@ -16,6 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 
 public class ManagerHomeController implements Initializable {
 
@@ -129,7 +130,8 @@ public class ManagerHomeController implements Initializable {
                 break;
 
             case "ESCI":
-                System.exit(0);
+                Stage stage = (Stage) mainPanel.getScene().getWindow();
+                stage.close();
                 break;
 
             default:
