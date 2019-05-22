@@ -33,21 +33,26 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
-
 import javax.swing.*;
 
 public class ProgrammationPanelController implements Initializable {
 
     @FXML Label nuovoFilmButton;
     @FXML ScrollPane moviePanel;
-
-    @Override
-    public void initialize(URL url, ResourceBundle rb) { createMovieGrid(); }
-
     private GridPane grigliaFilm = new GridPane();
     private static int rowCount = 0;
     private static int columnCount = 0;
+    private int columnMax = 2;
     private List<Movie> movies = new ArrayList<>();
+
+    @Override public void initialize(URL url, ResourceBundle rb) { }
+
+    public void init(double initialWidth) {
+        initMoviesList();
+        columnMax = getColumnMaxFromPageWidth(initialWidth);
+        createMovieGrid();
+        checkPageDimension();
+    }
 
     private void initMoviesList() {
         movies = CSVToMovieList.getMovieListFromCSV(DataReferences.MOVIEFILEPATH);
@@ -56,8 +61,6 @@ public class ProgrammationPanelController implements Initializable {
 
     private void createMovieGrid() {
         grigliaFilm.getChildren().clear();
-
-        initMoviesList();
 
         for (Movie movie : movies) {
             if(movie.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
@@ -126,7 +129,7 @@ public class ProgrammationPanelController implements Initializable {
             GUIUtils.setFadeInOutOnControl(hideMovieIconView);
 
             AnchorPane pane = new AnchorPane();
-            if(columnCount==2) {
+            if(columnCount==columnMax) {
                 columnCount=0;
                 rowCount++;
             }
@@ -159,7 +162,7 @@ public class ProgrammationPanelController implements Initializable {
                 if(reply == JOptionPane.YES_OPTION) {
                     movies.get(movies.indexOf(movie)).setStatus(MovieStatusTYPE.NOT_AVAILABLE);
                     MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
-                    refreshUI();
+                    refreshUIandMovieList();
                 }
             });
 
@@ -190,7 +193,7 @@ public class ProgrammationPanelController implements Initializable {
                     removeAssociatedSchedules(movie);
                     movies.remove(movie);
                     MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
-                    refreshUI();
+                    refreshUIandMovieList();
                 }
             });
 
@@ -242,7 +245,7 @@ public class ProgrammationPanelController implements Initializable {
         }
     }
 
-    void triggerNewMovieEvent() { refreshUI(); }
+    void triggerNewMovieEvent() { refreshUIandMovieList(); }
 
     void triggerOverwriteMovieEvent(Movie movie) {
         Movie toRemove = null;
@@ -256,12 +259,47 @@ public class ProgrammationPanelController implements Initializable {
             movies.remove(toRemove);
             movies.add(movie);
             MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
-            refreshUI();
+            refreshUIandMovieList();
         }
+    }
+
+    private void refreshUIandMovieList() {
+        grigliaFilm.getChildren().clear();
+        initMoviesList();
+        createMovieGrid();
     }
 
     private void refreshUI() {
         grigliaFilm.getChildren().clear();
         createMovieGrid();
+    }
+
+    private int temp = 0;
+    private void checkPageDimension() {
+        Thread t = new Thread( () -> {
+            Stage stage = (Stage) moviePanel.getScene().getWindow();
+            stage.widthProperty().addListener(e -> {
+                columnMax = getColumnMaxFromPageWidth(stage.getWidth());
+                if(temp!=columnMax) {
+                    temp = columnMax;
+                    refreshUI();
+                }
+            });
+        });
+        t.start();
+    }
+
+    private int getColumnMaxFromPageWidth(double width) {
+        if(width<800) {
+            return 1;
+        } else if(width>800 && width<=1360) {
+            return 2;
+        } else if(width>1360 && width<=1600) {
+            return 3;
+        } else if(width>1600) {
+            return 4;
+        } else {
+            return 5;
+        }
     }
 }

@@ -3,7 +3,6 @@ package it.unipv.gui.manager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,32 +25,38 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.*;
 
-
 public class HallPanelController implements Initializable {
 
-    @FXML ScrollPane galleryPanel;
+    @FXML ScrollPane hallPanel;
     @FXML Label nuovaSalaButton;
-
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        createHallGrid();
-    }
-
     private GridPane grigliaSale = new GridPane();
     private static int rowCount = 0;
     private static int columnCount = 0;
+    private int columnMax = 3;
     private List<String> hallNames = new ArrayList<>();
+    private File[] listOfPreviews;
+
+    @Override public void initialize(URL url, ResourceBundle rb) { }
+
+    public void init(double initialWidth) {
+        initListOfPreviews();
+        columnMax = getColumnMaxFromPageWidth(initialWidth);
+        createHallGrid();
+        checkPageDimension();
+    }
+
+    private void initListOfPreviews() {
+        listOfPreviews = new File(DataReferences.PIANTINEPREVIEWSFOLDERPATH).listFiles();
+    }
 
     private void createHallGrid() {
+        hallNames.clear();
         grigliaSale.getChildren().clear();
-
-        File previewFolder = new File(DataReferences.PIANTINEPREVIEWSFOLDERPATH);
-        File[] listOfPreviews = previewFolder.listFiles();
-
 
         for (File file : Objects.requireNonNull(listOfPreviews)) {
             createViewFromPreviews(file);
@@ -62,7 +67,6 @@ public class HallPanelController implements Initializable {
         rowCount = 0;
         columnCount = 0;
     }
-
 
     private void createViewFromPreviews(File file) {
         try{
@@ -86,14 +90,14 @@ public class HallPanelController implements Initializable {
             GUIUtils.setFadeInOutOnControl(renameIconView);
 
             AnchorPane pane = new AnchorPane();
-            if(columnCount==3) {
+            if(columnCount==columnMax) {
                 columnCount=0;
                 rowCount++;
             }
             grigliaSale.add(pane, columnCount, rowCount);
             columnCount++;
 
-            galleryPanel.setContent(grigliaSale);
+            hallPanel.setContent(grigliaSale);
             GridPane.setMargin(pane, new Insets(15,0,0,15));
 
             nomeSalaLabel.setLayoutY(snapHallView.getLayoutY() + 100);
@@ -127,7 +131,7 @@ public class HallPanelController implements Initializable {
             ApplicationUtils.removeFileFromPath(DataReferences.PIANTINEFOLDERPATH + hallName + ".csv");
             ApplicationUtils.removeFileFromPath(DataReferences.PIANTINEPREVIEWSFOLDERPATH + hallName + ".jpg");
             hallNames.remove(hallName);
-            refreshUI();
+            refreshUIandHallList();
         }
     }
 
@@ -223,10 +227,48 @@ public class HallPanelController implements Initializable {
         }
     }
 
-    void triggerModificationToHallList() { refreshUI(); }
+    void triggerModificationToHallList() { refreshUIandHallList(); }
+
+    private void refreshUIandHallList() {
+        grigliaSale.getChildren().clear();
+        initListOfPreviews();
+        createHallGrid();
+    }
 
     private void refreshUI() {
         grigliaSale.getChildren().clear();
         createHallGrid();
+    }
+
+    private int temp = 0;
+    private void checkPageDimension() {
+        Thread t = new Thread( () -> {
+            Stage stage = (Stage) hallPanel.getScene().getWindow();
+            stage.widthProperty().addListener(e -> {
+                columnMax = getColumnMaxFromPageWidth(stage.getWidth());
+                if(temp!=columnMax) {
+                    temp = columnMax;
+                    refreshUI();
+                }
+            });
+        });
+        t.start();
+    }
+
+    //Supporta fino ai 1080p
+    private int getColumnMaxFromPageWidth(double width) {
+        if(width<800) {
+            return 2;
+        } else if(width>=800 && width<=1200) {
+            return 3;
+        } else if(width>1200 && width<=1500) {
+            return 4;
+        } else if(width>1500 && width<=1700) {
+            return 5;
+        } else if(width>1700){
+            return 6;
+        } else {
+            throw new ApplicationException("Impossibile settare numero colonne per width: " + width);
+        }
     }
 }

@@ -25,74 +25,65 @@
       <AnchorPane BorderPane.alignment="CENTER">
          <children>
             <Rectangle fx:id="rectangleOptions" fill="#db8f00" height="31.0" layoutX="-1.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="204.0" />
-            <VBox alignment="CENTER" prefHeight="444.0" prefWidth="202.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox alignment="CENTER" prefHeight="660.0" prefWidth="203.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="1.0" />
-                  <Label fx:id="hallModifier" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="54.0" prefWidth="158.0" style="-fx-cursor: hand;" text="MODIFICA SALE">
+                  <Label fx:id="hallModifierLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="MODIFICA SALE">
                      <font>
-                        <Font size="16.0" />
+                        <Font size="18.0" />
                      </font>
                   </Label>
-                  <Label />
-                  <Label fx:id="scheduler" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="55.0" prefWidth="156.0" style="-fx-cursor: hand;" text="PROGRAMMAZIONE">
+                  <Label fx:id="schedulerLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="PROGRAMMAZIONE">
                      <font>
-                        <Font size="16.0" />
+                        <Font size="18.0" />
                      </font>
                   </Label>
-                  <Label />
-                  <Label fx:id="movieList" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="55.0" prefWidth="156.0" style="-fx-cursor: hand;" text="LISTA FILM">
+                  <Label fx:id="movieListLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="LISTA FILM">
                      <font>
-                        <Font size="16.0" />
+                        <Font size="18.0" />
                      </font>
                   </Label>
-                  <Label />
-                  <Label fx:id="userList" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="54.0" prefWidth="156.0" style="-fx-cursor: hand;" text="LISTA UTENTI">
+                  <Label fx:id="userListLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="LISTA UTENTI">
                      <font>
-                        <Font size="16.0" />
+                        <Font size="18.0" />
                      </font></Label>
-                  <Label prefHeight="14.0" prefWidth="0.0" />
-                  <Label alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="53.0" prefWidth="164.0" style="-fx-cursor: hand;" text="MODIFICA PREZZI">
+                  <Label fx:id="pricesModifierLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="MODIFICA PREZZI">
                      <font>
-                        <Font size="16.0" />
+                        <Font size="18.0" />
                      </font></Label>
-                  <Label prefHeight="13.0" prefWidth="0.0" />
-                  <Label fx:id="logout" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="57.0" prefWidth="156.0" style="-fx-cursor: hand;" text="ESCI">
+                  <Label fx:id="exitLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="ESCI">
                      <font>
-                        <Font size="16.0" />
+                        <Font size="18.0" />
                      </font></Label>
-                  <Label />
                </children>
             </VBox>
          </children>
       </AnchorPane>
    </left>
    <center>
-      <AnchorPane fx:id="mainPanel" prefHeight="526.0" prefWidth="692.0" style="-fx-background-color: black;" BorderPane.alignment="CENTER">
-         <children>
-            <BorderPane prefHeight="660.0" prefWidth="854.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <top>
-                  <AnchorPane prefHeight="317.0" prefWidth="854.0" BorderPane.alignment="CENTER">
-                     <children>
-                        <Label alignment="BOTTOM_CENTER" layoutX="413.0" layoutY="150.0" prefHeight="317.0" prefWidth="854.0" text="Benvenuti nell'Area Manager" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <font>
-                              <Font size="50.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </AnchorPane>
-               </top>
-               <center>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                     <children>
-                        <Label alignment="TOP_CENTER" layoutX="413.0" layoutY="155.0" prefHeight="343.0" prefWidth="854.0" text="Per iniziare, clicca su una categoria a sinistra" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <font>
-                              <Font size="30.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </AnchorPane>
-               </center>
-            </BorderPane>
-         </children></AnchorPane>
+      <BorderPane fx:id="mainPanel" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" BorderPane.alignment="CENTER">
+         <top>
+            <AnchorPane prefHeight="315.0" prefWidth="854.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label alignment="BOTTOM_CENTER" layoutX="391.0" layoutY="229.0" prefHeight="315.0" prefWidth="854.0" text="Benvenuti nell'Area Manager" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <font>
+                        <Font size="50.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+         </top>
+         <center>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label alignment="TOP_CENTER" layoutX="413.0" layoutY="66.0" prefHeight="345.0" prefWidth="854.0" text="Per iniziare, clicca su una categoria a sinistra." textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+         </center>
+      </BorderPane>
    </center>
 </BorderPane>

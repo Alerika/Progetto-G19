@@ -20,7 +20,7 @@
             </AnchorPane>
          </top>
          <center>
-            <ScrollPane fx:id="galleryPanel" prefHeight="361.0" prefWidth="566.0" style="-fx-background: black; -fx-border-color: black; -fx-outline: none; -fx-background-color: transparent;" stylesheets="@../../css/ScrollBarStyle.css" BorderPane.alignment="CENTER" />
+            <ScrollPane fx:id="hallPanel" prefHeight="361.0" prefWidth="566.0" style="-fx-background: black; -fx-border-color: black; -fx-outline: none; -fx-background-color: transparent;" stylesheets="@../../css/ScrollBarStyle.css" BorderPane.alignment="CENTER" />
          </center>
          <left>
             <AnchorPane prefHeight="338.0" prefWidth="88.0" BorderPane.alignment="CENTER" />
