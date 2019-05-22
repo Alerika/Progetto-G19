@@ -7,9 +7,12 @@ package it.unipv.gui.user;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -20,7 +23,17 @@ public class RegistrazioneController implements Initializable {
 
     public Label cancel;
     public TextField userField;
-    public TextField userField1;
+
+    @FXML
+    private void cancelClose(){
+        closeStage();
+    }
+
+    @FXML
+    private void closeStage(){
+        Stage stage = (Stage) userField.getScene().getWindow();
+        stage.close();
+    }
 
     /**
      * Initializes the controller class.

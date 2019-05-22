@@ -5,10 +5,18 @@
  */
 package it.unipv.gui.user;
 
-import java.io.File;
+import java.io.*;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.ResourceBundle;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import it.unipv.conversion.CSVToMovieList;
+import it.unipv.gui.common.GUIUtils;
+import it.unipv.gui.common.Movie;
+import it.unipv.gui.common.MovieStatusTYPE;
+import it.unipv.utils.ApplicationException;
+import it.unipv.utils.CloseableUtils;
+import it.unipv.utils.DataReferences;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -17,6 +25,7 @@ import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -32,7 +41,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 /**
  *
@@ -41,13 +49,19 @@ import javafx.stage.StageStyle;
 public class HomeController implements Initializable {
     
     @FXML
-    private Rectangle rectangleMenu, rectangleGenere, rectangle2D3D, rectangleDays;
+    private Rectangle rectangleMenu, rectangleGenere, rectangle2D3D;
     
     @FXML
-    private AnchorPane menuWindow, genereWindow, anchorLunedi, anchorMartedi, anchorMercoledi, anchorGiovedi, anchorVenerdi, anchorSabato, anchorDomenica, usernamePane, anchorInfo;
-    
+    private AnchorPane menuWindow, genereWindow, usernamePane, anchorInfo, homePane;
+
     @FXML
-    private ScrollPane filmScrollLun;
+    private GridPane filmGrid = new GridPane();
+
+    @FXML
+    private ScrollPane filmScroll;
+
+    @FXML
+    private Label labelIVA, labelCellulari, labelCosti, infoUtili;
     
     @FXML
     private Line lineGenere;
@@ -56,13 +70,69 @@ public class HomeController implements Initializable {
     private static int x = 0, y = 60;
     private double castY = 0;
     private HashMap<Label, Rectangle> orariMap = new HashMap<Label, Rectangle>();
-    private boolean logStatus = false;
     private final Stage stageRegistrazione = new Stage();
     private final Stage stageLogin = new Stage();
     private final Stage stagePrenotazione = new Stage();
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private static int rowCount = 0;
+    private static int columnCount = 0;
+    private static int columnCountMax = 0;
+    private List<Movie> film = new ArrayList<>();
     
-    public void setLogStatus(boolean bool){
-        logStatus = bool;
+    public void initGrid(){
+        film = CSVToMovieList.getMovieListFromCSV(DataReferences.MOVIEFILEPATH);
+        Collections.sort(film);
+
+        filmGrid.setHgap(80);
+        filmGrid.setVgap(80);
+
+        if (lineGenere.getScene().getWindow().getWidth() > 1360) {
+            columnCountMax = 5;
+            filmGrid.setHgap(150);
+        } else {
+            columnCountMax = 3;
+        }
+
+        for (Movie movie : film) {
+            if(movie.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
+                addMovie(movie);
+            }
+        }
+
+        rowCount = 0;
+        columnCount = 0;
+    }
+
+    public void addMovie(Movie movie){
+        try {
+            FileInputStream fis = new FileInputStream(movie.getLocandinaPath());
+            ImageView posterPreview = new ImageView(new Image(fis, 200, 0, true, true));
+            posterPreview.setFitWidth(200);
+            CloseableUtils.close(fis);
+
+            AnchorPane anchor = new AnchorPane();
+
+            if(columnCount == columnCountMax){
+                columnCount = 0;
+                rowCount++;
+            }
+
+            filmGrid.add(anchor, columnCount, rowCount);
+            columnCount++;
+
+            filmScroll.setContent(filmGrid);
+            GridPane.setMargin(anchor, new Insets(15,0,5,15));
+
+            anchor.getChildren().addAll(posterPreview);
+            posterPreview.setLayoutX(30);
+            if(rowCount==0){
+                posterPreview.setLayoutY(20);
+            }
+
+            GUIUtils.setScaleTransitionOnControl(posterPreview);
+        } catch(FileNotFoundException ex) {
+            throw new ApplicationException(ex);
+        }
     }
     
     public void animationMenu(){
@@ -71,9 +141,9 @@ public class HomeController implements Initializable {
         KeyValue heightValueForward = new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()+244);
         KeyValue heightValueBackwards = new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()-244);
         KeyFrame forwardW = new KeyFrame(javafx.util.Duration.seconds(0.3), widthValueForward);
-        KeyFrame backwardW = new KeyFrame(javafx.util.Duration.seconds(0.3), widthValueBackwards);
+        KeyFrame backwardW = new KeyFrame(javafx.util.Duration.seconds(0.15), widthValueBackwards);
         KeyFrame forwardH = new KeyFrame(javafx.util.Duration.seconds(0.3), heightValueForward);
-        KeyFrame backwardH = new KeyFrame(javafx.util.Duration.seconds(0.3), heightValueBackwards);
+        KeyFrame backwardH = new KeyFrame(javafx.util.Duration.seconds(0.15), heightValueBackwards);
         Timeline timelineForwardH = new Timeline(forwardH);
         Timeline timelineBackwardH = new Timeline(backwardH);
         Timeline timelineForwardW = new Timeline(forwardW);
@@ -190,81 +260,9 @@ public class HomeController implements Initializable {
         transition.play();
     }
     
-    
-    
-    public void setInvisblePane() {
-        anchorLunedi.setVisible(false);
-        anchorMartedi.setVisible(false);
-        anchorMercoledi.setVisible(false);
-        anchorGiovedi.setVisible(false);
-        anchorVenerdi.setVisible(false);
-        anchorSabato.setVisible(false);
-        anchorDomenica.setVisible(false);
-        anchorInfo.setVisible(false);
-    }
-
-    public void infoPaneClick() {
-        anchorInfo.setVisible(true);
-    }
-    
-    public void filterByDay(MouseEvent event){
-        Label label = (Label) event.getSource();
-        String tmp = label.getText();
-        setInvisblePane();
-        
-        TranslateTransition transition = new TranslateTransition(javafx.util.Duration.seconds(0.2), rectangleDays);
-        KeyValue width = new KeyValue(rectangleDays.widthProperty(), label.getWidth());
-        KeyFrame widthFrame = new KeyFrame(javafx.util.Duration.seconds(0.3), width);
-        Timeline timelineWidth = new Timeline(widthFrame);
-        transition.setToX(label.getLayoutX());
-        if(!rectangleDays.isVisible()){
-            rectangleDays.setVisible(true);
-            rectangleDays.setOpacity(0);
-            FadeTransition fadeIn = new FadeTransition(javafx.util.Duration.seconds(0.4), rectangleDays);
-            fadeIn.setFromValue(0);
-            fadeIn.setToValue(1.0);
-            fadeIn.play();
-        }
-        timelineWidth.play();
-        transition.play();
-        
-        switch(tmp){
-            case "Lunedi":
-                anchorLunedi.setVisible(true);
-                break;
-    
-            case "Martedi":
-                anchorMartedi.setVisible(true);
-                break;
-
-            case "Mercoledi":
-                anchorMercoledi.setVisible(true);
-                break;
-
-            case "Giovedi":
-                anchorGiovedi.setVisible(true);
-                break;
-
-            case "Venerdi":
-                anchorVenerdi.setVisible(true);
-                break;
-   
-            case "Sabato":
-                anchorSabato.setVisible(true);
-                break;
-
-            case "Domenica":
-                anchorDomenica.setVisible(true);
-                break;
-
-        }
-    }
-    
     GridPane grigliaFilm = new GridPane();
     
     public void aggiungiFilm(){
-        
-        grigliaFilm.setPrefSize(filmScrollLun.getWidth(), filmScrollLun.getHeight());
         
         Label titolo = new Label("Avengers");
         titolo.setFont(new Font("New Amsterdam Regular", 34));
@@ -289,8 +287,6 @@ public class HomeController implements Initializable {
         AnchorPane pane = new AnchorPane();
         
         grigliaFilm.addRow(count++, pane);
-        
-        filmScrollLun.setContent(grigliaFilm);
         
         pane.getChildren().add(view);
         pane.getChildren().add(titolo);
@@ -388,8 +384,6 @@ public class HomeController implements Initializable {
             pane.getChildren().add(orarioLabel);
             
             orariMap.put(orarioLabel, rect);
-            
-            //removeOrario(pane, "20:00");
     }
     
     public void removeOrario(AnchorPane pane, String orario){
@@ -435,8 +429,8 @@ public class HomeController implements Initializable {
             stageRegistrazione.setResizable(false);
             stageRegistrazione.setAlwaysOnTop(true);
             stageRegistrazione.show();
-        } catch (Exception e) {
-            System.out.println(e);
+        } catch (IOException e) {
+            throw new ApplicationException(e);
         }
     }
     
@@ -449,8 +443,8 @@ public class HomeController implements Initializable {
             stageLogin.setAlwaysOnTop(true);
             stageLogin.show();
             
-        } catch (Exception e) {
-            System.out.println(e);
+        } catch (IOException e) {
+            throw new ApplicationException(e);
         }
     }
     
@@ -462,20 +456,55 @@ public class HomeController implements Initializable {
             stagePrenotazione.setResizable(false);
             stagePrenotazione.setMaximized(true);
             stagePrenotazione.show();
-            } catch (Exception ex) {
-                System.out.println(ex);
+            } catch (IOException e) {
+            throw new ApplicationException(e);
         }
+    }
+
+    public void infoPaneClick() {
+        homePane.setVisible(false);
+        animationMenu();
+
+        Stage stage = (Stage) homePane.getScene().getWindow();
+
+        infoUtili.setLayoutX(stage.getWidth()/2-infoUtili.getWidth()/2);
+
+        labelCellulari.setLayoutX(stage.getWidth()/2-labelCellulari.getWidth()/2);
+        labelIVA.setLayoutX(stage.getWidth()/2-labelIVA.getWidth()/2);
+        labelCosti.setLayoutX(stage.getWidth()/2-labelCosti.getWidth()/2);
+
+        anchorInfo.setVisible(true);
+
+    }
+
+    public void homeClick(){
+        anchorInfo.setVisible(false);
+        animationMenu();
+        if(film.isEmpty()){
+            initGrid();
+        } else {
+            homePane.setVisible(true);
+        }
+    }
+
+    public void listaSaleClick(){
+        anchorInfo.setVisible(false);
+        homePane.setVisible(false);
+        animationMenu();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        setInvisblePane();
-        rectangleDays.setVisible(false);
-        anchorLunedi.setVisible(true);
+
+        dtf.format(LocalDateTime.now());
+
+        anchorInfo.setVisible(false);
         menuWindow.setVisible(false);
         lineGenere.setVisible(false);
         genereWindow.setVisible(false);
         usernamePane.setVisible(false);
+
+
     }
     
 }

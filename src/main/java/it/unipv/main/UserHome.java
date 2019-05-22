@@ -16,7 +16,7 @@ import javafx.stage.Stage;
  * @author Fede
  */
 public class UserHome extends Application {
-    
+
     @Override
     public void start(Stage stage) throws Exception {
         

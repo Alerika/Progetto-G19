@@ -25,7 +25,7 @@
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <PasswordField alignment="CENTER" layoutX="60.0" layoutY="273.0" prefHeight="37.0" prefWidth="331.0" promptText="Password">
+            <PasswordField fx:id="passField" alignment="CENTER" layoutX="60.0" layoutY="273.0" prefHeight="37.0" prefWidth="331.0" promptText="Password">
                <font>
                   <Font size="18.0" />
                </font>
@@ -41,7 +41,7 @@
                   <Font name="Bebas" size="22.0" />
                </font>
             </Label>
-            <Label fx:id="cancel" alignment="CENTER" layoutX="78.0" layoutY="483.0" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" text="cancel" textFill="WHITE">
+            <Label fx:id="cancel" alignment="CENTER" layoutX="78.0" layoutY="483.0" onMouseClicked="#cancelClose" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" text="cancel" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>
@@ -56,12 +56,12 @@
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <TextField fx:id="userField1" alignment="CENTER" layoutX="60.0" layoutY="65.0" prefHeight="37.0" prefWidth="331.0" promptText="E-mail">
+            <TextField fx:id="eMail" alignment="CENTER" layoutX="60.0" layoutY="65.0" prefHeight="37.0" prefWidth="331.0" promptText="E-mail">
                <font>
                   <Font name="Antipasto Pro" size="18.0" />
                </font>
             </TextField>
-            <PasswordField alignment="CENTER" layoutX="60.0" layoutY="383.0" prefHeight="37.0" prefWidth="331.0" promptText="Password">
+            <PasswordField fx:id="passField2" alignment="CENTER" layoutX="60.0" layoutY="383.0" prefHeight="37.0" prefWidth="331.0" promptText="Password">
                <font>
                   <Font size="18.0" />
                </font>
