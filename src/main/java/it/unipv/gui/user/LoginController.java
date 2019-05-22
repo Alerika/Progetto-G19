@@ -32,13 +32,13 @@ public class LoginController implements Initializable {
     public AnchorPane rootPane;
     @FXML
     private Label usernameError, passwordError, login;
-    
+
     @FXML
     private TextField userField;
-    
+
     @FXML
     private PasswordField passField;
-    
+
     @FXML
     private void enterKeyPressed(KeyEvent event) {
         if(event.getCode().equals(KeyCode.ENTER)){
@@ -57,7 +57,6 @@ public class LoginController implements Initializable {
                     Parent root = fxmlLoader.load();
                     Stage stage = new Stage();
                     stage.setScene(new Scene(root));
-                    stage.setResizable(false);
                     stage.setTitle("Area Manager");
                     stage.show();
                 } catch (IOException e) {
@@ -67,24 +66,23 @@ public class LoginController implements Initializable {
                 usernameError.setVisible(true);
             }
         }
-    }    
-    
+    }
+
     @FXML
     private void cancelClose(){
         closeStage();
     }
-    
+
     @FXML
     private void closeStage(){
         Stage stage = (Stage) login.getScene().getWindow();
         stage.close();
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         usernameError.setVisible(false);
         passwordError.setVisible(false);
-    } 
-    
-}
+    }
 
+}
