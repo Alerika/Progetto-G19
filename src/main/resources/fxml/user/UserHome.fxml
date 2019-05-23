@@ -52,6 +52,7 @@
             </AnchorPane>
             <AnchorPane fx:id="filmContainer" layoutY="141.0" maxHeight="860.0" maxWidth="1601.0" prefHeight="860.0" prefWidth="1601.0" style="-fx-background-color: #000000;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="143.0">
                <children>
+                  <AnchorPane fx:id="singleFilmPane" layoutX="299.0" prefHeight="857.0" prefWidth="1301.0" style="-fx-background-color: #1a1a1a;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="299.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                   <AnchorPane fx:id="anchorInfo" layoutY="97.0" prefHeight="857.0" prefWidth="1600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Label fx:id="infoUtili" alignment="CENTER" layoutX="733.0" layoutY="36.0" prefHeight="85.0" prefWidth="134.0" text="INFO UTILI" textFill="#db8f00" AnchorPane.topAnchor="36.0">
@@ -147,7 +148,7 @@
                            </font>
                         </Label>
                         <Rectangle fx:id="rectangleGenere" arcHeight="14.0" arcWidth="14.0" fill="#381200" height="44.0" layoutX="1401.0" layoutY="33.0" onMouseClicked="#animationGenere" stroke="TRANSPARENT" strokeType="INSIDE" style="-fx-cursor: hand;" width="113.0" AnchorPane.rightAnchor="86.0" AnchorPane.topAnchor="33.0" />
-                        <Label alignment="CENTER" layoutX="1412.0" layoutY="33.0" onMouseClicked="#animationGenere" prefHeight="44.0" prefWidth="80.0" style="-fx-cursor: hand;" text="genere" textFill="WHITE" AnchorPane.rightAnchor="108.0">
+                        <Label fx:id="genreLabel" alignment="CENTER" layoutX="1412.0" layoutY="33.0" onMouseClicked="#animationGenere" prefHeight="44.0" prefWidth="80.0" style="-fx-cursor: hand;" text="genere" textFill="WHITE" AnchorPane.rightAnchor="108.0">
                            <font>
                               <Font name="Bebas Neue Regular" size="24.0" />
                            </font>
@@ -157,44 +158,48 @@
                               <Image url="@../../images/expandGenere.png" />
                            </image>
                         </ImageView>
-                        <AnchorPane fx:id="genereWindow" layoutX="1375.0" layoutY="76.0" prefHeight="248.0" prefWidth="168.0" AnchorPane.rightAnchor="57.0">
+                        <AnchorPane fx:id="genereWindow" layoutX="1375.0" layoutY="76.0" prefHeight="362.0" prefWidth="168.0" AnchorPane.rightAnchor="57.0">
                            <children>
-                              <Label fx:id="home1" alignment="CENTER" contentDisplay="CENTER" layoutX="47.0" layoutY="126.0" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="Fantasy" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="50.0">
+                              <Label fx:id="home1" alignment="CENTER" contentDisplay="CENTER" layoutX="50.0" layoutY="181.0" onMouseClicked="#genereClicked" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="Fantasy" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="47.0">
                                  <font>
                                     <Font name="Bebas Neue Regular" size="24.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="listaSale1" alignment="CENTER" contentDisplay="CENTER" layoutX="47.0" layoutY="89.0" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="Dramma" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="50.0">
+                              <Label fx:id="listaSale1" alignment="CENTER" contentDisplay="CENTER" layoutX="50.0" layoutY="138.0" onMouseClicked="#genereClicked" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="Dramma" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="47.0">
                                  <font>
                                     <Font name="Bebas Neue Regular" size="24.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="areaRiservata1" alignment="CENTER" contentDisplay="CENTER" layoutX="43.0" layoutY="55.0" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="80.0" style="-fx-cursor: hand;" text="Commedia" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="45.0">
+                              <Label fx:id="areaRiservata1" alignment="CENTER" contentDisplay="CENTER" layoutX="45.0" layoutY="96.0" onMouseClicked="#genereClicked" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="80.0" style="-fx-cursor: hand;" text="Commedia" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="43.0">
                                  <font>
                                     <Font name="Bebas Neue Regular" size="24.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="infoEOrari1" alignment="CENTER" contentDisplay="CENTER" layoutX="54.0" layoutY="19.0" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="55.0" style="-fx-cursor: hand;" text="azione" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="59.0">
+                              <Label layoutX="59.0" layoutY="14.0" onMouseClicked="#genereClicked" onMouseEntered="#hoverGenereEnter" text="anime" textFill="WHITE">
                                  <font>
                                     <Font name="Bebas Neue Regular" size="24.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="listaSale11" alignment="CENTER" contentDisplay="CENTER" layoutX="50.0" layoutY="163.0" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="62.0" style="-fx-cursor: hand;" text="Horror" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="56.0">
+                              <Label fx:id="infoEOrari1" alignment="CENTER" contentDisplay="CENTER" layoutX="55.0" layoutY="55.0" onMouseClicked="#genereClicked" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="55.0" style="-fx-cursor: hand;" text="azione" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="58.0">
                                  <font>
                                     <Font name="Bebas Neue Regular" size="24.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="listaSale111" alignment="CENTER" contentDisplay="CENTER" layoutX="46.0" layoutY="199.0" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="musical" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="51.0">
+                              <Label fx:id="listaSale11" alignment="CENTER" contentDisplay="CENTER" layoutX="51.0" layoutY="222.0" onMouseClicked="#genereClicked" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="62.0" style="-fx-cursor: hand;" text="Horror" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="55.0">
                                  <font>
                                     <Font name="Bebas Neue Regular" size="24.0" />
                                  </font>
                               </Label>
-                              <Line fx:id="lineGenere" endX="26.0" layoutX="82.0" layoutY="50.0" startX="-26.0" stroke="WHITE" strokeWidth="2.0" />
+                              <Label fx:id="listaSale111" alignment="CENTER" contentDisplay="CENTER" layoutX="47.0" layoutY="262.0" onMouseClicked="#genereClicked" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="musical" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="50.0">
+                                 <font>
+                                    <Font name="Bebas Neue Regular" size="24.0" />
+                                 </font>
+                              </Label>
+                              <Line fx:id="lineGenere" endX="26.0" layoutX="82.0" layoutY="45.0" startX="-26.0" stroke="WHITE" strokeWidth="2.0" />
                            </children>
                         </AnchorPane>
                      </children>
                   </AnchorPane>
-                  <AnchorPane fx:id="singleFilmPane" layoutX="299.0" prefHeight="857.0" prefWidth="1301.0" style="-fx-background-color: #1a1a1a;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="299.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                   <Rectangle fx:id="rectangleMenu" arcHeight="14.0" arcWidth="14.0" fill="#db8f00" height="67.0" layoutX="29.0" layoutY="22.0" stroke="TRANSPARENT" strokeType="INSIDE" width="161.0" />
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="102.0" layoutY="40.0" prefHeight="25.0" prefWidth="44.0" text="MENU" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="102.0">
                      <font>

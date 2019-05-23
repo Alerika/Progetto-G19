@@ -15,7 +15,6 @@ import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieStatusTYPE;
 import it.unipv.gui.common.MovieTYPE;
-import it.unipv.gui.login.User;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
@@ -28,7 +27,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -38,10 +36,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
@@ -66,24 +62,22 @@ public class HomeController implements Initializable {
     private ScrollPane filmScroll, filmScrollFiltered;
 
     @FXML
-    private Label labelIVA, labelCellulari, labelCosti, infoUtili;
+    private Label labelIVA, labelCellulari, labelCosti, infoUtili, genreLabel;
     
     @FXML
     private Line lineGenere;
 
-    private static int x = 0, y = 60;
-    private double castY = 0;
-    private HashMap<Label, Rectangle> orariMap = new HashMap<Label, Rectangle>();
+    //private static int x = 0;
     private final Stage stageRegistrazione = new Stage();
     private final Stage stageLogin = new Stage();
-    private final Stage stagePrenotazione = new Stage();
+    //private final Stage stagePrenotazione = new Stage();
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static int rowCount = 0;
     private static int columnCount = 0;
     private static int columnCountMax = 0;
     private List<Movie> film = new ArrayList<>();
     
-    public void initGrid(){
+    private void initGrid(){
         film = CSVToMovieList.getMovieListFromCSV(DataReferences.MOVIEFILEPATH);
         Collections.sort(film);
 
@@ -115,7 +109,7 @@ public class HomeController implements Initializable {
         columnCount = 0;
     }
 
-    public void addMovie(Movie movie, GridPane grid, ScrollPane scroll){
+    private void addMovie(Movie movie, GridPane grid, ScrollPane scroll){
         try {
             FileInputStream fis = new FileInputStream(movie.getLocandinaPath());
             ImageView posterPreview = new ImageView(new Image(fis, 1000, 0, true, true));
@@ -211,8 +205,8 @@ public class HomeController implements Initializable {
     }
     
     public void animationGenere(){
-        KeyValue heightValueForward = new KeyValue(rectangleGenere.heightProperty(), rectangleGenere.getHeight()+248);
-        KeyValue heightValueBackwards = new KeyValue(rectangleGenere.heightProperty(), rectangleGenere.getHeight()-248);
+        KeyValue heightValueForward = new KeyValue(rectangleGenere.heightProperty(), rectangleGenere.getHeight()+305);
+        KeyValue heightValueBackwards = new KeyValue(rectangleGenere.heightProperty(), rectangleGenere.getHeight()-305);
         KeyFrame forwardH = new KeyFrame(javafx.util.Duration.seconds(0.3), heightValueForward);
         KeyFrame backwardH = new KeyFrame(javafx.util.Duration.seconds(0.3), heightValueBackwards);
         Timeline timelineForwardH = new Timeline(forwardH);
@@ -268,7 +262,7 @@ public class HomeController implements Initializable {
         }
     }
     
-    public void hoverOrariEnter(MouseEvent event){
+    /*public void hoverOrariEnter(MouseEvent event){
         Rectangle rect = (Rectangle) event.getSource();
         rect.setStroke(Color.YELLOW);
     }
@@ -276,8 +270,10 @@ public class HomeController implements Initializable {
     public void hoverOrariExit(MouseEvent event){
         Rectangle rect = (Rectangle) event.getSource();
         rect.setStroke(Color.WHITE);
-    }
-    
+    }*/
+
+    private MovieTYPE type;
+
     public void hoverGenereEnter(MouseEvent event){
         Label label = (Label) event.getSource();
         if(genereWindow.isVisible()){
@@ -288,7 +284,20 @@ public class HomeController implements Initializable {
         lineGenere.setStartX(-label.getWidth()/2);
         lineGenere.setEndX(label.getWidth()/2);
     }
-    
+
+    public void genereClicked(MouseEvent event) {
+        Label l = (Label)event.getSource();
+        genreLabel.setText(l.getText());
+
+        if(type==null) {
+            filterMoviesByMovieGenre(genreLabel.getText());
+        } else {
+            filterMoviesByMovieTYPEAndMovieGenre(type, genreLabel.getText());
+        }
+
+        animationGenere();
+    }
+
     public void animation2D3D(MouseEvent event){
         rectangle2D3D.setVisible(true);
         TranslateTransition transition = new TranslateTransition(javafx.util.Duration.seconds(0.2), rectangle2D3D);
@@ -298,42 +307,67 @@ public class HomeController implements Initializable {
 
         switch(label.getText()) {
             case "2D":
-                filterMoviesByMovieTYPE(MovieTYPE.TWOD);
+                if(genreLabel.getText().toLowerCase().equalsIgnoreCase("genere")) {
+                    filterMoviesByMovieTYPE(MovieTYPE.TWOD);
+                } else {
+                    filterMoviesByMovieTYPEAndMovieGenre(MovieTYPE.TWOD, genreLabel.getText());
+                }
+                type = MovieTYPE.TWOD;
                 break;
             case "3D":
-                filterMoviesByMovieTYPE(MovieTYPE.THREED);
+                if(genreLabel.getText().toLowerCase().equalsIgnoreCase("genere")) {
+                    filterMoviesByMovieTYPE(MovieTYPE.THREED);
+                } else {
+                    filterMoviesByMovieTYPEAndMovieGenre(MovieTYPE.THREED, genreLabel.getText());
+                }
+                type = MovieTYPE.THREED;
                 break;
         }
     }
 
     private void filterMoviesByMovieTYPE(MovieTYPE type) {
-        if(type!=null) {
-            List<Movie> filteredMovies = new ArrayList<>();
-            for(Movie m : film) {
-                if(m.getTipo().equals(type)){
-                    if(m.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
-                        filteredMovies.add(m);
-                    }
+        filmGridFiltered.getChildren().clear();
+        for(Movie m : film) {
+            if(m.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
+                if(m.getTipo().equals(type)) {
+                    addMovie(m, filmGridFiltered, filmScrollFiltered);
                 }
             }
-            filmGridFiltered.getChildren().clear();
-            for(Movie m : filteredMovies) {
-                addMovie(m, filmGridFiltered, filmScrollFiltered);
-            }
-            initRowAndColumnCount();
-        } else {
-            refreshUI();
         }
+        initRowAndColumnCount();
         filmScroll.setVisible(false);
         filmScrollFiltered.setVisible(true);
     }
 
-    private void refreshUI() {
-        filmGrid.getChildren().clear();
-        initGrid();
+    private void filterMoviesByMovieGenre(String genere) {
+        filmGridFiltered.getChildren().clear();
+        for(Movie m : film) {
+            if(m.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
+                if(m.getGenere().toLowerCase().contains(genere.toLowerCase())) {
+                    addMovie(m, filmGridFiltered, filmScrollFiltered);
+                }
+            }
+        }
+        initRowAndColumnCount();
+        filmScroll.setVisible(false);
+        filmScrollFiltered.setVisible(true);
+    }
+
+    private void filterMoviesByMovieTYPEAndMovieGenre(MovieTYPE type, String genere) {
+        filmGridFiltered.getChildren().clear();
+        for(Movie m : film) {
+            if(m.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
+                if(m.getGenere().toLowerCase().contains(genere.toLowerCase()) && m.getTipo().equals(type)) {
+                    addMovie(m, filmGridFiltered, filmScrollFiltered);
+                }
+            }
+        }
+        initRowAndColumnCount();
+        filmScroll.setVisible(false);
+        filmScrollFiltered.setVisible(true);
     }
     
-    public void addRectangleOrario(AnchorPane pane, String orario){
+    /*public void addRectangleOrario(AnchorPane pane, String orario){
         
         Rectangle rect = createRectangle(pane);
         
@@ -404,9 +438,9 @@ public class HomeController implements Initializable {
             pane.getChildren().add(orarioLabel);
             
             orariMap.put(orarioLabel, rect);
-    }
+    }*/
     
-    public void removeOrario(AnchorPane pane, String orario){
+    /*public void removeOrario(AnchorPane pane, String orario){
         Label labelTmp = new Label();
         
         Rectangle rectangleTmp = new Rectangle();
@@ -422,9 +456,9 @@ public class HomeController implements Initializable {
         pane.getChildren().remove(rectangleTmp);
         
         orariMap.remove(labelTmp, rectangleTmp);
-    }
+    }*/
     
-    public Rectangle createRectangle(AnchorPane pane){
+    /*public Rectangle createRectangle(AnchorPane pane){
         x += 200;
         
         Rectangle rect = new Rectangle();
@@ -432,6 +466,7 @@ public class HomeController implements Initializable {
         rect.setWidth(80);
         rect.setHeight(40);
         rect.setLayoutX(x);
+        double castY = 0;
         rect.setLayoutY(castY);
         rect.setStroke(Color.WHITE);
         rect.setStrokeWidth(1);
@@ -439,12 +474,11 @@ public class HomeController implements Initializable {
         x -= 100;
         
         return rect;
-    }
+    }*/
     
-    public void openRegistrazione(){
+    private void openRegistrazione(){
         try {
-            FXMLLoader fxmlLoaderRegistrazione = new FXMLLoader(getClass().getResource("/fxml/user/Registrazione.fxml"));
-            Parent root = (Parent) fxmlLoaderRegistrazione.load();
+            Parent root = new FXMLLoader(getClass().getResource("/fxml/user/Registrazione.fxml")).load();
             stageRegistrazione.setScene(new Scene(root));
             stageRegistrazione.setResizable(false);
             stageRegistrazione.setAlwaysOnTop(true);
@@ -454,10 +488,9 @@ public class HomeController implements Initializable {
         }
     }
     
-    public void openLogin(){
+    private void openLogin(){
         try {
-            FXMLLoader fxmlLoaderLogin = new FXMLLoader(getClass().getResource("/fxml/user/Login.fxml"));
-            Parent root = (Parent) fxmlLoaderLogin.load();
+            Parent root = new FXMLLoader(getClass().getResource("/fxml/user/Login.fxml")).load();
             stageLogin.setScene(new Scene(root));
             stageLogin.setResizable(false);
             stageLogin.setAlwaysOnTop(true);
@@ -468,10 +501,9 @@ public class HomeController implements Initializable {
         }
     }
     
-    public void openPrenotazioneFilm(){
+    /*public void openPrenotazioneFilm(){
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/user/PrenotazioneFilm.fxml"));
-            Parent root = (Parent) fxmlLoader.load();
+            Parent root = new FXMLLoader(getClass().getResource("/fxml/user/PrenotazioneFilm.fxml")).load();
             stagePrenotazione.setScene(new Scene(root));
             stagePrenotazione.setResizable(false);
             stagePrenotazione.setMaximized(true);
@@ -479,7 +511,7 @@ public class HomeController implements Initializable {
             } catch (IOException e) {
             throw new ApplicationException(e);
         }
-    }
+    }*/
 
     public void infoPaneClick() {
         homePane.setVisible(false);
@@ -502,13 +534,14 @@ public class HomeController implements Initializable {
         singleFilmPane.setVisible(false);
         rectangle2D3D.setVisible(false);
         animationMenu();
+        homePane.setVisible(true);
+        filmScroll.setVisible(true);
+        filmScrollFiltered.setVisible(false);
         if(film.isEmpty()){
             initGrid();
-        } else {
-            homePane.setVisible(true);
-            filmScroll.setVisible(true);
-            filmScrollFiltered.setVisible(false);
         }
+        genreLabel.setText("genere");
+        type = null;
     }
 
     public void listaSaleClick(){
@@ -519,9 +552,7 @@ public class HomeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
         dtf.format(LocalDateTime.now());
-
         rectangle2D3D.setVisible(false);
         anchorInfo.setVisible(false);
         menuWindow.setVisible(false);
@@ -529,7 +560,7 @@ public class HomeController implements Initializable {
         genereWindow.setVisible(false);
         usernamePane.setVisible(false);
         singleFilmPane.setVisible(false);
-
+        homePane.setVisible(false);
     }
     
 }
