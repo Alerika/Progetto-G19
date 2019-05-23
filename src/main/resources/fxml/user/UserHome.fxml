@@ -127,6 +127,7 @@
                   </AnchorPane>
                   <AnchorPane fx:id="homePane" prefHeight="857.0" prefWidth="1600.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
+                        <ScrollPane fx:id="filmScrollFiltered" hbarPolicy="NEVER" layoutX="10.0" layoutY="138.0" prefHeight="729.0" prefWidth="1601.0" style="-fx-background: black; -fx-background-color: black; -fx-outline: none; -fx-border: none;" stylesheets="@../../css/ScrollBarStyle.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="128.0" />
                         <ScrollPane fx:id="filmScroll" hbarPolicy="NEVER" layoutY="128.0" prefHeight="729.0" prefWidth="1601.0" style="-fx-background: black; -fx-background-color: black; -fx-outline: none; -fx-border: none;" stylesheets="@../../css/ScrollBarStyle.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="128.0" />
                         <Rectangle fx:id="rectangle1" arcHeight="14.0" arcWidth="14.0" fill="#db8f00" height="67.0" layoutX="1128.0" layoutY="21.0" stroke="TRANSPARENT" strokeType="INSIDE" width="415.0" AnchorPane.rightAnchor="57.0" />
                         <Label fx:id="nonRegistrato1" alignment="CENTER" contentDisplay="CENTER" layoutX="1141.0" layoutY="40.0" prefHeight="31.0" prefWidth="93.0" text="filtra per:" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="366.0">
@@ -156,7 +157,7 @@
                               <Image url="@../../images/expandGenere.png" />
                            </image>
                         </ImageView>
-                        <AnchorPane fx:id="genereWindow" layoutX="1375.0" layoutY="66.0" prefHeight="248.0" prefWidth="168.0" AnchorPane.rightAnchor="57.0">
+                        <AnchorPane fx:id="genereWindow" layoutX="1375.0" layoutY="76.0" prefHeight="248.0" prefWidth="168.0" AnchorPane.rightAnchor="57.0">
                            <children>
                               <Label fx:id="home1" alignment="CENTER" contentDisplay="CENTER" layoutX="47.0" layoutY="126.0" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="Fantasy" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="50.0">
                                  <font>
@@ -193,6 +194,7 @@
                         </AnchorPane>
                      </children>
                   </AnchorPane>
+                  <AnchorPane fx:id="singleFilmPane" layoutX="299.0" prefHeight="857.0" prefWidth="1301.0" style="-fx-background-color: #1a1a1a;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="299.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                   <Rectangle fx:id="rectangleMenu" arcHeight="14.0" arcWidth="14.0" fill="#db8f00" height="67.0" layoutX="29.0" layoutY="22.0" stroke="TRANSPARENT" strokeType="INSIDE" width="161.0" />
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="102.0" layoutY="40.0" prefHeight="25.0" prefWidth="44.0" text="MENU" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="102.0">
                      <font>

@@ -54,21 +54,23 @@ public class HomeController implements Initializable {
     private Rectangle rectangleMenu, rectangleGenere, rectangle2D3D;
     
     @FXML
-    private AnchorPane menuWindow, genereWindow, usernamePane, anchorInfo, homePane;
+    private AnchorPane menuWindow, genereWindow, usernamePane, anchorInfo, homePane, singleFilmPane;
 
     @FXML
     private GridPane filmGrid = new GridPane();
 
     @FXML
-    private ScrollPane filmScroll;
+    private GridPane filmGridFiltered = new GridPane();
+
+    @FXML
+    private ScrollPane filmScroll, filmScrollFiltered;
 
     @FXML
     private Label labelIVA, labelCellulari, labelCosti, infoUtili;
     
     @FXML
     private Line lineGenere;
-    
-    private static int count = 0;
+
     private static int x = 0, y = 60;
     private double castY = 0;
     private HashMap<Label, Rectangle> orariMap = new HashMap<Label, Rectangle>();
@@ -88,16 +90,20 @@ public class HomeController implements Initializable {
         filmGrid.setHgap(80);
         filmGrid.setVgap(80);
 
+        filmGridFiltered.setHgap(80);
+        filmGridFiltered.setVgap(80);
+
         if (lineGenere.getScene().getWindow().getWidth() > 1360) {
             columnCountMax = 5;
             filmGrid.setHgap(150);
+            filmGridFiltered.setHgap(150);
         } else {
             columnCountMax = 3;
         }
 
         for (Movie movie : film) {
             if(movie.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
-                addMovie(movie);
+                addMovie(movie, filmGrid, filmScroll);
             }
         }
 
@@ -109,10 +115,11 @@ public class HomeController implements Initializable {
         columnCount = 0;
     }
 
-    public void addMovie(Movie movie){
+    public void addMovie(Movie movie, GridPane grid, ScrollPane scroll){
         try {
             FileInputStream fis = new FileInputStream(movie.getLocandinaPath());
-            ImageView posterPreview = new ImageView(new Image(fis, 200, 0, true, true));
+            ImageView posterPreview = new ImageView(new Image(fis, 1000, 0, true, true));
+            posterPreview.setPreserveRatio(true);
             posterPreview.setFitWidth(200);
             CloseableUtils.close(fis);
 
@@ -123,19 +130,42 @@ public class HomeController implements Initializable {
                 rowCount++;
             }
 
-            filmGrid.add(anchor, columnCount, rowCount);
+            grid.add(anchor, columnCount, rowCount);
             columnCount++;
 
-            filmScroll.setContent(filmGrid);
+            scroll.setContent(grid);
             GridPane.setMargin(anchor, new Insets(15,0,5,15));
 
             anchor.getChildren().addAll(posterPreview);
             posterPreview.setLayoutX(30);
-            if(rowCount==0){
+            if(rowCount==0) {
                 posterPreview.setLayoutY(20);
             }
 
+            posterPreview.setOnMouseClicked(e ->
+            {
+                homePane.setVisible(false);
+
+                singleFilmPane.getChildren().clear();
+
+                try {
+                    FileInputStream fis2 = new FileInputStream(movie.getLocandinaPath());
+                    ImageView poster = new ImageView(new Image(fis2, 1000, 0, true, true));
+                    poster.setPreserveRatio(true);
+                    CloseableUtils.close(fis2);
+
+                    poster.setFitWidth(350);
+
+                    singleFilmPane.getChildren().add(poster);
+
+                    singleFilmPane.setVisible(true);
+                } catch (FileNotFoundException exce){
+                    throw new ApplicationException(exce);
+                }
+            });
+
             GUIUtils.setScaleTransitionOnControl(posterPreview);
+
         } catch(FileNotFoundException ex) {
             throw new ApplicationException(ex);
         }
@@ -260,6 +290,7 @@ public class HomeController implements Initializable {
     }
     
     public void animation2D3D(MouseEvent event){
+        rectangle2D3D.setVisible(true);
         TranslateTransition transition = new TranslateTransition(javafx.util.Duration.seconds(0.2), rectangle2D3D);
         Label label = (Label) event.getSource();
         transition.setToX(label.getLayoutX()-rectangle2D3D.getLayoutX()-rectangle2D3D.getWidth()/4);
@@ -285,72 +316,21 @@ public class HomeController implements Initializable {
                     }
                 }
             }
-            filmGrid.getChildren().clear();
+            filmGridFiltered.getChildren().clear();
             for(Movie m : filteredMovies) {
-                addMovie(m);
+                addMovie(m, filmGridFiltered, filmScrollFiltered);
             }
             initRowAndColumnCount();
         } else {
             refreshUI();
         }
+        filmScroll.setVisible(false);
+        filmScrollFiltered.setVisible(true);
     }
 
     private void refreshUI() {
         filmGrid.getChildren().clear();
         initGrid();
-    }
-    
-    GridPane grigliaFilm = new GridPane();
-    
-    public void aggiungiFilm(){
-        
-        Label titolo = new Label("Avengers");
-        titolo.setFont(new Font("New Amsterdam Regular", 34));
-        
-        Label genere = new Label("Genere: ");
-        genere.setFont(new Font("New Amsterdam Regular", 20));
-        
-        Label regia = new Label("Regia: ");
-        regia.setFont(new Font("New Amsterdam Regular", 20));
-        
-        Label cast = new Label("Cast: ");
-        cast.setFont(new Font("New Amsterdam Regular", 20));
-        
-        File file = new File("resources/images/Avengers.jpg");
-        Image image = new Image(file.toURI().toString());
-        ImageView view = new ImageView(image);
-        view.setFitHeight(image.getHeight()/6.5);
-        view.setFitWidth(image.getWidth()/6.5);
-
-        grigliaFilm.setVgap(80);
-        
-        AnchorPane pane = new AnchorPane();
-        
-        grigliaFilm.addRow(count++, pane);
-        
-        pane.getChildren().add(view);
-        pane.getChildren().add(titolo);
-        pane.getChildren().add(genere);
-        pane.getChildren().add(regia);
-        pane.getChildren().add(cast);
-        
-        titolo.setLayoutX(200);
-        
-        genere.setLayoutX(200);
-        genere.setLayoutY(titolo.getLayoutY()+60);
-        
-        regia.setLayoutX(200);
-        regia.setLayoutY(genere.getLayoutY()+40);
-        
-        cast.setLayoutX(200);
-        cast.setLayoutY(regia.getLayoutY()+40);
-        
-        castY = cast.getLayoutY()+40;
-        
-        addRectangleOrario(pane, "20:00");
-        
-        x = 0;
-        y = 60;
     }
     
     public void addRectangleOrario(AnchorPane pane, String orario){
@@ -519,11 +499,15 @@ public class HomeController implements Initializable {
 
     public void homeClick(){
         anchorInfo.setVisible(false);
+        singleFilmPane.setVisible(false);
+        rectangle2D3D.setVisible(false);
         animationMenu();
         if(film.isEmpty()){
             initGrid();
         } else {
             homePane.setVisible(true);
+            filmScroll.setVisible(true);
+            filmScrollFiltered.setVisible(false);
         }
     }
 
@@ -538,12 +522,13 @@ public class HomeController implements Initializable {
 
         dtf.format(LocalDateTime.now());
 
+        rectangle2D3D.setVisible(false);
         anchorInfo.setVisible(false);
         menuWindow.setVisible(false);
         lineGenere.setVisible(false);
         genereWindow.setVisible(false);
         usernamePane.setVisible(false);
-
+        singleFilmPane.setVisible(false);
 
     }
     
