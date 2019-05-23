@@ -14,6 +14,8 @@ import it.unipv.conversion.CSVToMovieList;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieStatusTYPE;
+import it.unipv.gui.common.MovieTYPE;
+import it.unipv.gui.login.User;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
@@ -99,6 +101,10 @@ public class HomeController implements Initializable {
             }
         }
 
+        initRowAndColumnCount();
+    }
+
+    private void initRowAndColumnCount() {
         rowCount = 0;
         columnCount = 0;
     }
@@ -152,15 +158,15 @@ public class HomeController implements Initializable {
         FadeTransition fadeOut = new FadeTransition(javafx.util.Duration.seconds(0.1), menuWindow);
               
         if(!menuWindow.isVisible()){
-        menuWindow.setOpacity(0);
-        menuWindow.setVisible(true);
-        timelineForwardW.play();
-        timelineForwardH.play();
+            menuWindow.setOpacity(0);
+            menuWindow.setVisible(true);
+            timelineForwardW.play();
+            timelineForwardH.play();
 
-        fadeIn.setDelay(javafx.util.Duration.seconds(0.2));
-        fadeIn.setFromValue(0);
-        fadeIn.setToValue(1.0);
-        fadeIn.play();
+            fadeIn.setDelay(javafx.util.Duration.seconds(0.2));
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1.0);
+            fadeIn.play();
         } else {
             if(menuWindow.isVisible()){
                 fadeOut.setFromValue(1.0);
@@ -258,6 +264,40 @@ public class HomeController implements Initializable {
         Label label = (Label) event.getSource();
         transition.setToX(label.getLayoutX()-rectangle2D3D.getLayoutX()-rectangle2D3D.getWidth()/4);
         transition.play();
+
+        switch(label.getText()) {
+            case "2D":
+                filterMoviesByMovieTYPE(MovieTYPE.TWOD);
+                break;
+            case "3D":
+                filterMoviesByMovieTYPE(MovieTYPE.THREED);
+                break;
+        }
+    }
+
+    private void filterMoviesByMovieTYPE(MovieTYPE type) {
+        if(type!=null) {
+            List<Movie> filteredMovies = new ArrayList<>();
+            for(Movie m : film) {
+                if(m.getTipo().equals(type)){
+                    if(m.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
+                        filteredMovies.add(m);
+                    }
+                }
+            }
+            filmGrid.getChildren().clear();
+            for(Movie m : filteredMovies) {
+                addMovie(m);
+            }
+            initRowAndColumnCount();
+        } else {
+            refreshUI();
+        }
+    }
+
+    private void refreshUI() {
+        filmGrid.getChildren().clear();
+        initGrid();
     }
     
     GridPane grigliaFilm = new GridPane();
