@@ -13,6 +13,7 @@ import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -242,17 +243,16 @@ public class HallPanelController implements Initializable {
 
     private int temp = 0;
     private void checkPageDimension() {
-        Thread t = new Thread( () -> {
-            Stage stage = (Stage) hallPanel.getScene().getWindow();
+        Platform.runLater(() -> {
+            Stage stage = (Stage) nuovaSalaButton.getScene().getWindow();
             stage.widthProperty().addListener(e -> {
                 columnMax = getColumnMaxFromPageWidth(stage.getWidth());
-                if(temp!=columnMax) {
+                if (temp != columnMax) {
                     temp = columnMax;
                     refreshUI();
                 }
             });
         });
-        t.start();
     }
 
     //Supporta fino ai 1080p

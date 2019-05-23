@@ -15,6 +15,7 @@ import it.unipv.gui.common.MovieStatusTYPE;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -276,17 +277,16 @@ public class ProgrammationPanelController implements Initializable {
 
     private int temp = 0;
     private void checkPageDimension() {
-        Thread t = new Thread( () -> {
+        Platform.runLater(() -> {
             Stage stage = (Stage) moviePanel.getScene().getWindow();
             stage.widthProperty().addListener(e -> {
                 columnMax = getColumnMaxFromPageWidth(stage.getWidth());
-                if(temp!=columnMax) {
+                if (temp != columnMax) {
                     temp = columnMax;
                     refreshUI();
                 }
             });
         });
-        t.start();
     }
 
     private int getColumnMaxFromPageWidth(double width) {
