@@ -1,4 +1,4 @@
-package it.unipv.gui.user;
+package it.unipv.gui.login;
 
 import java.net.URL;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import it.unipv.conversion.CSVToUserList;
 import it.unipv.conversion.UserToCSV;
+import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.login.User;
 import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
@@ -33,7 +34,7 @@ public class RegistrazioneController implements Initializable {
          || emailTextfield.getText().equalsIgnoreCase("")
          || passwordTextfield.getText().equalsIgnoreCase("")
          || retryPasswordTextfield.getText().equalsIgnoreCase("")) {
-            showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi compilare tutti i campi!");
+            GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi compilare tutti i campi!");
         } else {
             if(!isAlreadyThereThisUsername()) {
                 if(!isAlreadyThereThisEmail()) {
@@ -45,22 +46,22 @@ public class RegistrazioneController implements Initializable {
                                             , emailTextfield.getText())
                                     , DataReferences.USERFILEPATH
                                     , true );
-                            showAlert(Alert.AlertType.INFORMATION, "Info", "Informazione:",  "Registrazione avvenuta con successo!");
+                            GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Info", "Informazione:",  "Registrazione avvenuta con successo!");
                             doExit();
                         } else {
-                            showAlert(Alert.AlertType.ERROR,  "Errore", "Si è verificato un errore:", "Le password non coincidono!");
+                            GUIUtils.showAlert(Alert.AlertType.ERROR,  "Errore", "Si è verificato un errore:", "Le password non coincidono!");
                             clearTextField(passwordTextfield, retryPasswordTextfield);
                         }
                     } else {
-                        showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Non hai inserito una E-mail valida!");
+                        GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Non hai inserito una E-mail valida!");
                         clearTextField(emailTextfield, passwordTextfield, retryPasswordTextfield);
                     }
                 } else {
-                    showAlert(Alert.AlertType.ERROR,  "Errore", "Si è verificato un errore:", "E-mail già esistente!");
+                    GUIUtils.showAlert(Alert.AlertType.ERROR,  "Errore", "Si è verificato un errore:", "E-mail già esistente!");
                     clearTextField(emailTextfield, passwordTextfield, retryPasswordTextfield);
                 }
             } else {
-                showAlert(Alert.AlertType.ERROR,  "Errore", "Si è verificato un errore:", "Nome utente già esistente!");
+                GUIUtils.showAlert(Alert.AlertType.ERROR,  "Errore", "Si è verificato un errore:", "Nome utente già esistente!");
                 clearTextField(usernameTextfield, passwordTextfield, retryPasswordTextfield);
             }
         }
@@ -88,14 +89,6 @@ public class RegistrazioneController implements Initializable {
         return status;
     }
 
-    private void showAlert(Alert.AlertType type, String title, String headerText, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(headerText);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     private void clearTextField(TextField... toClear) {
         for(TextField tf : toClear) {
             tf.setText("");
@@ -111,8 +104,5 @@ public class RegistrazioneController implements Initializable {
 
     @FXML private void doCancel() { doExit(); }
 
-    private void doExit(){
-        Stage stage = (Stage) usernameTextfield.getScene().getWindow();
-        stage.close();
-    }
+    private void doExit(){ ((Stage) usernameTextfield.getScene().getWindow()).close(); }
 }

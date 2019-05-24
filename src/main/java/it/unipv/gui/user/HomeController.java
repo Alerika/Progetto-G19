@@ -10,6 +10,9 @@ import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieStatusTYPE;
 import it.unipv.gui.common.MovieTYPE;
+import it.unipv.gui.login.LoginController;
+import it.unipv.gui.login.User;
+import it.unipv.gui.login.UserInfo;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
@@ -22,6 +25,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -36,26 +40,13 @@ import javafx.stage.Stage;
 
 public class HomeController implements Initializable {
     
-    @FXML
-    private Rectangle rectangleMenu, rectangleGenere, rectangle2D3D;
-    
-    @FXML
-    private AnchorPane menuWindow, genereWindow, usernamePane, anchorInfo, homePane, singleFilmPane;
-
-    @FXML
-    private GridPane filmGrid = new GridPane();
-
-    @FXML
-    private GridPane filmGridFiltered = new GridPane();
-
-    @FXML
-    private ScrollPane filmScroll, filmScrollFiltered;
-
-    @FXML
-    private Label labelIVA, labelCellulari, labelCosti, infoUtili, genreLabel;
-    
-    @FXML
-    private Line lineGenere;
+    @FXML private Rectangle rectangleMenu, rectangleGenere, rectangle2D3D;
+    @FXML private AnchorPane menuWindow, genereWindow, usernamePane, anchorInfo, homePane, singleFilmPane;
+    @FXML private GridPane filmGrid = new GridPane();
+    @FXML private GridPane filmGridFiltered = new GridPane();
+    @FXML private ScrollPane filmScroll, filmScrollFiltered;
+    @FXML private Label labelIVA, labelCellulari, labelCosti, infoUtili, genreLabel, logLabel, nonRegistratoQuestionLabel, registerButton, areaRiservataButton;
+    @FXML private Line lineGenere;
 
     private final Stage stageRegistrazione = new Stage();
     private final Stage stageLogin = new Stage();
@@ -64,7 +55,8 @@ public class HomeController implements Initializable {
     private static int columnCount = 0;
     private static int columnCountMax = 0;
     private List<Movie> film = new ArrayList<>();
-    
+    private User loggedUser;
+
     private void initGrid(){
         film = CSVToMovieList.getMovieListFromCSV(DataReferences.MOVIEFILEPATH);
         Collections.sort(film);
@@ -124,10 +116,8 @@ public class HomeController implements Initializable {
                 posterPreview.setLayoutY(20);
             }
 
-            posterPreview.setOnMouseClicked(e ->
-            {
+            posterPreview.setOnMouseClicked(e -> {
                 homePane.setVisible(false);
-
                 singleFilmPane.getChildren().clear();
 
                 try {
@@ -225,7 +215,11 @@ public class HomeController implements Initializable {
     
     public void loginWindow(){
         if(!stageLogin.isShowing()){
-            openLogin();
+            if(loggedUser==null) {
+                openLogin();
+            } else {
+                //TODO MOSTRARE AREA RISERVATA
+            }
         }
     }
     
@@ -246,8 +240,26 @@ public class HomeController implements Initializable {
         timelineY.play();
         
         if(!stageRegistrazione.isShowing()){
-            openRegistrazione();
+            if(loggedUser==null) {
+                openRegistrazione();
+            } else {
+                doLogout();
+            }
         }
+    }
+
+    private void doLogout() {
+        logLabel.setText("effettua il login");
+        nonRegistratoQuestionLabel.setText("non sei registrato?");
+        registerButton.setText("Registrati");
+        areaRiservataButton.setVisible(false);
+        loggedUser = null;
+
+        if(checkIfThereIsAlreadyUserSaved()) {
+            UserInfo.deleteUserInfoFileInUserDir();
+        }
+
+        animationMenu();
     }
 
     private MovieTYPE type;
@@ -351,6 +363,7 @@ public class HomeController implements Initializable {
             stageRegistrazione.setResizable(false);
             stageRegistrazione.setTitle("Registrazione");
             stageRegistrazione.show();
+            animationMenu();
         } catch (IOException e) {
             throw new ApplicationException(e);
         }
@@ -358,11 +371,17 @@ public class HomeController implements Initializable {
     
     private void openLogin(){
         try {
-            stageLogin.setScene(new Scene(new FXMLLoader(getClass().getResource("/fxml/user/Login.fxml")).load()));
-            stageLogin.setResizable(false);
-            stageLogin.show();
-        } catch (IOException e) {
-            throw new ApplicationException(e);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/Login.fxml"));
+            Parent p = loader.load();
+            LoginController lc = loader.getController();
+            lc.init(this);
+            Stage stage = new Stage();
+            stage.setScene(new Scene(p));
+            stage.setTitle("Login");
+            stage.setResizable(false);
+            stage.show();
+        } catch (IOException ex) {
+            throw new ApplicationException(ex);
         }
     }
     
@@ -404,6 +423,12 @@ public class HomeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        if(checkIfThereIsAlreadyUserSaved()) {
+            loggedUser = UserInfo.getUserInfo();
+            setupLoggedUser();
+        } else {
+            areaRiservataButton.setVisible(false);
+        }
         dtf.format(LocalDateTime.now());
         rectangle2D3D.setVisible(false);
         anchorInfo.setVisible(false);
@@ -413,5 +438,21 @@ public class HomeController implements Initializable {
         usernamePane.setVisible(false);
         singleFilmPane.setVisible(false);
         homePane.setVisible(false);
+    }
+
+    private void setupLoggedUser() {
+        logLabel.setText(loggedUser.getName());
+        nonRegistratoQuestionLabel.setText("Vuoi uscire?");
+        registerButton.setText("logout");
+        areaRiservataButton.setVisible(true);
+    }
+
+    private boolean checkIfThereIsAlreadyUserSaved() {
+        return UserInfo.checkIfUserInfoFileExists();
+    }
+
+    public void triggerNewLogin(User user) {
+        loggedUser = user;
+        setupLoggedUser();
     }
 }

@@ -13,6 +13,11 @@ public class User implements Comparable<User> {
 
     User() {}
 
+    public User(String name, String password) {
+        this.name = name;
+        this.password = password;
+    }
+
     public User(String name, String password, String email) {
         this.name = name;
         this.password = password;
@@ -36,5 +41,13 @@ public class User implements Comparable<User> {
     @Override
     public int compareTo(User o) {
         return this.getName().compareToIgnoreCase(o.getName());
+    }
+
+    @Override
+    public String toString() {
+        return
+                "Username: " + this.name + "\n"
+              + "Password: " + this.password + "\n"
+              + "E-mail " + this.email;
     }
 }

@@ -23,12 +23,13 @@ public class UserInfo {
      * @param username -> nickname dell'utente
      * @param password -> password dell'utente
      */
-    static void createUserInfoFileInUserDir(String username, String password) {
+    public static void createUserInfoFileInUserDir(String username, String password, String email) {
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(DataReferences.INFOUSERFILE, "UTF-8");
             writer.println(username);
             writer.println(password);
+            writer.println(email);
         } catch (FileNotFoundException e) {
             throw new ApplicationException("File " + DataReferences.INFOUSERFILE + " non trovato!", e);
         } catch (UnsupportedEncodingException e) {
@@ -41,7 +42,7 @@ public class UserInfo {
     /**
      * Metodo utilizzato per rimuovere il file di informazioni salvate, se esiste
      */
-    static void deleteUserInfoFileInUserDir() {
+    public static void deleteUserInfoFileInUserDir() {
         File info = new File(DataReferences.INFOUSERFILE);
         if(info.exists()) {
             if(info.delete()) {
@@ -56,7 +57,7 @@ public class UserInfo {
      * Metodo utilizzato per verificare l'esistenza del file di info
      * @return -> true se esiste, false altrimenti
      */
-    static boolean checkIfUserInfoFileExists() {
+    public static boolean checkIfUserInfoFileExists() {
         return new File(DataReferences.INFOUSERFILE).exists();
     }
 
@@ -81,11 +82,12 @@ public class UserInfo {
                 line = br.readLine();
             }
 
-            if(infoFromFile.size()!=2) {
+            if(infoFromFile.size()!=3) {
                 throw new ApplicationException("Impossibile, formato file inatteso!");
             } else {
                 res.setName(infoFromFile.get(0));
                 res.setPassword(infoFromFile.get(1));
+                res.setEmail(infoFromFile.get(2));
             }
 
             return res;

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
@@ -9,9 +10,9 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="rootPane" prefHeight="673.0" prefWidth="413.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipv.gui.user.LoginController">
+<AnchorPane id="AnchorPane" fx:id="rootPane" prefHeight="747.0" prefWidth="397.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipv.gui.login.LoginController">
    <children>
-      <AnchorPane layoutY="112.0" prefHeight="595.0" prefWidth="450.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <AnchorPane layoutY="112.0" prefHeight="637.0" prefWidth="397.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <ImageView fitHeight="167.0" fitWidth="161.0" layoutX="126.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -23,42 +24,37 @@
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <PasswordField fx:id="passField" layoutX="43.0" layoutY="387.0" onKeyPressed="#enterKeyPressed" prefHeight="37.0" prefWidth="331.0" promptText="Password">
+            <PasswordField fx:id="passwordTextfield" layoutX="41.0" layoutY="370.0" onKeyPressed="#enterKeyPressed" prefHeight="39.0" prefWidth="331.0" promptText="Password">
                <font>
                   <Font size="18.0" />
                </font></PasswordField>
-            <Label layoutX="45.0" layoutY="350.0" text="password:" textFill="WHITE">
+            <Label layoutX="47.0" layoutY="336.0" text="Password:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#db8f00" height="48.0" layoutX="219.0" layoutY="489.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="3.0" style="-fx-cursor: hand;" width="139.0" />
-            <Label fx:id="login" alignment="CENTER" layoutX="262.0" layoutY="502.0" style="-fx-cursor: hand;" text="login">
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#db8f00" height="48.0" layoutX="218.0" layoutY="529.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="3.0" style="-fx-cursor: hand;" width="139.0" />
+            <Label fx:id="loginButton" alignment="CENTER" contentDisplay="CENTER" layoutX="218.0" layoutY="537.0" onMouseClicked="#loginButtonListener" prefHeight="32.0" prefWidth="139.0" style="-fx-cursor: hand;" text="Login">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>
             </Label>
-            <Label fx:id="cancel" alignment="CENTER" layoutX="62.0" layoutY="499.0" onMouseClicked="#cancelClose" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" text="cancel" textFill="WHITE">
+            <Label fx:id="cancel" alignment="CENTER" layoutX="63.0" layoutY="537.0" onMouseClicked="#doCancel" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" text="Annulla" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>
             </Label>
-            <TextField fx:id="userField" layoutX="41.0" layoutY="271.0" onKeyPressed="#enterKeyPressed" prefHeight="37.0" prefWidth="331.0" promptText="Username">
+            <TextField fx:id="usernameTextfield" layoutX="41.0" layoutY="271.0" onKeyPressed="#enterKeyPressed" prefHeight="37.0" prefWidth="331.0" promptText="Username">
                <font>
                   <Font name="Antipasto Pro" size="18.0" />
                </font></TextField>
-            <Label fx:id="usernameError" alignment="CENTER" layoutX="145.0" layoutY="320.0" text="Inserire username" textFill="#c90000">
+            <CheckBox fx:id="rememberCheckbox" layoutX="41.0" layoutY="437.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="331.0" text="Ricordati" textFill="WHITE">
                <font>
-                  <Font name="Antipasto Pro ExtraBold" size="15.0" />
+                  <Font size="18.0" />
                </font>
-            </Label>
-            <Label fx:id="passwordError" alignment="CENTER" layoutX="146.0" layoutY="438.0" text="Inserire password" textFill="#c90000">
-               <font>
-                  <Font name="Antipasto Pro ExtraBold" size="15.0" />
-               </font>
-            </Label>
+            </CheckBox>
          </children></AnchorPane>
-      <AnchorPane prefHeight="112.0" prefWidth="450.0" style="-fx-background-color: #db8f00;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <AnchorPane prefHeight="122.0" prefWidth="397.0" style="-fx-background-color: #db8f00;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <Label layoutX="166.0" layoutY="30.0" text="login" textFill="WHITE">
                <font>
