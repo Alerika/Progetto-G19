@@ -146,7 +146,8 @@ class RegisterForm extends javax.swing.JFrame {
         if(!isAlreadyThereThisUser()) {
             //Se entro qua vuol dire che non esiste un utente con quel determinato username, quindi può essere registrato
             UserToCSV.appendUserToCSV( new User( usernameTextField.getText()
-                                               , String.valueOf(passwordTextField.getPassword()))
+                                               , String.valueOf(passwordTextField.getPassword())
+                                               , "")
                                      , DataReferences.USERFILEPATH
                                      , true );
             JOptionPane.showMessageDialog(this, "Registrazione avvenuta con successo!");

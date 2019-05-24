@@ -187,7 +187,7 @@ public class LoginForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Devi inserire sia username che password!");
         } else {
             //Se entriamo qua vuol dire che ha inserito qualcosa all'interno dei due textfield
-            User u = new User(usernameTextField.getText().trim(), String.valueOf(passwordTextField.getPassword()));
+            User u = new User(usernameTextField.getText().trim(), String.valueOf(passwordTextField.getPassword()), "");
             if(checkIfItIsAValidUserFromUserList(u)) {
                 //Se entriamo qua vuol dire che l'utente esiste all'interno della lista utenti (i dati inseriti sono corretti)
                 doLogin(u);

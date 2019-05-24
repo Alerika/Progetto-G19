@@ -97,6 +97,7 @@ public class UserToCSV {
     private static String[] fullCsvRowWithUserInfo(User user, List<String> csvRow) {
         csvRow.add(user.getName());
         csvRow.add(user.getPassword());
+        csvRow.add(user.getEmail());
         return new String[csvRow.size()];
     }
 }
