@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package it.unipv.gui.user;
 
 import java.io.*;
@@ -27,7 +22,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -40,10 +34,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
-/**
- *
- * @author Fede
- */
 public class HomeController implements Initializable {
     
     @FXML
@@ -67,10 +57,8 @@ public class HomeController implements Initializable {
     @FXML
     private Line lineGenere;
 
-    //private static int x = 0;
     private final Stage stageRegistrazione = new Stage();
     private final Stage stageLogin = new Stage();
-    //private final Stage stagePrenotazione = new Stage();
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static int rowCount = 0;
     private static int columnCount = 0;
@@ -261,16 +249,6 @@ public class HomeController implements Initializable {
             openRegistrazione();
         }
     }
-    
-    /*public void hoverOrariEnter(MouseEvent event){
-        Rectangle rect = (Rectangle) event.getSource();
-        rect.setStroke(Color.YELLOW);
-    }
-    
-    public void hoverOrariExit(MouseEvent event){
-        Rectangle rect = (Rectangle) event.getSource();
-        rect.setStroke(Color.WHITE);
-    }*/
 
     private MovieTYPE type;
 
@@ -366,122 +344,12 @@ public class HomeController implements Initializable {
         filmScroll.setVisible(false);
         filmScrollFiltered.setVisible(true);
     }
-    
-    /*public void addRectangleOrario(AnchorPane pane, String orario){
-        
-        Rectangle rect = createRectangle(pane);
-        
-        rect.setCursor(Cursor.HAND);
-        
-	rect.setOnMouseEntered(e ->
-	{ 
-		rect.setStroke(Color.YELLOW);
-	});
-        
-        rect.setOnMouseExited(e ->
-	{ 
-		rect.setStroke(Color.WHITE);
-	});
-        
-        rect.setOnMouseClicked(e ->
-        {
-            if(!stagePrenotazione.isShowing()){
-                openPrenotazioneFilm();
-            }
-        });
-        
-        Label orarioLabel = new Label(orario);
-        
-        orarioLabel.setCursor(Cursor.HAND);
-        
-        orarioLabel.setOnMouseClicked(e ->
-        {
-            if(!stagePrenotazione.isShowing()){
-                openPrenotazioneFilm();
-            }
-        });
-        
-        orarioLabel.setOnMouseEntered(e ->
-	{ 
-		rect.setStroke(Color.YELLOW);
-	});
-        
-        orarioLabel.setOnMouseExited(e ->
-	{ 
-		rect.setStroke(Color.WHITE);
-	});
-            
-            if(rect.getLayoutX() < 800){
-                
-                pane.getChildren().add(rect);
-            
-            } else {
-                
-                x = 0;
-                
-                int tmpX = 200;
-                rect.setLayoutX(tmpX);
-                
-                castY = castY + y;
-                rect.setLayoutY(castY);
-                
-                pane.getChildren().add(rect);
-                
-                x = tmpX - 100;
-            }
-            
-            orarioLabel.setLayoutX(rect.getLayoutX()+rect.getWidth()/4);
-            orarioLabel.setLayoutY(rect.getLayoutY()+rect.getHeight()/4);
-            
-            orarioLabel.setFont(new Font("New Amsterdam Regular", 22));
-            
-            pane.getChildren().add(orarioLabel);
-            
-            orariMap.put(orarioLabel, rect);
-    }*/
-    
-    /*public void removeOrario(AnchorPane pane, String orario){
-        Label labelTmp = new Label();
-        
-        Rectangle rectangleTmp = new Rectangle();
-        
-        for (HashMap.Entry<Label, Rectangle> entry : orariMap.entrySet()) {
-            if(entry.getKey().getText().equals(orario)){
-                labelTmp = entry.getKey();
-                rectangleTmp = entry.getValue();
-            }
-        }
-        
-        pane.getChildren().remove(labelTmp);
-        pane.getChildren().remove(rectangleTmp);
-        
-        orariMap.remove(labelTmp, rectangleTmp);
-    }*/
-    
-    /*public Rectangle createRectangle(AnchorPane pane){
-        x += 200;
-        
-        Rectangle rect = new Rectangle();
-        
-        rect.setWidth(80);
-        rect.setHeight(40);
-        rect.setLayoutX(x);
-        double castY = 0;
-        rect.setLayoutY(castY);
-        rect.setStroke(Color.WHITE);
-        rect.setStrokeWidth(1);
-        
-        x -= 100;
-        
-        return rect;
-    }*/
-    
+
     private void openRegistrazione(){
         try {
-            Parent root = new FXMLLoader(getClass().getResource("/fxml/user/Registrazione.fxml")).load();
-            stageRegistrazione.setScene(new Scene(root));
+            stageRegistrazione.setScene(new Scene(new FXMLLoader(getClass().getResource("/fxml/user/Registrazione.fxml")).load()));
             stageRegistrazione.setResizable(false);
-            stageRegistrazione.setAlwaysOnTop(true);
+            stageRegistrazione.setTitle("Registrazione");
             stageRegistrazione.show();
         } catch (IOException e) {
             throw new ApplicationException(e);
@@ -490,29 +358,14 @@ public class HomeController implements Initializable {
     
     private void openLogin(){
         try {
-            Parent root = new FXMLLoader(getClass().getResource("/fxml/user/Login.fxml")).load();
-            stageLogin.setScene(new Scene(root));
+            stageLogin.setScene(new Scene(new FXMLLoader(getClass().getResource("/fxml/user/Login.fxml")).load()));
             stageLogin.setResizable(false);
-            stageLogin.setAlwaysOnTop(true);
             stageLogin.show();
-            
         } catch (IOException e) {
             throw new ApplicationException(e);
         }
     }
     
-    /*public void openPrenotazioneFilm(){
-        try {
-            Parent root = new FXMLLoader(getClass().getResource("/fxml/user/PrenotazioneFilm.fxml")).load();
-            stagePrenotazione.setScene(new Scene(root));
-            stagePrenotazione.setResizable(false);
-            stagePrenotazione.setMaximized(true);
-            stagePrenotazione.show();
-            } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
-    }*/
-
     public void infoPaneClick() {
         homePane.setVisible(false);
         animationMenu();
@@ -526,7 +379,6 @@ public class HomeController implements Initializable {
         labelCosti.setLayoutX(stage.getWidth()/2-labelCosti.getWidth()/2);
 
         anchorInfo.setVisible(true);
-
     }
 
     public void homeClick(){
@@ -562,5 +414,4 @@ public class HomeController implements Initializable {
         singleFilmPane.setVisible(false);
         homePane.setVisible(false);
     }
-    
 }

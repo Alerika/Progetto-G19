@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="1000.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipv.gui.user.AreaRiservataController">
+   <children>
+      <AnchorPane fx:id="redRectangle" prefHeight="146.0" prefWidth="366.0" style="-fx-background-color: #db8f00;" AnchorPane.bottomAnchor="855.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="1234.0" AnchorPane.topAnchor="0.0">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <children>
+            <ImageView fitHeight="110.0" fitWidth="143.0" layoutX="111.0" layoutY="19.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="111.0" AnchorPane.topAnchor="19.0">
+               <image>
+                  <Image url="@../../images/Cinema Logo.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutY="145.0" prefHeight="856.0" prefWidth="364.0" style="-fx-background-color: #db8f00;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="145.0">
+         <children>
+            <Rectangle fx:id="rectangleMenu" arcHeight="5.0" arcWidth="5.0" fill="#381200" height="57.0" layoutX="-4.0" layoutY="69.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="370.0" />
+            <Label fx:id="home" layoutX="154.0" layoutY="82.0" onMouseClicked="#rectangleAnimation" style="-fx-cursor: hand;" text="HOME" AnchorPane.leftAnchor="154.0" AnchorPane.topAnchor="82.0">
+               <font>
+                  <Font name="Bebas Neue Regular" size="25.0" />
+               </font>
+            </Label>
+            <Label fx:id="filmVisti" layoutX="138.0" layoutY="204.0" onMouseClicked="#rectangleAnimation" style="-fx-cursor: hand;" text="FILM VISTI" AnchorPane.leftAnchor="138.0" AnchorPane.topAnchor="204.0">
+               <font>
+                  <Font name="Bebas Neue Regular" size="25.0" />
+               </font>
+            </Label>
+            <Label fx:id="prenotazioni" alignment="CENTER" layoutX="122.0" layoutY="147.0" onMouseClicked="#rectangleAnimation" style="-fx-cursor: hand;" text="PRENOTAZIONI" AnchorPane.leftAnchor="122.0" AnchorPane.topAnchor="147.0">
+               <font>
+                  <Font name="Bebas Neue Regular" size="25.0" />
+               </font>
+            </Label>
+            <Label fx:id="suggerimenti" layoutX="121.0" layoutY="264.0" onMouseClicked="#rectangleAnimation" style="-fx-cursor: hand;" text="SUGGERIMENTI" AnchorPane.leftAnchor="121.0" AnchorPane.topAnchor="264.0">
+               <font>
+                  <Font name="Bebas Neue Regular" size="25.0" />
+               </font>
+            </Label>
+            <Label fx:id="logout" layoutX="144.0" layoutY="345.0" style="-fx-cursor: hand;" text="LOGOUT" AnchorPane.leftAnchor="144.0" AnchorPane.topAnchor="345.0">
+               <font>
+                  <Font name="Bebas Neue Regular" size="25.0" />
+               </font>
+            </Label>
+            <Line endX="146.0" fill="BLACK" layoutX="179.0" layoutY="321.0" startX="-142.0" AnchorPane.leftAnchor="36.5" AnchorPane.rightAnchor="40.5" AnchorPane.topAnchor="320.5" />
+            <Line endX="32.999969482421875" fill="BLACK" layoutX="169.0" layoutY="379.0" startX="-24.999969482421875" AnchorPane.leftAnchor="143.50003051757812" AnchorPane.rightAnchor="163.50003051757812" AnchorPane.topAnchor="378.5" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="prenotazioniPane" layoutX="366.0" prefHeight="1001.0" prefWidth="1234.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="366.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <AnchorPane fx:id="filmVistiPane" layoutX="366.0" prefHeight="1001.0" prefWidth="1234.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="366.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <AnchorPane fx:id="suggerimentiPane" layoutX="366.0" prefHeight="1001.0" prefWidth="1234.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="366.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <AnchorPane fx:id="homePane" layoutX="366.0" prefHeight="1001.0" prefWidth="1234.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="366.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label layoutX="119.0" layoutY="192.0" text="Username:" textFill="#db8f00" AnchorPane.leftAnchor="119.0">
+               <font>
+                  <Font name="Bebas Neue Regular" size="22.0" />
+               </font>
+            </Label>
+            <Label layoutX="119.0" layoutY="301.0" text="Password:" textFill="#db8f00" AnchorPane.leftAnchor="119.0">
+               <font>
+                  <Font name="Bebas Neue Regular" size="22.0" />
+               </font>
+            </Label>
+            <Label layoutX="119.0" layoutY="410.0" text="E-mail: " textFill="#db8f00" AnchorPane.leftAnchor="119.0">
+               <font>
+                  <Font name="Bebas Neue Regular" size="22.0" />
+               </font>
+            </Label>
+            <Label layoutX="118.0" layoutY="519.0" text="Codice cliente: " textFill="#db8f00" AnchorPane.leftAnchor="119.0">
+               <font>
+                  <Font name="Bebas Neue Regular" size="22.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
