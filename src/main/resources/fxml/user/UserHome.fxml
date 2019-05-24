@@ -190,7 +190,7 @@
                                     <Font name="Bebas Neue Regular" size="24.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="listaSale111" alignment="CENTER" contentDisplay="CENTER" layoutX="47.0" layoutY="262.0" onMouseClicked="#genereClicked" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="musical" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="50.0">
+                              <Label fx:id="listaSale111" alignment="CENTER" contentDisplay="CENTER" layoutX="47.0" layoutY="266.0" onMouseClicked="#genereClicked" onMouseEntered="#hoverGenereEnter" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="musical" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="50.0">
                                  <font>
                                     <Font name="Bebas Neue Regular" size="24.0" />
                                  </font>

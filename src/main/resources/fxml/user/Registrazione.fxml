@@ -25,48 +25,48 @@
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <PasswordField fx:id="passField" alignment="CENTER" layoutX="60.0" layoutY="273.0" prefHeight="37.0" prefWidth="331.0" promptText="Password">
+            <PasswordField fx:id="passwordTextfield" alignment="CENTER" layoutX="60.0" layoutY="273.0" prefHeight="37.0" prefWidth="331.0" promptText="Password">
                <font>
                   <Font size="18.0" />
                </font>
             </PasswordField>
-            <Label layoutX="182.0" layoutY="238.0" text="password:" textFill="WHITE">
+            <Label layoutX="182.0" layoutY="238.0" text="Password:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#db8f00" height="48.0" layoutX="235.0" layoutY="473.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="3.0" style="-fx-cursor: hand;" width="139.0" />
-            <Label alignment="CENTER" layoutX="253.0" layoutY="486.0" style="-fx-cursor: hand;" text="registrati">
+            <Label alignment="CENTER" layoutX="259.0" layoutY="481.0" onMouseClicked="#doRegister" style="-fx-cursor: hand;" text="Registrati">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>
             </Label>
-            <Label fx:id="cancel" alignment="CENTER" layoutX="78.0" layoutY="483.0" onMouseClicked="#cancelClose" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" text="cancel" textFill="WHITE">
+            <Label fx:id="cancelLabel" alignment="CENTER" layoutX="73.0" layoutY="481.0" onMouseClicked="#doCancel" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" text="Annulla" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>
             </Label>
-            <TextField fx:id="userField" alignment="CENTER" layoutX="60.0" layoutY="169.0" prefHeight="37.0" prefWidth="331.0" promptText="Username">
+            <TextField fx:id="usernameTextfield" alignment="CENTER" layoutX="60.0" layoutY="169.0" prefHeight="37.0" prefWidth="331.0" promptText="Username">
                <font>
                   <Font name="Antipasto Pro" size="18.0" />
                </font>
             </TextField>
-            <Label layoutX="196.0" layoutY="31.0" text="e-mail:" textFill="WHITE">
+            <Label layoutX="196.0" layoutY="31.0" text="E-mail:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <TextField fx:id="eMail" alignment="CENTER" layoutX="60.0" layoutY="65.0" prefHeight="37.0" prefWidth="331.0" promptText="E-mail">
+            <TextField fx:id="emailTextfield" alignment="CENTER" layoutX="60.0" layoutY="65.0" prefHeight="37.0" prefWidth="331.0" promptText="E-mail">
                <font>
                   <Font name="Antipasto Pro" size="18.0" />
                </font>
             </TextField>
-            <PasswordField fx:id="passField2" alignment="CENTER" layoutX="60.0" layoutY="383.0" prefHeight="37.0" prefWidth="331.0" promptText="Password">
+            <PasswordField fx:id="retryPasswordTextfield" alignment="CENTER" layoutX="60.0" layoutY="383.0" prefHeight="37.0" prefWidth="331.0" promptText="Password">
                <font>
                   <Font size="18.0" />
                </font>
             </PasswordField>
-            <Label layoutX="148.0" layoutY="346.0" text="ripeti   la  password:" textFill="WHITE">
+            <Label layoutX="152.0" layoutY="347.0" text="Ripeti la Password:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
