@@ -5,6 +5,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
 import it.unipv.conversion.CSVToMovieList;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.Movie;
@@ -21,21 +22,27 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class HomeController implements Initializable {
@@ -47,6 +54,7 @@ public class HomeController implements Initializable {
     @FXML private ScrollPane filmScroll, filmScrollFiltered;
     @FXML private Label labelIVA, labelCellulari, labelCosti, infoUtili, genreLabel, logLabel, nonRegistratoQuestionLabel, registerButton, areaRiservataButton;
     @FXML private Line lineGenere;
+    @FXML private Label goBackToHomeButton;
 
     private final Stage stageRegistrazione = new Stage();
     private final Stage stageLogin = new Stage();
@@ -99,6 +107,7 @@ public class HomeController implements Initializable {
 
             AnchorPane anchor = new AnchorPane();
 
+
             if(columnCount == columnCountMax){
                 columnCount = 0;
                 rowCount++;
@@ -116,25 +125,7 @@ public class HomeController implements Initializable {
                 posterPreview.setLayoutY(20);
             }
 
-            posterPreview.setOnMouseClicked(e -> {
-                homePane.setVisible(false);
-                singleFilmPane.getChildren().clear();
-
-                try {
-                    FileInputStream fis2 = new FileInputStream(movie.getLocandinaPath());
-                    ImageView poster = new ImageView(new Image(fis2, 1000, 0, true, true));
-                    poster.setPreserveRatio(true);
-                    CloseableUtils.close(fis2);
-
-                    poster.setFitWidth(350);
-
-                    singleFilmPane.getChildren().add(poster);
-
-                    singleFilmPane.setVisible(true);
-                } catch (FileNotFoundException exce){
-                    throw new ApplicationException(exce);
-                }
-            });
+            posterPreview.setOnMouseClicked(e -> populateSingleFilmPane(movie));
 
             GUIUtils.setScaleTransitionOnControl(posterPreview);
 
@@ -142,7 +133,148 @@ public class HomeController implements Initializable {
             throw new ApplicationException(ex);
         }
     }
-    
+
+    private void populateSingleFilmPane(Movie movie) {
+        homePane.setVisible(false);
+        singleFilmPane.getChildren().clear();
+
+        Label title = new Label();
+        Label movieTitle = new Label();
+
+        Label genre = new Label();
+        Label movieGenre = new Label();
+
+        Label direction = new Label();
+        Label movieDirection = new Label();
+
+        Label cast = new Label();
+        TextArea movieCast = new TextArea();
+        movieCast.getStylesheets().add("css/TextAreaStyle.css");
+        movieCast.sceneProperty().addListener((observableNewScene, oldScene, newScene) -> {
+            if (newScene != null) {
+                movieCast.applyCss();
+                Node text = movieCast.lookup(".text");
+
+                movieCast.prefHeightProperty().bind(Bindings.createDoubleBinding(() -> movieCast.getFont().getSize() + text.getBoundsInLocal().getHeight(), text.boundsInLocalProperty()));
+
+                text.boundsInLocalProperty().addListener((observableBoundsAfter, boundsBefore, boundsAfter) -> Platform.runLater(movieCast::requestLayout)
+                );
+            }
+        });
+        movieCast.setWrapText(true);
+        Label time = new Label();
+        Label movieTime = new Label();
+
+        Label year = new Label();
+        Label movieYear = new Label();
+
+        Font infoFont = new Font("Bebas Regular", 24);
+        ImageView poster;
+        try {
+            FileInputStream fis2 = new FileInputStream(movie.getLocandinaPath());
+            poster = new ImageView(new Image(fis2, 1000, 0, true, true));
+            poster.setPreserveRatio(true);
+            CloseableUtils.close(fis2);
+        } catch (FileNotFoundException exce){
+            throw new ApplicationException(exce);
+        }
+
+        poster.setFitWidth(350);
+
+        title.setText("TITOLO: ");
+        title.setTextFill(Color.valueOf("db8f00"));
+        title.setLayoutX(poster.getLayoutX() + poster.getFitWidth() + 20);
+        title.setLayoutY(poster.getLayoutY() + 25);
+        title.setFont(infoFont);
+
+        movieTitle.setText(movie.getTitolo());
+        movieTitle.setTextFill(Color.WHITE);
+        movieTitle.setLayoutX(title.getLayoutX() + 110);
+        movieTitle.setLayoutY(title.getLayoutY());
+        movieTitle.setFont(infoFont);
+
+        genre.setText("GENERE: ");
+        genre.setTextFill(Color.valueOf("db8f00"));
+        genre.setLayoutX(title.getLayoutX());
+        genre.setLayoutY(title.getLayoutY() + 50);
+        genre.setFont(infoFont);
+
+        movieGenre.setText(movie.getGenere());
+        movieGenre.setTextFill(Color.WHITE);
+        movieGenre.setLayoutX(movieTitle.getLayoutX());
+        movieGenre.setLayoutY(genre.getLayoutY());
+        movieGenre.setFont(infoFont);
+
+        direction.setText("REGIA: ");
+        direction.setTextFill(Color.valueOf("db8f00"));
+        direction.setLayoutX(title.getLayoutX());
+        direction.setLayoutY(genre.getLayoutY() + 50);
+        direction.setFont(infoFont);
+
+        movieDirection.setText(movie.getRegia());
+        movieDirection.setTextFill(Color.WHITE);
+        movieDirection.setLayoutX(movieTitle.getLayoutX());
+        movieDirection.setLayoutY(direction.getLayoutY());
+        movieDirection.setFont(infoFont);
+
+        cast.setText("CAST: ");
+        cast.setTextFill(Color.valueOf("db8f00"));
+        cast.setLayoutX(title.getLayoutX());
+        cast.setLayoutY(direction.getLayoutY() + 50);
+        cast.setFont(infoFont);
+
+        movieCast.setText(movie.getCast());
+        movieCast.setEditable(false);
+        movieCast.setLayoutX(movieDirection.getLayoutX() -15);
+        movieCast.setLayoutY(cast.getLayoutY()-8);
+        movieCast.setFont(infoFont);
+
+        singleFilmPane.getChildren().addAll(cast, movieCast);
+        singleFilmPane.applyCss();
+        singleFilmPane.layout();
+
+        time.setText("DURATA: ");
+        time.setTextFill(Color.valueOf("db8f00"));
+        time.setLayoutX(title.getLayoutX());
+        time.setLayoutY(movieCast.getLayoutY() + movieCast.prefHeightProperty().getValue());
+        time.setFont(infoFont);
+
+        movieTime.setText(movie.getDurata() + " minuti");
+        movieTime.setTextFill(Color.WHITE);
+        movieTime.setLayoutX(movieTitle.getLayoutX());
+        movieTime.setLayoutY(time.getLayoutY());
+        movieTime.setFont(infoFont);
+
+        year.setText("ANNO: ");
+        year.setTextFill(Color.valueOf("db8f00"));
+        year.setLayoutX(title.getLayoutX());
+        year.setLayoutY(time.getLayoutY() + 50);
+        year.setFont(infoFont);
+        year.setAlignment(Pos.CENTER_RIGHT);
+
+        movieYear.setText(movie.getAnno());
+        movieYear.setTextFill(Color.WHITE);
+        movieYear.setLayoutX(movieTitle.getLayoutX());
+        movieYear.setLayoutY(year.getLayoutY());
+        movieYear.setFont(infoFont);
+
+        singleFilmPane.getChildren().addAll(title, movieTitle);
+        singleFilmPane.getChildren().addAll(genre, movieGenre);
+        singleFilmPane.getChildren().addAll(direction, movieDirection);
+        singleFilmPane.getChildren().addAll(time, movieTime);
+        singleFilmPane.getChildren().addAll(year, movieYear);
+        singleFilmPane.getChildren().add(poster);
+        singleFilmPane.getChildren().addAll(goBackToHomeButton);
+
+        GUIUtils.setScaleTransitionOnControl(goBackToHomeButton);
+        goBackToHomeButton.setOnMouseClicked(event -> {
+            singleFilmPane.setVisible(false);
+            homePane.setVisible(true);
+        });
+
+        singleFilmPane.setVisible(true);
+    }
+
     public void animationMenu(){
         KeyValue widthValueForward = new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() +81);
         KeyValue widthValueBackwards = new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() -81);
@@ -408,12 +540,11 @@ public class HomeController implements Initializable {
         homePane.setVisible(true);
         filmScroll.setVisible(true);
         filmScrollFiltered.setVisible(false);
-        if(film.isEmpty()){
-            initGrid();
-        }
+        if(film.isEmpty()){ initGrid(); }
         genreLabel.setText("genere");
         type = null;
     }
+
 
     public void listaSaleClick(){
         anchorInfo.setVisible(false);

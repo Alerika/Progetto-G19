@@ -52,7 +52,6 @@
             </AnchorPane>
             <AnchorPane fx:id="filmContainer" layoutY="141.0" maxHeight="860.0" maxWidth="1601.0" prefHeight="860.0" prefWidth="1601.0" style="-fx-background-color: #000000;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="143.0">
                <children>
-                  <AnchorPane fx:id="singleFilmPane" layoutX="299.0" prefHeight="857.0" prefWidth="1301.0" style="-fx-background-color: #1a1a1a;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="299.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                   <AnchorPane fx:id="anchorInfo" layoutY="97.0" prefHeight="857.0" prefWidth="1600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Label fx:id="infoUtili" alignment="CENTER" layoutX="733.0" layoutY="36.0" prefHeight="85.0" prefWidth="134.0" text="INFO UTILI" textFill="#db8f00" AnchorPane.topAnchor="36.0">
@@ -244,6 +243,15 @@
                         <Label fx:id="registerButton" alignment="CENTER" contentDisplay="CENTER" layoutX="139.0" layoutY="201.0" onMouseClicked="#registrationWindow" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="registrati" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="139.0">
                            <font>
                               <Font name="Bebas Neue Regular" size="18.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane fx:id="singleFilmPane" layoutX="299.0" prefHeight="857.0" prefWidth="1301.0" style="-fx-background-color: #1a1a1a;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="299.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label fx:id="goBackToHomeButton" alignment="CENTER" layoutX="749.0" layoutY="766.0" prefHeight="36.0" prefWidth="195.0" style="-fx-background-color: #db8f00; -fx-background-radius: 10;" text="Torna alla home" textFill="WHITE">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="24.0" />
                            </font>
                         </Label>
                      </children>
