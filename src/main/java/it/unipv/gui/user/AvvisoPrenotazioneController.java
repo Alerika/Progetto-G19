@@ -1,30 +1,55 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package it.unipv.gui.user;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 
-/**
- * FXML Controller class
- *
- * @author Fede
- */
+import it.unipv.gui.common.GUIUtils;
+import it.unipv.gui.login.User;
+import it.unipv.gui.user.areariservata.AreaRiservataHomeController;
+import it.unipv.gui.user.areariservata.PrenotationPanelController;
+import it.unipv.utils.ApplicationException;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+
 public class AvvisoPrenotazioneController implements Initializable {
 
-    public Label areaRiservata;
+    @FXML private Label areaRiservataButton;
+    private User loggedUser;
 
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
+    @Override public void initialize(URL url, ResourceBundle rb) { }
+
+    public void init(User loggedUser) {
+        this.loggedUser = loggedUser;
+        GUIUtils.setScaleTransitionOnControl(areaRiservataButton);
+    }
+
+    private void doClose() {
+        Stage stage = (Stage) areaRiservataButton.getScene().getWindow();
+        stage.close();
+    }
+
+    @FXML
+    public void openReservedAreaListener() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/AreaRiservataHome.fxml"));
+            Parent p = loader.load();
+            AreaRiservataHomeController arhc = loader.getController();
+            arhc.init(loggedUser);
+            Stage stage = new Stage();
+            stage.setScene(new Scene(p));
+            stage.setResizable(false);
+            stage.setTitle("Area riservata di " + loggedUser.getName());
+            stage.show();
+        } catch (IOException ex) {
+            throw new ApplicationException(ex);
+        }
+        doClose();
+    }
     
 }

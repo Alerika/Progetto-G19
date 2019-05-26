@@ -29,7 +29,7 @@
                   <Font name="Bebas Neue Regular" size="20.0" />
                </font>
             </Label>
-            <Label fx:id="areaRiservata" layoutX="543.0" layoutY="110.0" style="-fx-cursor: hand;" text="area riservata" textFill="#db8f00">
+            <Label fx:id="areaRiservataButton" layoutX="550.0" layoutY="110.0" onMouseClicked="#openReservedAreaListener" style="-fx-cursor: hand;" text="area riservata" textFill="#db8f00">
                <font>
                   <Font name="Bebas Neue Regular" size="20.0" />
                </font>

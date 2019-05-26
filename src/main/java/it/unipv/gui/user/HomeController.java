@@ -7,13 +7,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import it.unipv.conversion.CSVToMovieList;
-import it.unipv.gui.common.GUIUtils;
-import it.unipv.gui.common.Movie;
-import it.unipv.gui.common.MovieStatusTYPE;
-import it.unipv.gui.common.MovieTYPE;
+import it.unipv.conversion.CSVToMovieScheduleList;
+import it.unipv.gui.common.*;
 import it.unipv.gui.login.LoginController;
 import it.unipv.gui.login.User;
 import it.unipv.gui.login.UserInfo;
+import it.unipv.gui.user.areariservata.AreaRiservataHomeController;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
@@ -29,9 +28,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -168,6 +169,8 @@ public class HomeController implements Initializable {
         Label year = new Label();
         Label movieYear = new Label();
 
+        Label programmationsLabel = new Label();
+
         Font infoFont = new Font("Bebas Regular", 24);
         ImageView poster;
         try {
@@ -250,7 +253,6 @@ public class HomeController implements Initializable {
         year.setLayoutX(title.getLayoutX());
         year.setLayoutY(time.getLayoutY() + 50);
         year.setFont(infoFont);
-        year.setAlignment(Pos.CENTER_RIGHT);
 
         movieYear.setText(movie.getAnno());
         movieYear.setTextFill(Color.WHITE);
@@ -258,11 +260,57 @@ public class HomeController implements Initializable {
         movieYear.setLayoutY(year.getLayoutY());
         movieYear.setFont(infoFont);
 
+        programmationsLabel.setText("PROGRAMMATO PER: ");
+        programmationsLabel.setTextFill(Color.valueOf("db8f00"));
+        programmationsLabel.setLayoutX(title.getLayoutX());
+        programmationsLabel.setLayoutY(year.getLayoutY()+50);
+        programmationsLabel.setFont(infoFont);
+
+        double x = title.getLayoutX()+20;
+        double y = programmationsLabel.getLayoutY()+35;
+        int count = 0;
+
+        List<MovieSchedule> schedules = getProgrammationListFromMovie(movie);
+        for(MovieSchedule ms : schedules) {
+            Label scheduleLabel = new Label();
+            scheduleLabel.setText("  " + ms.getDate() + "  ");
+            scheduleLabel.setTextFill(Color.WHITE);
+            if(count>=5) {
+                y+=50;
+                x = title.getLayoutX()+20;
+                count = 0;
+            }
+            scheduleLabel.setLayoutY(y);
+            scheduleLabel.setLayoutX(x);
+            scheduleLabel.setFont(infoFont);
+            scheduleLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
+            scheduleLabel.setOnMouseEntered(event -> {
+                scheduleLabel.setBorder(new Border(new BorderStroke(Color.YELLOW, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
+                scheduleLabel.setCursor(Cursor.HAND);
+            });
+            scheduleLabel.setOnMouseExited(event -> {
+                scheduleLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
+                scheduleLabel.setCursor(Cursor.DEFAULT);
+            });
+
+            scheduleLabel.setOnMouseClicked(event -> {
+                if(loggedUser==null) {
+                    GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi essere loggato per poter accedere alla prenotazione!");
+                } else {
+                    openPrenotationStage(movie, scheduleLabel);
+                }
+            });
+            x += 190;
+            count++;
+            singleFilmPane.getChildren().add(scheduleLabel);
+        }
+
         singleFilmPane.getChildren().addAll(title, movieTitle);
         singleFilmPane.getChildren().addAll(genre, movieGenre);
         singleFilmPane.getChildren().addAll(direction, movieDirection);
         singleFilmPane.getChildren().addAll(time, movieTime);
         singleFilmPane.getChildren().addAll(year, movieYear);
+        singleFilmPane.getChildren().add(programmationsLabel);
         singleFilmPane.getChildren().add(poster);
         singleFilmPane.getChildren().addAll(goBackToHomeButton);
 
@@ -273,6 +321,38 @@ public class HomeController implements Initializable {
         });
 
         singleFilmPane.setVisible(true);
+    }
+
+    private void openPrenotationStage(Movie movie, Label scheduleLabel) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/MoviePrenotation.fxml"));
+            Parent p = loader.load();
+            MoviePrenotationController mpc = loader.getController();
+            mpc.init(scheduleLabel.getText().trim(), movie, loggedUser);
+            Stage stage = new Stage();
+            stage.setScene(new Scene(p));
+            stage.setResizable(false);
+            stage.setTitle("Prenotazione " + movie.getTitolo() + " " + scheduleLabel.getText().trim());
+            stage.show();
+        } catch (IOException ex) {
+            throw new ApplicationException(ex);
+        }
+    }
+
+    private List<MovieSchedule> getProgrammationListFromMovie(Movie m) {
+        String date = "";
+        List<MovieSchedule> allSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH);
+        Collections.sort(allSchedules);
+        List<MovieSchedule> res = new ArrayList<>();
+        for(MovieSchedule ms : allSchedules) {
+            if(ms.getMovieCode().equals(m.getCodice())) {
+                if(!date.equals(ms.getDate())) {
+                    res.add(ms);
+                    date = ms.getDate();
+                }
+            }
+        }
+        return res;
     }
 
     public void animationMenu(){
@@ -350,7 +430,7 @@ public class HomeController implements Initializable {
             if(loggedUser==null) {
                 openLogin();
             } else {
-                //TODO MOSTRARE AREA RISERVATA
+                doOpenReservedArea();
             }
         }
     }
@@ -545,11 +625,32 @@ public class HomeController implements Initializable {
         type = null;
     }
 
-
     public void listaSaleClick(){
         anchorInfo.setVisible(false);
         homePane.setVisible(false);
         animationMenu();
+    }
+
+    @FXML
+    public void areaRiservataClick() {
+        doOpenReservedArea();
+        animationMenu();
+    }
+
+    private void doOpenReservedArea() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/AreaRiservataHome.fxml"));
+            Parent p = loader.load();
+            AreaRiservataHomeController arhc = loader.getController();
+            arhc.init(loggedUser);
+            Stage stage = new Stage();
+            stage.setScene(new Scene(p));
+            stage.setResizable(false);
+            stage.setTitle("Area riservata di " + loggedUser.getName());
+            stage.show();
+        } catch (IOException ex) {
+            throw new ApplicationException(ex);
+        }
     }
 
     @Override

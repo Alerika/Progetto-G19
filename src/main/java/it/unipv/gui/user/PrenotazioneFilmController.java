@@ -30,9 +30,9 @@ public class PrenotazioneFilmController implements Initializable {
 
     /**
      * Initializes the controller class.
-     * 
+     *
      */
-    
+
     @FXML
     private ImageView logo;
     
