@@ -7,8 +7,8 @@ import org.junit.runners.JUnit4;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.ZoneId;
+import java.util.*;
 
 @RunWith(JUnit4.class)
 public class TestUtils extends TestCase {
@@ -27,17 +27,6 @@ public class TestUtils extends TestCase {
         m2.setDate("03/04/2019");
         m2.setTime("21:00");
         assertEquals(1, movieScheduleDateAndTimeComparator(m1,m2));
-    }
-
-    private boolean checkIfDateIsPassed(String toCheck){
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Date dateToCheck;
-        try {
-            dateToCheck = sdf.parse(toCheck);
-        } catch (ParseException e) {
-            throw new ApplicationException("Parse fallito :(");
-        }
-        return dateToCheck.before(new Date());
     }
 
     private int movieScheduleDateAndTimeComparator(MovieSchedule m1, MovieSchedule m2){
@@ -118,5 +107,41 @@ public class TestUtils extends TestCase {
         if(isItToAdd) { result.add(Calendar.MINUTE, movieDuration+pause); }
         if(!isItToAdd) { result.add(Calendar.MINUTE, -(movieDuration+pause)); }
         return result;
+    }
+
+
+    private boolean checkIfDateIsPassed(String toCheck){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date dateToCheck;
+        try {
+            dateToCheck = sdf.parse(toCheck);
+        } catch (ParseException e) {
+            throw new ApplicationException(e);
+        }
+        return dateToCheck.before(new Date());
+    }
+
+    @Test
+    public void testGetterActualSeatsList() {
+        List<String> listaPostiOccupati = new ArrayList<>();
+        listaPostiOccupati.add("A1-A2-A3");
+        listaPostiOccupati.add("B4-B8");
+        listaPostiOccupati.add("B9-C2-C3");
+        listaPostiOccupati.add("D1-D2-E3-E4");
+
+        List<String> res = getActualOccupiedSeatsList(listaPostiOccupati);
+
+        for(String s : res) {
+            System.out.println(s);
+        }
+    }
+
+    private List<String> getActualOccupiedSeatsList(List<String> listaPostiOccupati) {
+        List<String> res = new ArrayList<>();
+        for(String s : listaPostiOccupati) {
+            String[] supp = s.split("-");
+            res.addAll(Arrays.asList(supp));
+        }
+        return res;
     }
 }
