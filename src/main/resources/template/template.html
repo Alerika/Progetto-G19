@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Fattura</title>
+		<style type="text/css">
+			.firstColumn {
+				font-family: 'BebasNeue-Regular', sans-serif;
+				font-size: 14px;
+				font-weight: normal;
+				line-height: normal;
+				text-transform: uppercase;
+				letter-spacing: 1px;
+				color:#db8f00;
+			}
+			
+			.secondColumn {
+				font-family: 'BebasNeueRegular', sans-serif;
+				font-size: 14px;
+				font-weight: normal;
+				line-height: normal;
+				text-transform: uppercase;
+				letter-spacing: 1px;
+				color:white;
+			}
+		</style>
+	</head>
+    <body style="background-color:black">
+		<div align="center">
+			<img th:src="@{../images/PDF-Banner2.png}" src="../images/PDF-Banner2.png" alt="bannerImage">
+		</div>
+		<br><br>
+		<div align="left">
+			<table>
+				<col width="130">
+				<col width="300">
+				<tr>
+					<td height = "35" class="firstColumn"> Utente: </td>
+					<td th:text="${prenotation.nomeUtente}" class="secondColumn">Geppetto</td> 
+				</tr>
+				<tr>
+					<td height = "35" class="firstColumn">Film:</td>
+					<td th:text="${prenotation.nomeFilm}" class="secondColumn">Avengers: Endgame</td>
+				</tr>
+				<tr>
+					<td height = "35" class="firstColumn">Giorno:</td>
+					<td th:text="${prenotation.giornoFilm}" class="secondColumn">26/05/2019</td>
+				</tr>
+				<tr>
+					<td height = "35" class="firstColumn">Ora:</td>
+					<td th:text="${prenotation.oraFilm}" class="secondColumn">11:36</td>
+				</tr>
+				<tr>
+					<td height = "35" class="firstColumn">Sala:</td>
+					<td th:text="${prenotation.salaFilm}" class="secondColumn">Sala 1</td>
+				</tr>
+				<tr>
+					<td height = "35" class="firstColumn">Posti scelti:</td>
+					<td th:text="${prenotation.postiSelezionati}" class="secondColumn">D4-D5</td>
+				</tr>
+				<tr>
+					<td height = "35" class="firstColumn">Costo totale:</td>
+					<td th:text="${prenotation.costoTotale}" class="secondColumn">90 cucuzze</td>
+				</tr>			
+			</table>
+		</div>
+		<br><br>
+		<div align="center" class="firstColumn"> 
+			Ti ringraziamo di aver prenotato presso Golden Movie Studio!
+			<br>
+			Per pagare la tua prenotazione recati presso la reception del nostro cinema!
+		</div>
+    </body>
+</html>
