@@ -128,16 +128,12 @@ public class UserListPanelController implements Initializable {
     @FXML public void searchButtonListener() {
         String searchedUserName = searchBarTextfield.getText();
         if(searchedUserName!=null || searchedUserName.trim().equalsIgnoreCase("")) {
-            List<User> filteredUser = new ArrayList<>();
+            grigliaUser.getChildren().clear();
             for(User u : users) {
                 if(u.getName().toLowerCase().trim().contains(searchedUserName.toLowerCase())){
-                    filteredUser.add(u);
-                }
-            }
-            grigliaUser.getChildren().clear();
-            for(User u : filteredUser) {
-                if(!u.getName().trim().equalsIgnoreCase("Admin")) {
-                    createGridCellFromUser(u);
+                    if(!u.getName().trim().equalsIgnoreCase("Admin")) {
+                        createGridCellFromUser(u);
+                    }
                 }
             }
             initRowAndColumnCount();

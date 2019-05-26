@@ -179,15 +179,11 @@ public class MovieListPanelController implements Initializable {
     @FXML public void searchButtonListener() {
         String searchedMovieTitle = searchBarTextfield.getText();
         if(searchedMovieTitle!=null || searchedMovieTitle.trim().equalsIgnoreCase("")) {
-            List<Movie> filteredMovies = new ArrayList<>();
+            grigliaFilm.getChildren().clear();
             for(Movie m : movies) {
                 if(m.getTitolo().toLowerCase().trim().contains(searchedMovieTitle.toLowerCase())){
-                    filteredMovies.add(m);
+                    createViewFromMoviesList(m);
                 }
-            }
-            grigliaFilm.getChildren().clear();
-            for(Movie m : filteredMovies) {
-                createViewFromMoviesList(m);
             }
             initRowAndColumnCount();
         } else {
