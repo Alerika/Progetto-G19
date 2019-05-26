@@ -15,19 +15,16 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class ManagerHomeController implements Initializable {
 
-    @FXML private Rectangle rectangleOptions;
     @FXML private BorderPane mainPanel;
     @FXML Label hallModifierLabel, schedulerLabel, movieListLabel, userListLabel, pricesModifierLabel, exitLabel;
     private List<Label> labels = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        rectangleOptions.setVisible(false);
         addLabelsToList();
         setOnMouseEnteredToLabels();
         setOnMouseExitedToLabels();
@@ -44,7 +41,7 @@ public class ManagerHomeController implements Initializable {
 
     private String openedPane = "";
 
-    public void setOnMouseEnteredToLabels() {
+    private void setOnMouseEnteredToLabels() {
         for(Label l : labels) {
             l.setOnMouseEntered(e -> {
                 l.setCursor(Cursor.HAND);
@@ -56,7 +53,7 @@ public class ManagerHomeController implements Initializable {
 
     }
 
-    public void setOnMouseExitedToLabels() {
+    private void setOnMouseExitedToLabels() {
         for(Label l : labels) {
             l.setCursor(Cursor.DEFAULT);
             l.setOnMouseExited(e -> {
