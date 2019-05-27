@@ -20,8 +20,10 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -87,8 +89,11 @@ public class MovieSchedulerController implements Initializable {
         grigliaProgrammazione.setHgap(15);
         grigliaProgrammazione.setVgap(15);
 
-        ImageView deleteIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png"));
-        GUIUtils.setFadeInOutOnControl(deleteIconView);
+        Label deleteIcon = new Label();
+        deleteIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        deleteIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png")));
+        deleteIcon.setTooltip(new Tooltip("Elimina"));
+        GUIUtils.setFadeInOutOnControl(deleteIcon);
 
         AnchorPane pane = new AnchorPane();
         if(columnCount==1) {
@@ -101,9 +106,9 @@ public class MovieSchedulerController implements Initializable {
         schedulerPanel.setContent(grigliaProgrammazione);
         GridPane.setMargin(pane, new Insets(5,5,5,5));
 
-        deleteIconView.setY(scheduleLabel.getLayoutY());
-        deleteIconView.setX(scheduleLabel.getLayoutX()+200);
-        deleteIconView.setOnMouseClicked(e -> {
+        deleteIcon.setLayoutY(scheduleLabel.getLayoutY());
+        deleteIcon.setLayoutX(scheduleLabel.getLayoutX()+200);
+        deleteIcon.setOnMouseClicked(e -> {
             int reply = JOptionPane.showConfirmDialog(null, "Sei sicuro di voler eliminare dalla lista questa programmazione?");
             if(reply == JOptionPane.YES_OPTION) {
                 movieSchedules.remove(schedule);
@@ -112,9 +117,7 @@ public class MovieSchedulerController implements Initializable {
             }
         });
 
-        pane.getChildren().addAll(scheduleLabel);
-        pane.getChildren().addAll(deleteIconView);
-
+        pane.getChildren().addAll(scheduleLabel, deleteIcon);
     }
 
     private void initMovieSchedulesList() {

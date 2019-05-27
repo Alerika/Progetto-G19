@@ -22,8 +22,10 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -78,6 +80,9 @@ public class ProgrammationPanelController implements Initializable {
     private void createViewFromMoviesList(Movie movie) {
         try{
             Label nomeFilmLabel = new Label(StringUtils.abbreviate(movie.getTitolo(), 17));
+            if(movie.getTitolo().length()>17) {
+                nomeFilmLabel.setTooltip(new Tooltip(movie.getTitolo()));
+            }
             nomeFilmLabel.setFont(Font.font("system", FontWeight.BOLD, FontPosture.REGULAR, 20));
             nomeFilmLabel.setTextFill(Color.WHITE);
 
@@ -120,14 +125,23 @@ public class ProgrammationPanelController implements Initializable {
             annoFilmLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
             annoFilmLabel.setTextFill(Color.WHITE);
 
-            ImageView deleteIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png"));
-            GUIUtils.setFadeInOutOnControl(deleteIconView);
+            Label deleteIcon = new Label();
+            deleteIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            deleteIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png")));
+            deleteIcon.setTooltip(new Tooltip("Elimina " + movie.getTitolo()));
+            GUIUtils.setFadeInOutOnControl(deleteIcon);
 
-            ImageView showSchedulesIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/Schedule.png"));
-            GUIUtils.setFadeInOutOnControl(showSchedulesIconView);
+            Label showSchedulesIcon = new Label();
+            showSchedulesIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            showSchedulesIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Schedule.png")));
+            showSchedulesIcon.setTooltip(new Tooltip("Programma " + movie.getTitolo()));
+            GUIUtils.setFadeInOutOnControl(showSchedulesIcon);
 
-            ImageView hideMovieIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/Hide.png"));
-            GUIUtils.setFadeInOutOnControl(hideMovieIconView);
+            Label hideMovieIcon = new Label();
+            hideMovieIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            hideMovieIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Hide.png")));
+            hideMovieIcon.setTooltip(new Tooltip("Togli dalle programmazioni " + movie.getTitolo()));
+            GUIUtils.setFadeInOutOnControl(hideMovieIcon);
 
             AnchorPane pane = new AnchorPane();
             if(columnCount==columnMax) {
@@ -155,9 +169,9 @@ public class ProgrammationPanelController implements Initializable {
             annoFilmLabel.setLayoutY(nomeFilmLabel.getLayoutY()+130);
             annoFilmLabel.setLayoutX(nomeFilmLabel.getLayoutX());
 
-            hideMovieIconView.setY(nomeFilmLabel.getLayoutY()+167);
-            hideMovieIconView.setX(nomeFilmLabel.getLayoutX());
-            hideMovieIconView.setOnMouseClicked(event -> {
+            hideMovieIcon.setLayoutY(nomeFilmLabel.getLayoutY()+167);
+            hideMovieIcon.setLayoutX(nomeFilmLabel.getLayoutX());
+            hideMovieIcon.setOnMouseClicked(event -> {
                 int reply = JOptionPane.showConfirmDialog( null
                                                          , "Sei sicuro di voler nascondere " + movie.getTitolo() + " dai film programmabili?");
                 if(reply == JOptionPane.YES_OPTION) {
@@ -167,9 +181,9 @@ public class ProgrammationPanelController implements Initializable {
                 }
             });
 
-            showSchedulesIconView.setY(nomeFilmLabel.getLayoutY()+167);
-            showSchedulesIconView.setX(nomeFilmLabel.getLayoutX()+40);
-            showSchedulesIconView.setOnMouseClicked(e -> {
+            showSchedulesIcon.setLayoutY(nomeFilmLabel.getLayoutY()+167);
+            showSchedulesIcon.setLayoutX(nomeFilmLabel.getLayoutX()+40);
+            showSchedulesIcon.setOnMouseClicked(e -> {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieScheduler.fxml"));
                     Parent p = loader.load();
@@ -184,9 +198,9 @@ public class ProgrammationPanelController implements Initializable {
                 }
             });
 
-            deleteIconView.setY(nomeFilmLabel.getLayoutY()+167);
-            deleteIconView.setX(nomeFilmLabel.getLayoutX()+80);
-            deleteIconView.setOnMouseClicked(e -> {
+            deleteIcon.setLayoutY(nomeFilmLabel.getLayoutY()+167);
+            deleteIcon.setLayoutX(nomeFilmLabel.getLayoutX()+80);
+            deleteIcon.setOnMouseClicked(e -> {
                 int reply =
                         JOptionPane.showConfirmDialog( null
                                 , "Sei sicuro di voler eliminare il film " + movie.getTitolo() +"?");
@@ -198,15 +212,15 @@ public class ProgrammationPanelController implements Initializable {
                 }
             });
 
-            pane.getChildren().addAll(posterPreview);
-            pane.getChildren().addAll(nomeFilmLabel);
-            pane.getChildren().addAll(genereFilmLabel);
-            pane.getChildren().addAll(regiaFilmLabel);
-            pane.getChildren().addAll(castFilmLabel);
-            pane.getChildren().addAll(annoFilmLabel);
-            pane.getChildren().addAll(hideMovieIconView);
-            pane.getChildren().addAll(deleteIconView);
-            pane.getChildren().addAll(showSchedulesIconView);
+            pane.getChildren().addAll( posterPreview
+                                     , nomeFilmLabel
+                                     , genereFilmLabel
+                                     , regiaFilmLabel
+                                     , castFilmLabel
+                                     , annoFilmLabel
+                                     , hideMovieIcon
+                                     , deleteIcon
+                                     , showSchedulesIcon);
 
             GUIUtils.setScaleTransitionOnControl(posterPreview);
 

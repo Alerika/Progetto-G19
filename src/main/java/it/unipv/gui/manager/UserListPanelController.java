@@ -13,9 +13,7 @@ import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -70,11 +68,17 @@ public class UserListPanelController implements Initializable {
         grigliaUser.setHgap(15);
         grigliaUser.setVgap(15);
 
-        ImageView deleteIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png"));
-        GUIUtils.setFadeInOutOnControl(deleteIconView);
+        Label deleteIcon = new Label();
+        deleteIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        deleteIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png")));
+        deleteIcon.setTooltip(new Tooltip("Elimina " + user.getName()));
+        GUIUtils.setFadeInOutOnControl(deleteIcon);
 
-        ImageView editIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/Edit.png"));
-        GUIUtils.setFadeInOutOnControl(editIconView);
+        Label editIcon = new Label();
+        editIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        editIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Edit.png")));
+        editIcon.setTooltip(new Tooltip("Modifica password a " + user.getName()));
+        GUIUtils.setFadeInOutOnControl(editIcon);
 
         AnchorPane pane = new AnchorPane();
         if(columnCount==1) {
@@ -87,9 +91,9 @@ public class UserListPanelController implements Initializable {
         userListPanel.setContent(grigliaUser);
         GridPane.setMargin(pane, new Insets(5,5,5,5));
 
-        editIconView.setY(userLabel.getLayoutY());
-        editIconView.setX(userLabel.getLayoutX()+270);
-        editIconView.setOnMouseClicked( event -> {
+        editIcon.setLayoutY(userLabel.getLayoutY());
+        editIcon.setLayoutX(userLabel.getLayoutX()+270);
+        editIcon.setOnMouseClicked( event -> {
             String password = JOptionPane.showInputDialog("Inserisci la nuova password per l'utente " + user.getName());
             if(password!=null) {
                 if(!Objects.requireNonNull(password).trim().equalsIgnoreCase("") || !(password.trim().length() ==0)) {
@@ -103,9 +107,9 @@ public class UserListPanelController implements Initializable {
             }
         });
 
-        deleteIconView.setY(userLabel.getLayoutY());
-        deleteIconView.setX(userLabel.getLayoutX()+305);
-        deleteIconView.setOnMouseClicked(e -> {
+        deleteIcon.setLayoutY(userLabel.getLayoutY());
+        deleteIcon.setLayoutX(userLabel.getLayoutX()+305);
+        deleteIcon.setOnMouseClicked(e -> {
             int reply = JOptionPane.showConfirmDialog(null, "Sei sicuro di voler eliminare questo utente?");
             if(reply == JOptionPane.YES_OPTION) {
                 users.remove(user);
@@ -114,10 +118,7 @@ public class UserListPanelController implements Initializable {
             }
         });
 
-        pane.getChildren().addAll(userLabel);
-        pane.getChildren().addAll(editIconView);
-        pane.getChildren().addAll(deleteIconView);
-
+        pane.getChildren().addAll(userLabel, editIcon, deleteIcon);
     }
 
     private void refreshUI() {

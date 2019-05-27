@@ -23,9 +23,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -78,20 +76,32 @@ public class MovieListPanelController implements Initializable {
 
     private void createViewFromMoviesList(Movie movie) {
         Label movieTitleLabel = new Label(StringUtils.abbreviate(movie.getTitolo(),30));
+        if(movie.getTitolo().length()>30) {
+            movieTitleLabel.setTooltip(new Tooltip(movie.getTitolo()));
+        }
         movieTitleLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 18));
         movieTitleLabel.setTextFill(Color.WHITE);
 
         grigliaFilm.setHgap(15);
         grigliaFilm.setVgap(15);
 
-        ImageView deleteIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png"));
-        GUIUtils.setFadeInOutOnControl(deleteIconView);
+        Label deleteIcon = new Label();
+        deleteIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        deleteIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png")));
+        deleteIcon.setTooltip(new Tooltip("Elimina " + movie.getTitolo()));
+        GUIUtils.setFadeInOutOnControl(deleteIcon);
 
-        ImageView editIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/Edit.png"));
-        GUIUtils.setFadeInOutOnControl(editIconView);
+        Label editIcon = new Label();
+        editIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        editIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Edit.png")));
+        editIcon.setTooltip(new Tooltip("Modifica " + movie.getTitolo()));
+        GUIUtils.setFadeInOutOnControl(editIcon);
 
-        ImageView setVisibleIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/Visible.png"));
-        GUIUtils.setFadeInOutOnControl(setVisibleIconView);
+        Label setVisibleIcon = new Label();
+        setVisibleIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        setVisibleIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Visible.png")));
+        setVisibleIcon.setTooltip(new Tooltip("Rendi programmabile " + movie.getTitolo()));
+        GUIUtils.setFadeInOutOnControl(setVisibleIcon);
 
         AnchorPane pane = new AnchorPane();
         if(columnCount==1) {
@@ -104,9 +114,9 @@ public class MovieListPanelController implements Initializable {
         movieListPanel.setContent(grigliaFilm);
         GridPane.setMargin(pane, new Insets(5,5,5,5));
 
-        setVisibleIconView.setY(movieTitleLabel.getLayoutY());
-        setVisibleIconView.setX(movieTitleLabel.getLayoutX()+270);
-        setVisibleIconView.setOnMouseClicked(event -> {
+        setVisibleIcon.setLayoutY(movieTitleLabel.getLayoutY());
+        setVisibleIcon.setLayoutX(movieTitleLabel.getLayoutX()+270);
+        setVisibleIcon.setOnMouseClicked(event -> {
             int reply = JOptionPane.showConfirmDialog( null
                                                      , "Sei sicuro di voler rendere " + movie.getTitolo() + " programmabile?");
             if(reply == JOptionPane.YES_OPTION) {
@@ -116,9 +126,9 @@ public class MovieListPanelController implements Initializable {
             }
         });
 
-        editIconView.setY(movieTitleLabel.getLayoutY());
-        editIconView.setX(movieTitleLabel.getLayoutX()+305);
-        editIconView.setOnMouseClicked( event -> {
+        editIcon.setLayoutY(movieTitleLabel.getLayoutY());
+        editIcon.setLayoutX(movieTitleLabel.getLayoutX()+305);
+        editIcon.setOnMouseClicked( event -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieEditor.fxml"));
                 Parent p = loader.load();
@@ -133,9 +143,9 @@ public class MovieListPanelController implements Initializable {
             }
         });
 
-        deleteIconView.setY(movieTitleLabel.getLayoutY());
-        deleteIconView.setX(movieTitleLabel.getLayoutX()+340);
-        deleteIconView.setOnMouseClicked(e -> {
+        deleteIcon.setLayoutY(movieTitleLabel.getLayoutY());
+        deleteIcon.setLayoutX(movieTitleLabel.getLayoutX()+340);
+        deleteIcon.setOnMouseClicked(e -> {
             int reply =
                     JOptionPane.showConfirmDialog( null
                                                  , "Sei sicuro di voler eliminare " + movie.getTitolo() +" e le sue relative programmazioni?");
@@ -148,12 +158,11 @@ public class MovieListPanelController implements Initializable {
 
         });
 
-        pane.getChildren().addAll(movieTitleLabel);
+        pane.getChildren().add(movieTitleLabel);
         if(!movie.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
-            pane.getChildren().addAll(setVisibleIconView);
+            pane.getChildren().add(setVisibleIcon);
         }
-        pane.getChildren().addAll(editIconView);
-        pane.getChildren().addAll(deleteIconView);
+        pane.getChildren().addAll(editIcon, deleteIcon);
     }
     private void removeAssociatedSchedules(Movie movie) {
         List<MovieSchedule> movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH);

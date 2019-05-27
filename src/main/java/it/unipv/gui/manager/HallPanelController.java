@@ -17,8 +17,10 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -84,11 +86,17 @@ public class HallPanelController implements Initializable {
             snapHallView.setFitWidth(150);
             CloseableUtils.close(fis);
 
-            ImageView deleteIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png"));
-            GUIUtils.setFadeInOutOnControl(deleteIconView);
+            Label deleteIcon = new Label();
+            deleteIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            deleteIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png")));
+            deleteIcon.setTooltip(new Tooltip("Elimina " + nomeSalaLabel.getText().trim()));
+            GUIUtils.setFadeInOutOnControl(deleteIcon);
 
-            ImageView renameIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/Edit.png"));
-            GUIUtils.setFadeInOutOnControl(renameIconView);
+            Label renameIcon = new Label();
+            renameIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            renameIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Edit.png")));
+            renameIcon.setTooltip(new Tooltip("Rinomina " + nomeSalaLabel.getText().trim()));
+            GUIUtils.setFadeInOutOnControl(renameIcon);
 
             AnchorPane pane = new AnchorPane();
             if(columnCount==columnMax) {
@@ -103,22 +111,19 @@ public class HallPanelController implements Initializable {
 
             nomeSalaLabel.setLayoutY(snapHallView.getLayoutY() + 100);
 
-            deleteIconView.setY(nomeSalaLabel.getLayoutY()-2);
-            deleteIconView.setX(nomeSalaLabel.getLayoutX()+126);
+            deleteIcon.setLayoutY(nomeSalaLabel.getLayoutY()-2);
+            deleteIcon.setLayoutX(nomeSalaLabel.getLayoutX()+126);
 
-            renameIconView.setY(nomeSalaLabel.getLayoutY()-2);
-            renameIconView.setX(nomeSalaLabel.getLayoutX()+93);
+            renameIcon.setLayoutY(nomeSalaLabel.getLayoutY()-2);
+            renameIcon.setLayoutX(nomeSalaLabel.getLayoutX()+93);
 
-            pane.getChildren().addAll(snapHallView);
-            pane.getChildren().addAll(nomeSalaLabel);
-            pane.getChildren().addAll(deleteIconView);
-            pane.getChildren().addAll(renameIconView);
+            pane.getChildren().addAll(snapHallView, nomeSalaLabel, deleteIcon, renameIcon);
 
             snapHallView.setOnMouseClicked(event -> new HallEditor(nomeSalaLabel.getText(), this, true));
 
             GUIUtils.setScaleTransitionOnControl(snapHallView);
-            renameIconView.setOnMouseClicked(event -> renameHall(nomeSalaLabel.getText(), nomeSalaLabel));
-            deleteIconView.setOnMouseClicked(event -> removeHall(nomeSalaLabel.getText()));
+            renameIcon.setOnMouseClicked(event -> renameHall(nomeSalaLabel.getText(), nomeSalaLabel, renameIcon, deleteIcon));
+            deleteIcon.setOnMouseClicked(event -> removeHall(nomeSalaLabel.getText()));
 
 
         } catch(FileNotFoundException ex) {
@@ -136,7 +141,7 @@ public class HallPanelController implements Initializable {
         }
     }
 
-    private void renameHall(String hallName, Label labelToModify) {
+    private void renameHall(String hallName, Label labelToModify, Label renameIcon, Label deleteIcon) {
         String newFileName = JOptionPane.showInputDialog(null, "Inserisci il nuovo nome della sala:");
         if(newFileName!=null) {
             if(!newFileName.trim().equalsIgnoreCase("")) {
@@ -147,6 +152,9 @@ public class HallPanelController implements Initializable {
                                                    , DataReferences.PIANTINEPREVIEWSFOLDERPATH + newFileName + ".jpg" ) ) {
                         JOptionPane.showMessageDialog(null, "Sala rinominata con successo!");
                         labelToModify.setText(newFileName);
+                        renameIcon.setTooltip(new Tooltip("Rinomina " + newFileName));
+                        deleteIcon.setTooltip(new Tooltip("Elimina " + newFileName));
+
                         hallNames.add(newFileName);
                         hallNames.remove(hallName);
                     } else {
