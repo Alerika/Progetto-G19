@@ -28,15 +28,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -46,6 +42,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 
 public class HomeController implements Initializable {
     
@@ -163,7 +160,9 @@ public class HomeController implements Initializable {
                 );
             }
         });
+        movieCast.getStyleClass().add("movieCastTA");
         movieCast.setWrapText(true);
+
         Label time = new Label();
         Label movieTime = new Label();
 
@@ -172,7 +171,7 @@ public class HomeController implements Initializable {
 
         Label programmationsLabel = new Label();
 
-        Font infoFont = new Font("Bebas Regular", 24);
+        Font infoFont = new Font("Bebas Regular", 20);
         ImageView poster;
         try {
             FileInputStream fis2 = new FileInputStream(movie.getLocandinaPath());
@@ -227,7 +226,11 @@ public class HomeController implements Initializable {
         cast.setLayoutY(direction.getLayoutY() + 50);
         cast.setFont(infoFont);
 
-        movieCast.setText(movie.getCast());
+        movieCast.setText(StringUtils.abbreviate(movie.getCast(),170));
+        if(movie.getCast().length()>170) {
+            movieCast.setTooltip(new Tooltip(getFormattedTooltipText(movie, ',')));
+        }
+
         movieCast.setEditable(false);
         movieCast.setLayoutX(movieDirection.getLayoutX() -15);
         movieCast.setLayoutY(cast.getLayoutY()-8);
@@ -297,7 +300,9 @@ public class HomeController implements Initializable {
 
                 scheduleLabel.setOnMouseClicked(event -> {
                     if(loggedUser==null) {
-                        GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi essere loggato per poter accedere alla prenotazione!");
+                        GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi aver effettuato il login per poter accedere alla prenotazione!");
+                    } else if (!isHimANormalUser(loggedUser)){
+                        GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Non puoi effettuare una prenotazione con questo account!");
                     } else {
                         openPrenotationStage(movie, scheduleLabel);
                     }
@@ -308,14 +313,37 @@ public class HomeController implements Initializable {
             }
         }
 
-        singleFilmPane.getChildren().addAll(title, movieTitle);
-        singleFilmPane.getChildren().addAll(genre, movieGenre);
-        singleFilmPane.getChildren().addAll(direction, movieDirection);
-        singleFilmPane.getChildren().addAll(time, movieTime);
-        singleFilmPane.getChildren().addAll(year, movieYear);
-        singleFilmPane.getChildren().add(programmationsLabel);
-        singleFilmPane.getChildren().add(poster);
-        singleFilmPane.getChildren().addAll(goBackToHomeButton);
+        TextArea movieSynopsis = new TextArea();
+        movieSynopsis.setText(movie.getTrama());
+        movieSynopsis.getStylesheets().add("css/TextAreaStyle.css");
+        movieSynopsis.sceneProperty().addListener((observableNewScene, oldScene, newScene) -> {
+            if (newScene != null) {
+                movieSynopsis.applyCss();
+                Node text = movieSynopsis.lookup(".text");
+
+                movieSynopsis.prefHeightProperty().bind(Bindings.createDoubleBinding(() -> movieSynopsis.getFont().getSize() + text.getBoundsInLocal().getHeight(), text.boundsInLocalProperty()));
+
+                text.boundsInLocalProperty().addListener((observableBoundsAfter, boundsBefore, boundsAfter) -> Platform.runLater(movieSynopsis::requestLayout)
+                );
+            }
+        });
+        movieSynopsis.getStyleClass().add("movieSynopsisTA");
+        movieSynopsis.setFont(infoFont);
+        movieSynopsis.setWrapText(true);
+        movieSynopsis.setEditable(false);
+        BorderedTitledPane btp = new BorderedTitledPane("Trama", movieSynopsis);
+        btp.setLayoutX(title.getLayoutX() + 40);
+        btp.setLayoutY(poster.getLayoutY()+500);
+
+        singleFilmPane.getChildren().addAll( title, movieTitle
+                                           , genre, movieGenre
+                                           , direction, movieDirection
+                                           , time, movieTime
+                                           , year, movieYear
+                                           , programmationsLabel
+                                           , poster
+                                           , goBackToHomeButton
+                                           , btp);
 
         GUIUtils.setScaleTransitionOnControl(goBackToHomeButton);
         goBackToHomeButton.setOnMouseClicked(event -> {
@@ -324,6 +352,24 @@ public class HomeController implements Initializable {
         });
 
         singleFilmPane.setVisible(true);
+    }
+
+    private String getFormattedTooltipText(Movie movie, char escape) {
+        StringBuilder res = new StringBuilder();
+        char[] temp = movie.getCast().toCharArray();
+        int cont = 0;
+        for(int i=0; i<movie.getCast().length();i++) {
+            if(cont == 5) {
+                res.append("\n").append(temp[i]);
+                cont = 0;
+            } else {
+                res.append(temp[i]);
+            }
+            if(temp[i] == escape) {
+                cont++;
+            }
+        }
+        return res.toString();
     }
 
     private void openPrenotationStage(Movie movie, Label scheduleLabel) {
@@ -433,7 +479,7 @@ public class HomeController implements Initializable {
             if(loggedUser==null) {
                 openLogin();
             } else {
-                doOpenReservedArea();
+                openReservedArea();
             }
         }
     }
@@ -474,7 +520,7 @@ public class HomeController implements Initializable {
             UserInfo.deleteUserInfoFileInUserDir();
         }
 
-        animationMenu();
+        homeClick();
     }
 
     private MovieTYPE type;
@@ -602,6 +648,11 @@ public class HomeController implements Initializable {
     
     public void infoPaneClick() {
         homePane.setVisible(false);
+        singleFilmPane.setVisible(false);
+        filmScroll.setVisible(false);
+        filmScrollFiltered.setVisible(false);
+        rectangle2D3D.setVisible(false);
+
         animationMenu();
 
         Stage stage = (Stage) homePane.getScene().getWindow();
@@ -636,8 +687,31 @@ public class HomeController implements Initializable {
 
     @FXML
     public void areaRiservataClick() {
-        doOpenReservedArea();
+        openReservedArea();
         animationMenu();
+    }
+
+    private void openReservedArea() {
+        if(!isHimANormalUser(loggedUser)) {
+            doOpenManagerArea();
+        } else {
+            doOpenReservedArea();
+        }
+    }
+
+    private void doOpenManagerArea() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/manager/ManagerHome.fxml"));
+            Parent root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Area Manager");
+            stage.setMinHeight(850);
+            stage.setMinWidth(1100);
+            stage.show();
+        } catch (IOException e) {
+            throw new ApplicationException(e);
+        }
     }
 
     private void doOpenReservedArea() {
@@ -680,7 +754,17 @@ public class HomeController implements Initializable {
         logLabel.setText(loggedUser.getName());
         nonRegistratoQuestionLabel.setText("Vuoi uscire?");
         registerButton.setText("logout");
+        if(!isHimANormalUser(loggedUser)) {
+            areaRiservataButton.setText("Area Manager");
+        } else {
+            areaRiservataButton.setText("Area Riservata");
+        }
         areaRiservataButton.setVisible(true);
+    }
+
+    private boolean isHimANormalUser(User user) {
+        return !( user.getName().equalsIgnoreCase(DataReferences.ADMINUSERNAME)
+               &&  user.getPassword().equalsIgnoreCase(DataReferences.ADMINPASSWORD));
     }
 
     private boolean checkIfThereIsAlreadyUserSaved() {

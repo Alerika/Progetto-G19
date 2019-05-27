@@ -2,10 +2,18 @@
     -fx-background-color: #1a1a1a;
 }
 
-.text-area {
+.movieCastTA {
     -fx-text-fill:white;
     -fx-background-color: transparent;
+}
 
+.text-area *.text {
+    -fx-text-alignment: justify;
+}
+
+.movieSynopsisTA {
+    -fx-text-fill:white;
+    -fx-background-color: #db8f00;
 }
 .text-area .viewport{
     -fx-background-color: transparent;

@@ -1,0 +1,16 @@
+.bordered-titled-title {
+    -fx-background-color: #db8f00;
+     -fx-background-radius: 5 5 5 5;
+    -fx-translate-y: -24;
+    -fx-padding: 0 0 0 0;
+}
+
+.bordered-titled-border {
+    -fx-content-display: top;
+    -fx-border-insets: 15 0 0 0;
+    -fx-border-color: transparent;
+}
+
+.bordered-titled-content {
+    -fx-border-insets: 0 0 0 0;
+}

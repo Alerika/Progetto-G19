@@ -52,22 +52,17 @@ public class LoginController implements Initializable {
         if(usernameTextfield.getText().equals("") || passwordTextfield.getText().equals("")){
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi compilare tutti i campi!");
         } else {
-            if(usernameTextfield.getText().equals("admin") && passwordTextfield.getText().equals("admin")){
-                doExit();
-                openManagerArea();
-            } else {
-                User user = new User(usernameTextfield.getText().trim(), passwordTextfield.getText().trim());
-                if(checkIfItIsAValidUserFromUserList(user)) {
-                    doRealLogin(user);
+            User user = new User(usernameTextfield.getText().trim(), passwordTextfield.getText().trim());
+            if(checkIfItIsAValidUserFromUserList(user)) {
+                doRealLogin(user);
 
-                    if(rememberCheckbox.isSelected()) {
-                        UserInfo.createUserInfoFileInUserDir(user.getName(), user.getPassword(), user.getEmail());
-                    }
-
-                    doExit();
-                } else {
-                    GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Non esiste un utente con questo username!");    
+                if(rememberCheckbox.isSelected()) {
+                    UserInfo.createUserInfoFileInUserDir(user.getName(), user.getPassword(), user.getEmail());
                 }
+
+                doExit();
+            } else {
+                GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Non esiste un utente con questo username!");
             }
         }
     }
@@ -76,31 +71,14 @@ public class LoginController implements Initializable {
         homeController.triggerNewLogin(user);
     }
 
-    private void openManagerArea() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/manager/ManagerHome.fxml"));
-            Parent root = fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Area Manager");
-            stage.setMinHeight(850);
-            stage.setMinWidth(1100);
-            stage.show();
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
-    }
-
     private boolean checkIfItIsAValidUserFromUserList(User u) {
         boolean flag = false;
         for(User user : userList) {
-            if(!user.getName().equals("Admin")) {
-                if( u.getName().trim().equals(user.getName())
-                 && u.getPassword().trim().equals(user.getPassword()) ) {
-                    u.setEmail(user.getEmail());
-                    flag = true;
-                    break;
-                }
+            if( u.getName().trim().equals(user.getName())
+             && u.getPassword().trim().equals(user.getPassword()) ) {
+                u.setEmail(user.getEmail());
+                flag = true;
+                break;
             }
         }
 

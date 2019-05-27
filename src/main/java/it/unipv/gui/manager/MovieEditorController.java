@@ -52,6 +52,7 @@ public class MovieEditorController implements Initializable {
         initMovieTypeComboBox();
         GUIUtils.setScaleTransitionOnControl(saveButton);
         setFileChooser();
+        setMaxCharToPlotTextArea();
     }
 
     void init(Movie movie, ProgrammationPanelController programmationPanelController) {
@@ -62,6 +63,13 @@ public class MovieEditorController implements Initializable {
         initMovieTypeComboBox();
         setComponents();
         setFileChooser();
+        setMaxCharToPlotTextArea();
+    }
+
+    private void setMaxCharToPlotTextArea() {
+        plotTextArea.setTextFormatter(new TextFormatter<String>(change ->
+                change.getControlNewText().length() <= 650 ? change : null));
+
     }
 
     void init(Movie movie, MovieListPanelController movieListPanelController) {

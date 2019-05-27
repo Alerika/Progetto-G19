@@ -21,7 +21,7 @@ class HallViewer extends JFrame {
     private List<MyDraggableSeat> undraggableSeats = new ArrayList<>();
     private List<MyDraggableSeat> selectedMDS = new ArrayList<>();
     private MoviePrenotationController moviePrenotationController;
-    boolean isSomethingChanged = false;
+    private boolean isSomethingChanged = false;
 
     HallViewer(MoviePrenotationController moviePrenotationController, String nomeSala, List<String> occupiedSeatNames) {
         this.moviePrenotationController = moviePrenotationController;
@@ -84,17 +84,15 @@ class HallViewer extends JFrame {
             mds.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if(e.getClickCount()==2) {
-                        if(!mds.getType().equals(SeatTYPE.OCCUPATO)) {
-                            if(selectedMDS.contains(mds)) {
-                                mds.setBorder(new LineBorder(Color.BLUE,3));
-                                selectedMDS.remove(mds);
-                            } else {
-                                mds.setBorder(new LineBorder(Color.CYAN, 3));
-                                selectedMDS.add(mds);
-                            }
-                            isSomethingChanged = true;
+                    if(!mds.getType().equals(SeatTYPE.OCCUPATO)) {
+                        if(selectedMDS.contains(mds)) {
+                            mds.setBorder(new LineBorder(Color.BLUE,3));
+                            selectedMDS.remove(mds);
+                        } else {
+                            mds.setBorder(new LineBorder(Color.CYAN, 3));
+                            selectedMDS.add(mds);
                         }
+                        isSomethingChanged = true;
                     }
                 }
             });
