@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 public class ApplicationUtils {
@@ -43,5 +46,16 @@ public class ApplicationUtils {
             return fileToRename.renameTo(new File(newFilePath));
         }
         throw new ApplicationException("Impossibile rinominare il file " + oldFilePath);
+    }
+
+    public static boolean checkIfDateIsPassed(String toCheck){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date dateToCheck;
+        try {
+            dateToCheck = sdf.parse(toCheck);
+        } catch (ParseException e) {
+            throw new ApplicationException(e);
+        }
+        return dateToCheck.before(new Date());
     }
 }

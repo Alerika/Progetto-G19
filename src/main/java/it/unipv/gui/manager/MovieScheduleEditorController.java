@@ -13,6 +13,7 @@ import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieSchedule;
 import it.unipv.utils.ApplicationException;
+import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.DataReferences;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -64,7 +65,7 @@ public class MovieScheduleEditorController implements Initializable {
          || time.trim().equalsIgnoreCase("")
          || hall.trim().equalsIgnoreCase("") ){
             JOptionPane.showMessageDialog(null, "Devi compilare tutti i campi!");
-        } else if (checkIfDateIsPassed(date + " " + time)) {
+        } else if (ApplicationUtils.checkIfDateIsPassed(date + " " + time)) {
             JOptionPane.showMessageDialog(null, "Non puoi programmare un film nel passato!");
         } else if(checkIfSomethingIsAlreadyScheduledInThatTemporalGap(hall, date + " " + time, Integer.parseInt(movie.getDurata())) ) {
             JOptionPane.showMessageDialog(null, "C'è già una programmazione in questo periodo!");
@@ -104,17 +105,6 @@ public class MovieScheduleEditorController implements Initializable {
         } else {
             return toFormat;
         }
-    }
-
-    private boolean checkIfDateIsPassed(String toCheck){
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        Date dateToCheck;
-        try {
-            dateToCheck = sdf.parse(toCheck);
-        } catch (ParseException e) {
-            throw new ApplicationException(e);
-        }
-        return dateToCheck.before(new Date());
     }
 
     private boolean checkIfSomethingIsAlreadyScheduledInThatTemporalGap(String hall, String incomingScheduleDate, int incomingMovieDuration) {

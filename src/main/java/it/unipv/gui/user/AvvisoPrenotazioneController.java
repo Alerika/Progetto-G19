@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.login.User;
 import it.unipv.gui.user.areariservata.AreaRiservataHomeController;
-import it.unipv.gui.user.areariservata.PrenotationPanelController;
 import it.unipv.utils.ApplicationException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,7 +42,8 @@ public class AvvisoPrenotazioneController implements Initializable {
             arhc.init(loggedUser);
             Stage stage = new Stage();
             stage.setScene(new Scene(p));
-            stage.setResizable(false);
+            stage.setMinHeight(850);
+            stage.setMinWidth(1200);
             stage.setTitle("Area riservata di " + loggedUser.getName());
             stage.show();
         } catch (IOException ex) {

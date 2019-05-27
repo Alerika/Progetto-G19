@@ -14,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -83,12 +84,10 @@ public class AreaRiservataHomeController implements Initializable {
                         prenotationsLabel.setStyle("-fx-background-color:#db8f00");
                         setTransparentOtherLabels("PRENOTAZIONI");
                         mainPanel.getChildren().clear();
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/PrenotationPanel.fxml"));
-                        BorderPane prenotationPanel = loader.load();
-                        PrenotationPanelController ppc = loader.getController();
-                        prenotationPanel.prefHeightProperty().bind(mainPanel.heightProperty());
-                        prenotationPanel.prefWidthProperty().bind(mainPanel.widthProperty());
-                        ppc.init(loggedUser);
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/CurrentPrenotationPanel.fxml"));
+                        AnchorPane prenotationPanel = loader.load();
+                        CurrentPrenotationPanelController cppc = loader.getController();
+                        cppc.init(loggedUser);
                         mainPanel.setCenter(prenotationPanel);
                         openedPane = "PRENOTAZIONI";
                     }
@@ -98,18 +97,21 @@ public class AreaRiservataHomeController implements Initializable {
                 break;
 
             case "FILM VISTI":
-                //try {
+                try {
                     if(!openedPane.equals("FILM VISTI")) {
                         seenMoviesLabel.setStyle("-fx-background-color:#db8f00");
                         setTransparentOtherLabels("FILM VISTI");
-                        /*mainPanel.getChildren().clear();
-                        AnchorPane movieListPanel = FXMLLoader.load(getClass().getResource("/fxml/manager/MovieListPanel.fxml"));
-                        mainPanel.setCenter(movieListPanel);*/
+                        mainPanel.getChildren().clear();
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/HistoryPanel.fxml"));
+                        AnchorPane historyPanel = loader.load();
+                        HistoryPanelController hpc = loader.getController();
+                        hpc.init(loggedUser, mainPanel.getWidth());
+                        mainPanel.setCenter(historyPanel);
                         openedPane = "FILM VISTI";
                     }
-                /*} catch (IOException e) {
+                } catch (IOException e) {
                     throw new ApplicationException(e);
-                }*/
+                }
                 break;
 
             case "SUGGERIMENTI":
@@ -144,10 +146,8 @@ public class AreaRiservataHomeController implements Initializable {
                 setTransparentOtherLabels("HOME");
                 mainPanel.getChildren().clear();
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/HomePanel.fxml"));
-                BorderPane homePanel = loader.load();
+                AnchorPane homePanel = loader.load();
                 HomePanelController hpc = loader.getController();
-                homePanel.prefHeightProperty().bind(mainPanel.heightProperty());
-                homePanel.prefWidthProperty().bind(mainPanel.widthProperty());
                 hpc.init(loggedUser);
                 mainPanel.setCenter(homePanel);
                 openedPane = "HOME";

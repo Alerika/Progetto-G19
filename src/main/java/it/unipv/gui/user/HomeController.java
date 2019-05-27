@@ -14,6 +14,7 @@ import it.unipv.gui.login.User;
 import it.unipv.gui.login.UserInfo;
 import it.unipv.gui.user.areariservata.AreaRiservataHomeController;
 import it.unipv.utils.ApplicationException;
+import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
 import javafx.animation.FadeTransition;
@@ -272,37 +273,39 @@ public class HomeController implements Initializable {
 
         List<MovieSchedule> schedules = getProgrammationListFromMovie(movie);
         for(MovieSchedule ms : schedules) {
-            Label scheduleLabel = new Label();
-            scheduleLabel.setText("  " + ms.getDate() + "  ");
-            scheduleLabel.setTextFill(Color.WHITE);
-            if(count>=5) {
-                y+=50;
-                x = title.getLayoutX()+20;
-                count = 0;
-            }
-            scheduleLabel.setLayoutY(y);
-            scheduleLabel.setLayoutX(x);
-            scheduleLabel.setFont(infoFont);
-            scheduleLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
-            scheduleLabel.setOnMouseEntered(event -> {
-                scheduleLabel.setBorder(new Border(new BorderStroke(Color.YELLOW, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
-                scheduleLabel.setCursor(Cursor.HAND);
-            });
-            scheduleLabel.setOnMouseExited(event -> {
-                scheduleLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
-                scheduleLabel.setCursor(Cursor.DEFAULT);
-            });
-
-            scheduleLabel.setOnMouseClicked(event -> {
-                if(loggedUser==null) {
-                    GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi essere loggato per poter accedere alla prenotazione!");
-                } else {
-                    openPrenotationStage(movie, scheduleLabel);
+            if(!ApplicationUtils.checkIfDateIsPassed(ms.getDate())) {
+                Label scheduleLabel = new Label();
+                scheduleLabel.setText("  " + ms.getDate() + "  ");
+                scheduleLabel.setTextFill(Color.WHITE);
+                if(count>=5) {
+                    y+=50;
+                    x = title.getLayoutX()+20;
+                    count = 0;
                 }
-            });
-            x += 190;
-            count++;
-            singleFilmPane.getChildren().add(scheduleLabel);
+                scheduleLabel.setLayoutY(y);
+                scheduleLabel.setLayoutX(x);
+                scheduleLabel.setFont(infoFont);
+                scheduleLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
+                scheduleLabel.setOnMouseEntered(event -> {
+                    scheduleLabel.setBorder(new Border(new BorderStroke(Color.YELLOW, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
+                    scheduleLabel.setCursor(Cursor.HAND);
+                });
+                scheduleLabel.setOnMouseExited(event -> {
+                    scheduleLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
+                    scheduleLabel.setCursor(Cursor.DEFAULT);
+                });
+
+                scheduleLabel.setOnMouseClicked(event -> {
+                    if(loggedUser==null) {
+                        GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi essere loggato per poter accedere alla prenotazione!");
+                    } else {
+                        openPrenotationStage(movie, scheduleLabel);
+                    }
+                });
+                x += 190;
+                count++;
+                singleFilmPane.getChildren().add(scheduleLabel);
+            }
         }
 
         singleFilmPane.getChildren().addAll(title, movieTitle);
@@ -645,7 +648,8 @@ public class HomeController implements Initializable {
             arhc.init(loggedUser);
             Stage stage = new Stage();
             stage.setScene(new Scene(p));
-            stage.setResizable(false);
+            stage.setMinHeight(850);
+            stage.setMinWidth(1200);
             stage.setTitle("Area riservata di " + loggedUser.getName());
             stage.show();
         } catch (IOException ex) {

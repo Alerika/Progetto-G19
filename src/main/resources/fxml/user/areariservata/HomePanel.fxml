@@ -6,35 +6,39 @@
 <?import javafx.scene.text.Font?>
 
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="268.0" prefWidth="661.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipv.gui.user.areariservata.HomePanelController">
-   <center>
-      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+<AnchorPane style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipv.gui.user.areariservata.HomePanelController">
+   <children>
+      <BorderPane prefHeight="268.0" prefWidth="661.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <center>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-               <children>
-                  <Label layoutX="96.0" layoutY="75.0" prefHeight="39.0" prefWidth="80.0" text="Username:" textFill="#db8f00">
-                     <font>
-                        <Font name="Bebas Neue Regular" size="22.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="96.0" layoutY="145.0" prefHeight="39.0" prefWidth="80.0" text="E-Mail:" textFill="#db8f00">
-                     <font>
-                        <Font name="Bebas Neue Regular" size="22.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="usernameInjectedLabel" layoutX="215.0" layoutY="75.0" prefHeight="39.0" prefWidth="444.0" textFill="WHITE">
-                     <font>
-                        <Font name="Bebas Neue Regular" size="22.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="emailInjectedLabel" layoutX="215.0" layoutY="145.0" prefHeight="39.0" prefWidth="443.0" textFill="WHITE">
-                     <font>
-                        <Font name="Bebas Neue Regular" size="22.0" />
-                     </font>
-                  </Label>
-               </children>
-            </AnchorPane>
+            <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <center>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Label layoutX="96.0" layoutY="75.0" prefHeight="39.0" prefWidth="80.0" text="Username:" textFill="#db8f00">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="22.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="96.0" layoutY="145.0" prefHeight="39.0" prefWidth="80.0" text="E-Mail:" textFill="#db8f00">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="22.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="usernameInjectedLabel" layoutX="215.0" layoutY="75.0" prefHeight="39.0" prefWidth="444.0" textFill="WHITE">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="22.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="emailInjectedLabel" layoutX="215.0" layoutY="145.0" prefHeight="39.0" prefWidth="443.0" textFill="WHITE">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="22.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </center>
+            </BorderPane>
          </center>
       </BorderPane>
-   </center>
-</BorderPane>
+   </children>
+</AnchorPane>

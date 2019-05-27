@@ -2,10 +2,7 @@ package it.unipv.gui.user.areariservata;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import it.unipv.conversion.CSVToPrenotationList;
 import it.unipv.conversion.PrenotationToPDF;
@@ -13,6 +10,7 @@ import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.login.User;
 import it.unipv.gui.user.Prenotation;
 import it.unipv.utils.ApplicationException;
+import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -28,13 +26,13 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import org.apache.commons.lang3.StringUtils;
 
-public class PrenotationPanelController implements Initializable {
+public class CurrentPrenotationPanelController implements Initializable {
 
     private User user;
     private List<Prenotation> prenotations = new ArrayList<>();
     private static int rowCount = 0;
     private static int columnCount = 0;
-    @FXML private GridPane grigliaProgrammazioni = new GridPane();
+    private GridPane grigliaPrenotazioni = new GridPane();
     @FXML private ScrollPane prenotationsPanel;
     @FXML private TextField searchBarTextfield;
     @FXML private Label searchButton;
@@ -44,10 +42,10 @@ public class PrenotationPanelController implements Initializable {
     public void init(User user) {
         this.user = user;
         GUIUtils.setScaleTransitionOnControl(searchButton);
-        createProgrammationListGrid();
+        createPrenotationListGrid();
     }
 
-    private void initProgrammationList() {
+    private void initPrenotationList() {
         List<Prenotation> x = CSVToPrenotationList.getPrenotationListFromCSV(DataReferences.PRENOTATIONSFILEPATH);
         for(Prenotation p : x) {
             if(p.getNomeUtente().equalsIgnoreCase(user.getName())) {
@@ -57,14 +55,16 @@ public class PrenotationPanelController implements Initializable {
         Collections.sort(prenotations);
     }
 
-    private void createProgrammationListGrid() {
-        grigliaProgrammazioni.getChildren().clear();
+    private void createPrenotationListGrid() {
+        grigliaPrenotazioni.getChildren().clear();
         GUIUtils.setScaleTransitionOnControl(searchButton);
 
-        initProgrammationList();
+        initPrenotationList();
 
         for (Prenotation p : prenotations) {
-            createGridCellFromPrenotation(p);
+            if(!ApplicationUtils.checkIfDateIsPassed(p.getGiornoFilm())) {
+                createGridCellFromPrenotation(p);
+            }
         }
 
         initRowAndColumnCount();
@@ -82,29 +82,32 @@ public class PrenotationPanelController implements Initializable {
         dayLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 20));
         dayLabel.setTextFill(Color.WHITE);
 
-        grigliaProgrammazioni.setHgap(15);
-        grigliaProgrammazioni.setVgap(15);
+        grigliaPrenotazioni.setHgap(15);
+        grigliaPrenotazioni.setVgap(15);
 
-        ImageView invoiceIconView = GUIUtils.getIconView(getClass().getResourceAsStream("/images/PDFIcon.png"));
-        GUIUtils.setFadeInOutOnControl(invoiceIconView);
+        Label invoceIcon = new Label();
+        invoceIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        invoceIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/PDFIcon.png")));
+        invoceIcon.setTooltip(new Tooltip("Scarica fattura del " + p.getGiornoFilm()));
+        GUIUtils.setFadeInOutOnControl(invoceIcon);
 
         AnchorPane pane = new AnchorPane();
         if(columnCount==1) {
             columnCount=0;
             rowCount++;
         }
-        grigliaProgrammazioni.add(pane, columnCount, rowCount);
+        grigliaPrenotazioni.add(pane, columnCount, rowCount);
         columnCount++;
 
-        prenotationsPanel.setContent(grigliaProgrammazioni);
+        prenotationsPanel.setContent(grigliaPrenotazioni);
         GridPane.setMargin(pane, new Insets(5,5,5,5));
 
         dayLabel.setLayoutY(movieNameLabel.getLayoutY());
         dayLabel.setLayoutX(movieNameLabel.getLayoutX()+250);
 
-        invoiceIconView.setY(dayLabel.getLayoutY());
-        invoiceIconView.setX(dayLabel.getLayoutX()+140);
-        invoiceIconView.setOnMouseClicked(event -> {
+        invoceIcon.setLayoutY(dayLabel.getLayoutY());
+        invoceIcon.setLayoutX(dayLabel.getLayoutX()+140);
+        invoceIcon.setOnMouseClicked(event -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documenti PDF", "*.pdf"));
@@ -128,7 +131,7 @@ public class PrenotationPanelController implements Initializable {
         });
 
 
-        pane.getChildren().addAll(movieNameLabel, dayLabel, invoiceIconView);
+        pane.getChildren().addAll(movieNameLabel, dayLabel, invoceIcon);
     }
 
     private void initRowAndColumnCount() {
@@ -137,15 +140,15 @@ public class PrenotationPanelController implements Initializable {
     }
 
     private void refreshUI() {
-        grigliaProgrammazioni.getChildren().clear();
-        createProgrammationListGrid();
+        grigliaPrenotazioni.getChildren().clear();
+        createPrenotationListGrid();
     }
 
     @FXML
     public void searchButtonListener() {
         String searchedString = searchBarTextfield.getText();
         if(searchedString!=null || searchedString.trim().equalsIgnoreCase("")) {
-            grigliaProgrammazioni.getChildren().clear();
+            grigliaPrenotazioni.getChildren().clear();
             for(Prenotation p : prenotations) {
                 if( p.getNomeFilm().trim().toLowerCase().contains(searchedString.toLowerCase())
                  || p.getGiornoFilm().trim().toLowerCase().contains(searchedString.toLowerCase())){
