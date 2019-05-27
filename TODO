@@ -1,6 +1,6 @@
 Parte comune:
-[X] Login (sarebbe da rifare dal lato utente)
-[X] Logout (sarebbe da rifare dal lato utente)
+[X] Login
+[X] Logout
 [ ] Portare tutto su database
 [ ] ...
 
@@ -34,10 +34,18 @@ Parte gestore:
 [ ] ...
 
 Parte cliente
-[ ] Impostare un codice per l'utente durante la registrazione (serve? chiedere conferma)
 [-] Implementare l'area riservata (da terminare)
+[-] Mostrare trama nella home quando si clicca sul film (da sistemare tutta quella zona graficamente, non è fatta bene, potrebbe sovrapporsi tutto)
 [X] Implementare la prenotazione del posto a sedere
 [X] Implementare la prenotazione del film
 [X] Implementare la visualizzazione dell'ordine (quindi far vedere i posti selezionati, il film, data/ora, ecc)
-[ ] Implementare abbonamenti (se richiesti, non l'ho ancora capito)
+[X] Risolvere problema dell'admin che può fare login infiniti
+[ ] Lista sale inserendo elenco delle sale e per ogni sala indicare posti totali, vip e riservati ai disabili
+[ ] Pagina di benvenuto iniziale
+[ ] Prenotazione posti più intuitiva
+[-] Ritorno alla pagina di benvenuto/home nel momento in cui un utente fa il logout (attualmente va alla home, ma sarebbe meglio alla schermata di benvenuto credo)
+[X] Risolvere il bug della pagina "info utili" che si sovrappone alle altre
+[X] Risolvere il problema delle pagine che rimangono aperte nonostante si chiuda la pagina "principale"
+[-] Modificare il pdf della prenotazione cambiando font (capire perché non cambia font)
+[ ] Aggiungere i film suggeriti nell'area riservata
 [ ] ...
