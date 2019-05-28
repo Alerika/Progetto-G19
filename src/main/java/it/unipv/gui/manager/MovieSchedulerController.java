@@ -24,7 +24,7 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -75,6 +75,7 @@ public class MovieSchedulerController implements Initializable {
             Stage stage = new Stage();
             stage.setScene(new Scene(p));
             stage.setTitle("Nuova programmazione per " + movie.getTitolo());
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
             stage.show();
         } catch (IOException ex) {
             throw new ApplicationException(ex);

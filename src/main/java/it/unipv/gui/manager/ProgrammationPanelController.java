@@ -103,6 +103,7 @@ public class ProgrammationPanelController implements Initializable {
                     Stage stage = new Stage();
                     stage.setScene(new Scene(p));
                     stage.setTitle("Modifica: " + movie.getTitolo());
+                    stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
                     stage.show();
                 } catch (IOException ex) {
                     throw new ApplicationException(ex);
@@ -192,6 +193,7 @@ public class ProgrammationPanelController implements Initializable {
                     Stage stage = new Stage();
                     stage.setScene(new Scene(p));
                     stage.setTitle("Programmazione " + movie.getTitolo());
+                    stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
                     stage.show();
                 } catch (IOException ex) {
                     throw new ApplicationException(ex);
@@ -254,6 +256,7 @@ public class ProgrammationPanelController implements Initializable {
             Stage stage = new Stage();
             stage.setScene(new Scene(pane));
             stage.setTitle("Editor Film");
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
             stage.show();
         } catch (IOException e) {
             throw new ApplicationException(e);
