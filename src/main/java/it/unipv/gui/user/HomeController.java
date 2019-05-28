@@ -171,7 +171,7 @@ public class HomeController implements Initializable {
 
         Label programmationsLabel = new Label();
 
-        Font infoFont = new Font("Bebas Regular", 20);
+        Font infoFont = new Font("Bebas Neue Regular", 24);
         ImageView poster;
         try {
             FileInputStream fis2 = new FileInputStream(movie.getLocandinaPath());
@@ -273,44 +273,49 @@ public class HomeController implements Initializable {
         double x = title.getLayoutX()+20;
         double y = programmationsLabel.getLayoutY()+35;
         int count = 0;
+        int i = 0;
 
+        //Metto massimo 10 date perché se no si sovrappongono con la trama.. tanto ogni giorno toglie una data vecchia e ne aggiunge una nuova
         List<MovieSchedule> schedules = getProgrammationListFromMovie(movie);
         for(MovieSchedule ms : schedules) {
-            if(!ApplicationUtils.checkIfDateIsPassed(ms.getDate())) {
-                Label scheduleLabel = new Label();
-                scheduleLabel.setText("  " + ms.getDate() + "  ");
-                scheduleLabel.setTextFill(Color.WHITE);
-                if(count>=5) {
-                    y+=50;
-                    x = title.getLayoutX()+20;
-                    count = 0;
-                }
-                scheduleLabel.setLayoutY(y);
-                scheduleLabel.setLayoutX(x);
-                scheduleLabel.setFont(infoFont);
-                scheduleLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
-                scheduleLabel.setOnMouseEntered(event -> {
-                    scheduleLabel.setBorder(new Border(new BorderStroke(Color.YELLOW, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
-                    scheduleLabel.setCursor(Cursor.HAND);
-                });
-                scheduleLabel.setOnMouseExited(event -> {
-                    scheduleLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
-                    scheduleLabel.setCursor(Cursor.DEFAULT);
-                });
-
-                scheduleLabel.setOnMouseClicked(event -> {
-                    if(loggedUser==null) {
-                        GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi aver effettuato il login per poter accedere alla prenotazione!");
-                    } else if (!isHimANormalUser(loggedUser)){
-                        GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Non puoi effettuare una prenotazione con questo account!");
-                    } else {
-                        openPrenotationStage(movie, scheduleLabel);
+            if(i<10) {
+                if(!ApplicationUtils.checkIfDateIsPassed(ms.getDate())) {
+                    Label scheduleLabel = new Label();
+                    scheduleLabel.setText("  " + ms.getDate() + "  ");
+                    scheduleLabel.setTextFill(Color.WHITE);
+                    if(count>=5) {
+                        y+=50;
+                        x = title.getLayoutX()+20;
+                        count = 0;
                     }
-                });
-                x += 190;
-                count++;
-                singleFilmPane.getChildren().add(scheduleLabel);
+                    scheduleLabel.setLayoutY(y);
+                    scheduleLabel.setLayoutX(x);
+                    scheduleLabel.setFont(infoFont);
+                    scheduleLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
+                    scheduleLabel.setOnMouseEntered(event -> {
+                        scheduleLabel.setBorder(new Border(new BorderStroke(Color.YELLOW, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
+                        scheduleLabel.setCursor(Cursor.HAND);
+                    });
+                    scheduleLabel.setOnMouseExited(event -> {
+                        scheduleLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
+                        scheduleLabel.setCursor(Cursor.DEFAULT);
+                    });
+
+                    scheduleLabel.setOnMouseClicked(event -> {
+                        if(loggedUser==null) {
+                            GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi aver effettuato il login per poter accedere alla prenotazione!");
+                        } else if (!isHimANormalUser(loggedUser)){
+                            GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Non puoi effettuare una prenotazione con questo account!");
+                        } else {
+                            openPrenotationStage(movie, scheduleLabel);
+                        }
+                    });
+                    x += 190;
+                    count++;
+                    singleFilmPane.getChildren().add(scheduleLabel);
+                }
             }
+            i++;
         }
 
         TextArea movieSynopsis = new TextArea();
@@ -331,9 +336,9 @@ public class HomeController implements Initializable {
         movieSynopsis.setFont(infoFont);
         movieSynopsis.setWrapText(true);
         movieSynopsis.setEditable(false);
-        BorderedTitledPane btp = new BorderedTitledPane("Trama", movieSynopsis);
-        btp.setLayoutX(title.getLayoutX() + 40);
-        btp.setLayoutY(poster.getLayoutY()+500);
+        movieSynopsis.setLayoutX(poster.getLayoutX() + 5);
+        movieSynopsis.setLayoutY(poster.getLayoutY()+520);
+        movieSynopsis.setPrefWidth(1400);
 
         singleFilmPane.getChildren().addAll( title, movieTitle
                                            , genre, movieGenre
@@ -343,7 +348,7 @@ public class HomeController implements Initializable {
                                            , programmationsLabel
                                            , poster
                                            , goBackToHomeButton
-                                           , btp);
+                                           , movieSynopsis);
 
         GUIUtils.setScaleTransitionOnControl(goBackToHomeButton);
         goBackToHomeButton.setOnMouseClicked(event -> {
@@ -382,6 +387,7 @@ public class HomeController implements Initializable {
             stage.setScene(new Scene(p));
             stage.setResizable(false);
             stage.setTitle("Prenotazione " + movie.getTitolo() + " " + scheduleLabel.getText().trim());
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
             stage.show();
         } catch (IOException ex) {
             throw new ApplicationException(ex);
@@ -624,6 +630,7 @@ public class HomeController implements Initializable {
             stageRegistrazione.setResizable(false);
             stageRegistrazione.setTitle("Registrazione");
             stageRegistrazione.show();
+            stageRegistrazione.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
             animationMenu();
         } catch (IOException e) {
             throw new ApplicationException(e);
@@ -640,6 +647,7 @@ public class HomeController implements Initializable {
             stage.setScene(new Scene(p));
             stage.setTitle("Login");
             stage.setResizable(false);
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
             stage.show();
         } catch (IOException ex) {
             throw new ApplicationException(ex);
@@ -708,6 +716,7 @@ public class HomeController implements Initializable {
             stage.setTitle("Area Manager");
             stage.setMinHeight(850);
             stage.setMinWidth(1100);
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
             stage.show();
         } catch (IOException e) {
             throw new ApplicationException(e);
@@ -725,6 +734,7 @@ public class HomeController implements Initializable {
             stage.setMinHeight(850);
             stage.setMinWidth(1200);
             stage.setTitle("Area riservata di " + loggedUser.getName());
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
             stage.show();
         } catch (IOException ex) {
             throw new ApplicationException(ex);

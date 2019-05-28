@@ -1,6 +1,5 @@
 package it.unipv.gui.login;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,16 +7,10 @@ import java.util.ResourceBundle;
 
 import it.unipv.conversion.CSVToUserList;
 import it.unipv.gui.common.GUIUtils;
-import it.unipv.gui.login.User;
-import it.unipv.gui.login.UserInfo;
 import it.unipv.gui.user.HomeController;
-import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;

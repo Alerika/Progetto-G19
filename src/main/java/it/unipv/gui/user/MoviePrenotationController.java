@@ -82,7 +82,7 @@ public class MoviePrenotationController implements Initializable {
     }
 
     private void initComponents() {
-        Font infoFont = new Font("Bebas Regular", 24);
+        Font infoFont = new Font("Bebas Neue", 24);
 
         Label disponibleHoursLabel = new Label("ORARI DISPONIBILI: ");
         disponibleHoursLabel.setFont(infoFont);
@@ -121,6 +121,7 @@ public class MoviePrenotationController implements Initializable {
             Stage stage = new Stage();
             stage.setScene(new Scene(p));
             stage.setResizable(false);
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
             stage.setTitle("Grazie per la prenotazione!");
             stage.show();
         } catch (IOException ex) {

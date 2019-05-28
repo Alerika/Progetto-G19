@@ -13,7 +13,7 @@
 
 .movieSynopsisTA {
     -fx-text-fill:white;
-    -fx-background-color: #db8f00;
+    -fx-background-color: transparent;
 }
 .text-area .viewport{
     -fx-background-color: transparent;
