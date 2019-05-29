@@ -34,8 +34,8 @@ Parte gestore:
 [ ] ...
 
 Parte cliente
-[-] Implementare l'area riservata (da terminare)
-[-] Mostrare trama nella home quando si clicca sul film (da sistemare tutta quella zona graficamente, non è fatta bene, potrebbe sovrapporsi tutto)
+[X] Implementare l'area riservata
+[X] Mostrare trama nella home quando si clicca sul film
 [X] Implementare la prenotazione del posto a sedere
 [X] Implementare la prenotazione del film
 [X] Implementare la visualizzazione dell'ordine (quindi far vedere i posti selezionati, il film, data/ora, ecc)
@@ -47,5 +47,5 @@ Parte cliente
 [X] Risolvere il bug della pagina "info utili" che si sovrappone alle altre
 [X] Risolvere il problema delle pagine che rimangono aperte nonostante si chiuda la pagina "principale"
 [-] Modificare il pdf della prenotazione cambiando font (capire perché non cambia font)
-[ ] Aggiungere i film suggeriti nell'area riservata
+[X] Aggiungere i film suggeriti nell'area riservata
 [ ] ...
