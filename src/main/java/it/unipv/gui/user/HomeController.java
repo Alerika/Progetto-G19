@@ -318,6 +318,12 @@ public class HomeController implements Initializable {
             i++;
         }
 
+        Label synopsis = new Label("Trama:");
+        synopsis.setTextFill(Color.valueOf("db8f00"));
+        synopsis.setLayoutX(poster.getLayoutX() + 15);
+        synopsis.setLayoutY(poster.getLayoutY()+515);
+        synopsis.setFont(infoFont);
+
         TextArea movieSynopsis = new TextArea();
         movieSynopsis.setText(movie.getTrama());
         movieSynopsis.getStylesheets().add("css/TextAreaStyle.css");
@@ -336,8 +342,8 @@ public class HomeController implements Initializable {
         movieSynopsis.setFont(infoFont);
         movieSynopsis.setWrapText(true);
         movieSynopsis.setEditable(false);
-        movieSynopsis.setLayoutX(poster.getLayoutX() + 5);
-        movieSynopsis.setLayoutY(poster.getLayoutY()+520);
+        movieSynopsis.setLayoutX(synopsis.getLayoutX()-15);
+        movieSynopsis.setLayoutY(synopsis.getLayoutY()+30);
         movieSynopsis.setPrefWidth(1400);
 
         singleFilmPane.getChildren().addAll( title, movieTitle
@@ -348,7 +354,7 @@ public class HomeController implements Initializable {
                                            , programmationsLabel
                                            , poster
                                            , goBackToHomeButton
-                                           , movieSynopsis);
+                                           , synopsis, movieSynopsis);
 
         GUIUtils.setScaleTransitionOnControl(goBackToHomeButton);
         goBackToHomeButton.setOnMouseClicked(event -> {
@@ -377,20 +383,25 @@ public class HomeController implements Initializable {
         return res.toString();
     }
 
+    private boolean isPrenotationAreaOpened = false;
     private void openPrenotationStage(Movie movie, Label scheduleLabel) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/MoviePrenotation.fxml"));
-            Parent p = loader.load();
-            MoviePrenotationController mpc = loader.getController();
-            mpc.init(scheduleLabel.getText().trim(), movie, loggedUser);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(p));
-            stage.setResizable(false);
-            stage.setTitle("Prenotazione " + movie.getTitolo() + " " + scheduleLabel.getText().trim());
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-            stage.show();
-        } catch (IOException ex) {
-            throw new ApplicationException(ex);
+        if(!isPrenotationAreaOpened) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/MoviePrenotation.fxml"));
+                Parent p = loader.load();
+                MoviePrenotationController mpc = loader.getController();
+                mpc.init(scheduleLabel.getText().trim(), movie, loggedUser);
+                Stage stage = new Stage();
+                stage.setScene(new Scene(p));
+                stage.setResizable(false);
+                stage.setTitle("Prenotazione " + movie.getTitolo() + " " + scheduleLabel.getText().trim());
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                stage.setOnCloseRequest( event -> isPrenotationAreaOpened = false);
+                stage.show();
+                isPrenotationAreaOpened = true;
+            } catch (IOException ex) {
+                throw new ApplicationException(ex);
+            }
         }
     }
 
@@ -707,37 +718,48 @@ public class HomeController implements Initializable {
         }
     }
 
+    private boolean isManagerAreaOpened = false;
     private void doOpenManagerArea() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/manager/ManagerHome.fxml"));
-            Parent root = fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Area Manager");
-            stage.setMinHeight(850);
-            stage.setMinWidth(1100);
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-            stage.show();
-        } catch (IOException e) {
-            throw new ApplicationException(e);
+        if(!isManagerAreaOpened) {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/manager/ManagerHome.fxml"));
+                Parent root = fxmlLoader.load();
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Area Manager");
+                stage.setMinHeight(850);
+                stage.setMinWidth(1100);
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                stage.setOnCloseRequest( event -> isManagerAreaOpened = false);
+                stage.show();
+                isManagerAreaOpened = true;
+            } catch (IOException e) {
+                throw new ApplicationException(e);
+            }
         }
+
     }
 
+    private boolean isReservedAreaOpened = false;
     private void doOpenReservedArea() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/AreaRiservataHome.fxml"));
-            Parent p = loader.load();
-            AreaRiservataHomeController arhc = loader.getController();
-            arhc.init(loggedUser);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(p));
-            stage.setMinHeight(850);
-            stage.setMinWidth(1200);
-            stage.setTitle("Area riservata di " + loggedUser.getName());
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-            stage.show();
-        } catch (IOException ex) {
-            throw new ApplicationException(ex);
+        if(!isReservedAreaOpened) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/AreaRiservataHome.fxml"));
+                Parent p = loader.load();
+                AreaRiservataHomeController arhc = loader.getController();
+                arhc.init(loggedUser);
+                Stage stage = new Stage();
+                stage.setScene(new Scene(p));
+                stage.setMinHeight(850);
+                stage.setMinWidth(1200);
+                stage.setTitle("Area riservata di " + loggedUser.getName());
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                stage.setOnCloseRequest( event -> isReservedAreaOpened = false);
+                stage.show();
+                isReservedAreaOpened = true;
+            } catch (IOException ex) {
+                throw new ApplicationException(ex);
+            }
         }
     }
 

@@ -17,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class AreaRiservataHomeController implements Initializable {
 
@@ -131,6 +132,7 @@ public class AreaRiservataHomeController implements Initializable {
 
             case "ESCI":
                 Stage stage = (Stage) mainPanel.getScene().getWindow();
+                stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
                 stage.close();
                 break;
 

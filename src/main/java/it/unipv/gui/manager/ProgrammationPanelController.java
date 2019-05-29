@@ -94,21 +94,7 @@ public class ProgrammationPanelController implements Initializable {
             posterPreview.setFitWidth(130);
             CloseableUtils.close(fis);
 
-            posterPreview.setOnMouseClicked(e -> {
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieEditor.fxml"));
-                    Parent p = loader.load();
-                    MovieEditorController mec = loader.getController();
-                    mec.init(movie, this);
-                    Stage stage = new Stage();
-                    stage.setScene(new Scene(p));
-                    stage.setTitle("Modifica: " + movie.getTitolo());
-                    stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-                    stage.show();
-                } catch (IOException ex) {
-                    throw new ApplicationException(ex);
-                }
-            });
+            posterPreview.setOnMouseClicked(e -> openMovieEditor(movie, false));
 
             Label genereFilmLabel = new Label(StringUtils.abbreviate("Genere: " + movie.getGenere(), 28));
             genereFilmLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
@@ -184,21 +170,7 @@ public class ProgrammationPanelController implements Initializable {
 
             showSchedulesIcon.setLayoutY(nomeFilmLabel.getLayoutY()+167);
             showSchedulesIcon.setLayoutX(nomeFilmLabel.getLayoutX()+40);
-            showSchedulesIcon.setOnMouseClicked(e -> {
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieScheduler.fxml"));
-                    Parent p = loader.load();
-                    MovieSchedulerController msc = loader.getController();
-                    msc.init(movie);
-                    Stage stage = new Stage();
-                    stage.setScene(new Scene(p));
-                    stage.setTitle("Programmazione " + movie.getTitolo());
-                    stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-                    stage.show();
-                } catch (IOException ex) {
-                    throw new ApplicationException(ex);
-                }
-            });
+            showSchedulesIcon.setOnMouseClicked(e -> openMovieScheduler(movie));
 
             deleteIcon.setLayoutY(nomeFilmLabel.getLayoutY()+167);
             deleteIcon.setLayoutX(nomeFilmLabel.getLayoutX()+80);
@@ -231,6 +203,54 @@ public class ProgrammationPanelController implements Initializable {
         }
     }
 
+    private boolean isMovieSchedulerAlreadyOpened = false;
+    private void openMovieScheduler(Movie movie) {
+        if(!isMovieSchedulerAlreadyOpened) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieScheduler.fxml"));
+                Parent p = loader.load();
+                MovieSchedulerController msc = loader.getController();
+                msc.init(movie);
+                Stage stage = new Stage();
+                stage.setScene(new Scene(p));
+                stage.setTitle("Programmazione " + movie.getTitolo());
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                stage.setOnCloseRequest(event -> isMovieSchedulerAlreadyOpened = false);
+                stage.show();
+                isMovieSchedulerAlreadyOpened = true;
+            } catch (IOException ex) {
+                throw new ApplicationException(ex);
+            }
+        }
+    }
+
+    private boolean isMovieEditorAlreadyOpened = false;
+    private void openMovieEditor(Movie movie, boolean isANewFilm) {
+        if(!isMovieEditorAlreadyOpened) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieEditor.fxml"));
+                Parent p = loader.load();
+                MovieEditorController mec = loader.getController();
+                Stage stage = new Stage();
+                stage.setScene(new Scene(p));
+                if(isANewFilm) {
+                    mec.init(this);
+                    stage.setTitle("Editor Film");
+
+                } else {
+                    mec.init(movie, this);
+                    stage.setTitle("Modifica: " + movie.getTitolo());
+                }
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                stage.setOnCloseRequest(event -> isMovieEditorAlreadyOpened=false);
+                stage.show();
+                isMovieEditorAlreadyOpened = true;
+            } catch (IOException ex) {
+                throw new ApplicationException(ex);
+            }
+        }
+    }
+
     private void removeAssociatedSchedules(Movie movie) {
         List<MovieSchedule> movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH);
         List<MovieSchedule> toRemove = new ArrayList<>();
@@ -248,19 +268,7 @@ public class ProgrammationPanelController implements Initializable {
     }
 
     @FXML public void nuovoFilmButtonListener() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieEditor.fxml"));
-            Parent pane = loader.load();
-            MovieEditorController mec = loader.getController();
-            mec.init(this);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(pane));
-            stage.setTitle("Editor Film");
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-            stage.show();
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
+       openMovieEditor(null, true);
     }
 
     void triggerNewMovieEvent() { refreshUIandMovieList(); }

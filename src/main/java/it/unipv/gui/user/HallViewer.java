@@ -124,5 +124,6 @@ class HallViewer extends JFrame {
                 moviePrenotationController.triggerSelectedSeats(selectedMDS);
             }
         }
+        moviePrenotationController.triggerClosingHallViewer();
     }
 }

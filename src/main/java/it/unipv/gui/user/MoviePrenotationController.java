@@ -34,6 +34,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.apache.commons.io.FilenameUtils;
 
 public class MoviePrenotationController implements Initializable {
@@ -52,6 +53,7 @@ public class MoviePrenotationController implements Initializable {
     private String clickedHall;
     private Prenotation finalPrenotation;
     private User user;
+    private boolean opened = false;
     @FXML private Label closeButton, confirmButton;
     @FXML private AnchorPane orariPanel, salaHeader, summaryPanel;
     @FXML private ScrollPane salaPanel;
@@ -109,6 +111,7 @@ public class MoviePrenotationController implements Initializable {
 
     private void doClose() {
         Stage stage = (Stage) orariPanel.getScene().getWindow();
+        stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
         stage.close();
     }
 
@@ -224,11 +227,14 @@ public class MoviePrenotationController implements Initializable {
             nomeSalaLabel.setLayoutX(snapHallView.getLayoutX()+50);
 
             snapHallView.setOnMouseClicked(event -> {
-                clickedHall = nomeSalaLabel.getText().trim();
-                if(selectedMDS.size()>0) {
-                    new HallViewer(this, nomeSalaLabel.getText().trim(), selectedMDS, getOccupiedSeatNames());
-                } else {
-                    new HallViewer(this, nomeSalaLabel.getText().trim(), getOccupiedSeatNames());
+                if(!opened) {
+                    clickedHall = nomeSalaLabel.getText().trim();
+                    if(selectedMDS.size()>0) {
+                        new HallViewer(this, nomeSalaLabel.getText().trim(), selectedMDS, getOccupiedSeatNames());
+                    } else {
+                        new HallViewer(this, nomeSalaLabel.getText().trim(), getOccupiedSeatNames());
+                    }
+                    opened = true;
                 }
             });
 
@@ -354,5 +360,9 @@ public class MoviePrenotationController implements Initializable {
         }
 
         return res%1==0 ? String.valueOf((int)res) : ""+res+"0";
+    }
+
+    void triggerClosingHallViewer() {
+        opened = false;
     }
 }

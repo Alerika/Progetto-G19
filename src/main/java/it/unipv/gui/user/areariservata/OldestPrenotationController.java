@@ -15,7 +15,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -24,6 +23,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class OldestPrenotationController implements Initializable {
 
@@ -116,6 +116,7 @@ public class OldestPrenotationController implements Initializable {
     @FXML
     public void doClose() {
         Stage stage = (Stage) closeButton.getScene().getWindow();
+        stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
         stage.close();
     }
 }

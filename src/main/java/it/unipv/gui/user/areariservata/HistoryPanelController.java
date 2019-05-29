@@ -183,24 +183,29 @@ public class HistoryPanelController implements Initializable {
         }
     }
 
+    private boolean isAlreadyOpened = false;
     private void openOldestPrenotationWindow(Movie movie) {
-        List<Prenotation> toInject = new ArrayList<>();
-        for(Prenotation p : prenotations) {
-            if(p.getCodiceFilm().equalsIgnoreCase(movie.getCodice())) {
-                toInject.add(p);
+        if(!isAlreadyOpened) {
+            List<Prenotation> toInject = new ArrayList<>();
+            for(Prenotation p : prenotations) {
+                if(p.getCodiceFilm().equalsIgnoreCase(movie.getCodice())) {
+                    toInject.add(p);
+                }
             }
-        }
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/OldestPrenotation.fxml"));
-            Parent p = loader.load();
-            OldestPrenotationController opc = loader.getController();
-            opc.init(toInject);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(p));
-            stage.setTitle("Storico prenotazioni " + movie.getTitolo());
-            stage.show();
-        } catch (IOException ex) {
-            throw new ApplicationException(ex);
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/OldestPrenotation.fxml"));
+                Parent p = loader.load();
+                OldestPrenotationController opc = loader.getController();
+                opc.init(toInject);
+                Stage stage = new Stage();
+                stage.setScene(new Scene(p));
+                stage.setTitle("Storico prenotazioni " + movie.getTitolo());
+                stage.setOnCloseRequest(event -> isAlreadyOpened = false);
+                stage.show();
+                isAlreadyOpened = true;
+            } catch (IOException ex) {
+                throw new ApplicationException(ex);
+            }
         }
     }
 

@@ -68,7 +68,7 @@ public class MovieEditorController implements Initializable {
 
     private void setMaxCharToPlotTextArea() {
         plotTextArea.setTextFormatter(new TextFormatter<String>(change ->
-                change.getControlNewText().length() <= 1200 ? change : null));
+                change.getControlNewText().length() <= 1100 ? change : null));
 
     }
 

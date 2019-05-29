@@ -66,19 +66,24 @@ public class MovieSchedulerController implements Initializable {
         columnCount = 0;
     }
 
+    private boolean isMovieSchedulerEditorAlreadyOpened = false;
     @FXML public void nuovaProgrammazioneButtonListener() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieScheduleEditor.fxml"));
-            Parent p = loader.load();
-            MovieScheduleEditorController msec = loader.getController();
-            msec.init(this, movie);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(p));
-            stage.setTitle("Nuova programmazione per " + movie.getTitolo());
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-            stage.show();
-        } catch (IOException ex) {
-            throw new ApplicationException(ex);
+        if(!isMovieSchedulerEditorAlreadyOpened) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieScheduleEditor.fxml"));
+                Parent p = loader.load();
+                MovieScheduleEditorController msec = loader.getController();
+                msec.init(this, movie);
+                Stage stage = new Stage();
+                stage.setScene(new Scene(p));
+                stage.setTitle("Nuova programmazione per " + movie.getTitolo());
+                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                stage.setOnCloseRequest(event -> isMovieSchedulerEditorAlreadyOpened = false);
+                stage.show();
+                isMovieSchedulerEditorAlreadyOpened = true;
+            } catch (IOException ex) {
+                throw new ApplicationException(ex);
+            }
         }
     }
 
