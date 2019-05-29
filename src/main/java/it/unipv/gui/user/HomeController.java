@@ -751,10 +751,6 @@ public class HomeController implements Initializable {
         int numPostiVIP = getSeatNumberPerType(myDraggableSeatList, SeatTYPE.VIP);
         int numPostiDisabili = getSeatNumberPerType(myDraggableSeatList, SeatTYPE.DISABILE);
 
-        Label numPostiNormaliLabel = new Label("Posti normali: " + getSeatNumberPerType(myDraggableSeatList, SeatTYPE.NORMALE));
-        numPostiNormaliLabel.setFont(font);
-        numPostiNormaliLabel.setTextFill(Color.WHITE);
-
         Label numPostiDisabiliLabel = new Label("Posti per disabili: " + numPostiDisabili);
         numPostiDisabiliLabel.setFont(font);
         numPostiDisabiliLabel.setTextFill(Color.WHITE);
@@ -795,14 +791,12 @@ public class HomeController implements Initializable {
 
         nomeSalaLabel.setLayoutY(snapHallView.getLayoutY() + 133);
         numPostiTotaliLabel.setLayoutY(nomeSalaLabel.getLayoutY() + 15);
-        numPostiNormaliLabel.setLayoutY(numPostiTotaliLabel.getLayoutY() + 15);
-        numPostiDisabiliLabel.setLayoutY(numPostiNormaliLabel.getLayoutY() + 15);
+        numPostiDisabiliLabel.setLayoutY(numPostiTotaliLabel.getLayoutY() + 15);
         numPostiVIPLabel.setLayoutY(numPostiDisabiliLabel.getLayoutY() + 15);
 
         pane.getChildren().addAll( snapHallView
                                  , nomeSalaLabel
                                  , numPostiTotaliLabel
-                                 , numPostiNormaliLabel
                                  , numPostiDisabiliLabel
                                  , numPostiVIPLabel);
 
