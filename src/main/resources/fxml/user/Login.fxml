@@ -34,7 +34,7 @@
                </font>
             </Label>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#db8f00" height="48.0" layoutX="218.0" layoutY="529.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="3.0" style="-fx-cursor: hand;" width="139.0" />
-            <Label fx:id="loginButton" alignment="CENTER" contentDisplay="CENTER" layoutX="218.0" layoutY="537.0" onMouseClicked="#loginButtonListener" prefHeight="32.0" prefWidth="139.0" style="-fx-cursor: hand;" text="Login">
+            <Label fx:id="loginButton" alignment="CENTER" contentDisplay="CENTER" layoutX="218.0" layoutY="537.0" onMouseClicked="#loginButtonListener" prefHeight="32.0" prefWidth="139.0" style="-fx-cursor: hand;" text="Login" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>
