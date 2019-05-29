@@ -2,7 +2,6 @@ package it.unipv.gui.manager;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
@@ -53,6 +52,7 @@ public class MovieEditorController implements Initializable {
         GUIUtils.setScaleTransitionOnControl(saveButton);
         setFileChooser();
         setMaxCharToPlotTextArea();
+        setTextfieldToNumericOnlyTextfield(timeTextField, yearTextField);
     }
 
     void init(Movie movie, ProgrammationPanelController programmationPanelController) {
@@ -64,12 +64,23 @@ public class MovieEditorController implements Initializable {
         setComponents();
         setFileChooser();
         setMaxCharToPlotTextArea();
+        setTextfieldToNumericOnlyTextfield(timeTextField, yearTextField);
     }
 
     private void setMaxCharToPlotTextArea() {
         plotTextArea.setTextFormatter(new TextFormatter<String>(change ->
                 change.getControlNewText().length() <= 1100 ? change : null));
 
+    }
+
+    private void setTextfieldToNumericOnlyTextfield(TextField... tf) {
+        for(TextField t : tf) {
+            t.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("\\d*")) {
+                    t.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            });
+        }
     }
 
     void init(Movie movie, MovieListPanelController movieListPanelController) {

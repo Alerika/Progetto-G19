@@ -116,18 +116,21 @@ public class AreaRiservataHomeController implements Initializable {
                 break;
 
             case "SUGGERIMENTI":
-               // try {
+               try {
                     if(!openedPane.equals("SUGGERIMENTI")){
                         tipsLabel.setStyle("-fx-background-color:#db8f00");
                         setTransparentOtherLabels("SUGGERIMENTI");
-                        /*mainPanel.getChildren().clear();
-                        AnchorPane userListPanel = FXMLLoader.load(getClass().getResource("/fxml/manager/UserListPanel.fxml"));
-                        mainPanel.setCenter(userListPanel);*/
+                        mainPanel.getChildren().clear();
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/TipsPanel.fxml"));
+                        AnchorPane tipsPanel = loader.load();
+                        TipsPanelController tpc = loader.getController();
+                        tpc.init(loggedUser, mainPanel.getWidth());
+                        mainPanel.setCenter(tipsPanel);
                         openedPane = "SUGGERIMENTI";
                     }
-                /*} catch (IOException e) {
+                } catch (IOException e) {
                     throw new ApplicationException(e);
-                }*/
+                }
                 break;
 
             case "ESCI":

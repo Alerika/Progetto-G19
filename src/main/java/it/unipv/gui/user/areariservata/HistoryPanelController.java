@@ -170,9 +170,7 @@ public class HistoryPanelController implements Initializable {
 
             oldestPrenotationIcon.setLayoutY(nomeFilmLabel.getLayoutY());
             oldestPrenotationIcon.setLayoutX(nomeFilmLabel.getLayoutX()+200);
-            oldestPrenotationIcon.setOnMouseClicked(e -> {
-                openOldestPrenotationWindow(movie);
-            });
+            oldestPrenotationIcon.setOnMouseClicked(e -> openOldestPrenotationWindow(movie));
 
             pane.getChildren().addAll(posterPreview);
             pane.getChildren().addAll(nomeFilmLabel);
