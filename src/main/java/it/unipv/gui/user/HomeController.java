@@ -722,7 +722,6 @@ public class HomeController implements Initializable {
         grigliaSale.getChildren().clear();
         if (lineGenere.getScene().getWindow().getWidth() > 1360) {
             hallColumnCountMax = 5;
-            grigliaSale.setHgap(150);
         } else {
             hallColumnCountMax = 3;
         }
@@ -771,7 +770,7 @@ public class HomeController implements Initializable {
         }
 
         grigliaSale.setHgap(150);
-        grigliaSale.setVgap(150);
+        grigliaSale.setVgap(60);
 
         ImageView snapHallView;
         try {
@@ -784,7 +783,7 @@ public class HomeController implements Initializable {
         }
 
         AnchorPane pane = new AnchorPane();
-        if (columnCount == hallColumnCountMax) {
+        if (hallColumnCount == hallColumnCountMax) {
             hallColumnCount = 0;
             hallRowCount++;
         }
