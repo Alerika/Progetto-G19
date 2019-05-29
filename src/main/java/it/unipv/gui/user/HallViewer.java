@@ -102,6 +102,7 @@ class HallViewer extends JFrame {
 
     private void initFrame() {
         setTitle(nomeSala + ": seleziona i posti!");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/GoldenMovieStudioIcon.png")));
         setLayout(new GridLayout(1,1));
         add(undraggableSeatsPanel);
         setSize(1200,720);

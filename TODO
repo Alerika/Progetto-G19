@@ -40,7 +40,7 @@ Parte cliente
 [X] Implementare la prenotazione del film
 [X] Implementare la visualizzazione dell'ordine (quindi far vedere i posti selezionati, il film, data/ora, ecc)
 [X] Risolvere problema dell'admin che può fare login infiniti
-[ ] Lista sale inserendo elenco delle sale e per ogni sala indicare posti totali, vip e riservati ai disabili
+[X] Implementare lista sale inserendo elenco delle sale e per ogni sala indicare posti totali, vip e riservati ai disabili
 [ ] Pagina di benvenuto iniziale
 [ ] Prenotazione posti più intuitiva
 [-] Ritorno alla pagina di benvenuto/home nel momento in cui un utente fa il logout (attualmente va alla home, ma sarebbe meglio alla schermata di benvenuto credo)

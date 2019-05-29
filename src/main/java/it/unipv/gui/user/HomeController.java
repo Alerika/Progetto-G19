@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import it.unipv.conversion.CSVToDraggableSeats;
 import it.unipv.conversion.CSVToMovieList;
 import it.unipv.conversion.CSVToMovieScheduleList;
 import it.unipv.gui.common.*;
@@ -41,16 +42,19 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class HomeController implements Initializable {
     
     @FXML private Rectangle rectangleMenu, rectangleGenere, rectangle2D3D;
     @FXML private AnchorPane menuWindow, genereWindow, usernamePane, anchorInfo, homePane, singleFilmPane;
-    @FXML private GridPane filmGrid = new GridPane();
+    private GridPane filmGrid = new GridPane();
     @FXML private GridPane filmGridFiltered = new GridPane();
-    @FXML private ScrollPane filmScroll, filmScrollFiltered;
+    @FXML private ScrollPane filmScroll, filmScrollFiltered, hallPanel;
     @FXML private Label labelIVA, labelCellulari, labelCosti, infoUtili, genreLabel, logLabel, nonRegistratoQuestionLabel, registerButton, areaRiservataButton;
     @FXML private Line lineGenere;
     @FXML private Label goBackToHomeButton;
@@ -666,26 +670,23 @@ public class HomeController implements Initializable {
     }
     
     public void infoPaneClick() {
+        hallPanel.setVisible(false);
         homePane.setVisible(false);
         singleFilmPane.setVisible(false);
         filmScroll.setVisible(false);
         filmScrollFiltered.setVisible(false);
         rectangle2D3D.setVisible(false);
-
         animationMenu();
-
         Stage stage = (Stage) homePane.getScene().getWindow();
-
         infoUtili.setLayoutX(stage.getWidth()/2-infoUtili.getWidth()/2);
-
         labelCellulari.setLayoutX(stage.getWidth()/2-labelCellulari.getWidth()/2);
         labelIVA.setLayoutX(stage.getWidth()/2-labelIVA.getWidth()/2);
         labelCosti.setLayoutX(stage.getWidth()/2-labelCosti.getWidth()/2);
-
         anchorInfo.setVisible(true);
     }
 
     public void homeClick(){
+        hallPanel.setVisible(false);
         anchorInfo.setVisible(false);
         singleFilmPane.setVisible(false);
         rectangle2D3D.setVisible(false);
@@ -701,7 +702,147 @@ public class HomeController implements Initializable {
     public void listaSaleClick(){
         anchorInfo.setVisible(false);
         homePane.setVisible(false);
+        hallPanel.setVisible(true);
+        initHallGrid();
         animationMenu();
+    }
+
+    private File[] listOfPreviews;
+    private static int hallRowCount = 0;
+    private static int hallColumnCount = 0;
+    private static int hallColumnCountMax = 0;
+    private GridPane grigliaSale = new GridPane();
+
+    private void initListOfPreviews() {
+        listOfPreviews = new File(DataReferences.PIANTINEPREVIEWSFOLDERPATH).listFiles();
+    }
+
+    private void initHallGrid() {
+        initListOfPreviews();
+        grigliaSale.getChildren().clear();
+        if (lineGenere.getScene().getWindow().getWidth() > 1360) {
+            hallColumnCountMax = 5;
+            grigliaSale.setHgap(150);
+        } else {
+            hallColumnCountMax = 3;
+        }
+
+
+        for (File file : Objects.requireNonNull(listOfPreviews)) {
+            createViewFromPreviews(file);
+        }
+
+        hallRowCount = 0;
+        hallColumnCount = 0;
+    }
+
+    private void createViewFromPreviews(File file) {
+        Font font = Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15);
+
+        Label nomeSalaLabel = new Label(FilenameUtils.removeExtension(file.getName()));
+        nomeSalaLabel.setFont(font);
+        nomeSalaLabel.setTextFill(Color.WHITE);
+
+        List<MyDraggableSeat> myDraggableSeatList = initDraggableSeatsList(nomeSalaLabel.getText().trim());
+
+        Label numPostiTotaliLabel = new Label("Capienza: " + myDraggableSeatList.size() + " posti");
+        numPostiTotaliLabel.setFont(font);
+        numPostiTotaliLabel.setTextFill(Color.WHITE);
+
+        int numPostiVIP = getSeatNumberPerType(myDraggableSeatList, SeatTYPE.VIP);
+        int numPostiDisabili = getSeatNumberPerType(myDraggableSeatList, SeatTYPE.DISABILE);
+
+        Label numPostiNormaliLabel = new Label("Posti normali: " + getSeatNumberPerType(myDraggableSeatList, SeatTYPE.NORMALE));
+        numPostiNormaliLabel.setFont(font);
+        numPostiNormaliLabel.setTextFill(Color.WHITE);
+
+        Label numPostiDisabiliLabel = new Label("Posti per disabili: " + numPostiDisabili);
+        numPostiDisabiliLabel.setFont(font);
+        numPostiDisabiliLabel.setTextFill(Color.WHITE);
+        if (numPostiDisabili == 0) {
+            numPostiDisabiliLabel.setVisible(false);
+        }
+
+        Label numPostiVIPLabel = new Label("Posti VIP: " + numPostiVIP);
+        numPostiVIPLabel.setFont(font);
+        numPostiVIPLabel.setTextFill(Color.WHITE);
+        if (numPostiVIP == 0) {
+            numPostiVIPLabel.setVisible(false);
+        }
+
+        grigliaSale.setHgap(150);
+        grigliaSale.setVgap(150);
+
+        ImageView snapHallView;
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            snapHallView = new ImageView(new Image(fis, 220, 395, true, true));
+            CloseableUtils.close(fis);
+            snapHallView.setOnMouseClicked(event -> openHallPreview(file, nomeSalaLabel));
+        } catch (FileNotFoundException ex) {
+            throw new ApplicationException(ex);
+        }
+
+        AnchorPane pane = new AnchorPane();
+        if (columnCount == hallColumnCountMax) {
+            hallColumnCount = 0;
+            hallRowCount++;
+        }
+        grigliaSale.add(pane, hallColumnCount, hallRowCount);
+        hallColumnCount++;
+
+        hallPanel.setContent(grigliaSale);
+        GridPane.setMargin(pane, new Insets(15, 0, 0, 15));
+
+        nomeSalaLabel.setLayoutY(snapHallView.getLayoutY() + 133);
+        numPostiTotaliLabel.setLayoutY(nomeSalaLabel.getLayoutY() + 15);
+        numPostiNormaliLabel.setLayoutY(numPostiTotaliLabel.getLayoutY() + 15);
+        numPostiDisabiliLabel.setLayoutY(numPostiNormaliLabel.getLayoutY() + 15);
+        numPostiVIPLabel.setLayoutY(numPostiDisabiliLabel.getLayoutY() + 15);
+
+        pane.getChildren().addAll( snapHallView
+                                 , nomeSalaLabel
+                                 , numPostiTotaliLabel
+                                 , numPostiNormaliLabel
+                                 , numPostiDisabiliLabel
+                                 , numPostiVIPLabel);
+
+        GUIUtils.setScaleTransitionOnControl(snapHallView);
+    }
+
+    private void openHallPreview(File file, Label nomeSalaLabel) {
+        try {
+            BorderPane borderPane = new BorderPane();
+            ImageView imageView = new ImageView();
+            Image image = new Image(new FileInputStream(file));
+            imageView.setImage(image);
+            imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
+            imageView.setCache(true);
+            borderPane.setCenter(imageView);
+            Stage stage = new Stage();
+            stage.setTitle(nomeSalaLabel.getText());
+            Scene scene = new Scene(borderPane);
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+            stage.setScene(scene);
+            stage.show();
+        } catch (FileNotFoundException e) {
+            throw new ApplicationException(e);
+        }
+    }
+
+    private int getSeatNumberPerType(List<MyDraggableSeat> mdsList, SeatTYPE type) {
+        int res = 0;
+        for(MyDraggableSeat mds : mdsList) {
+            if(mds.getType().equals(type)) {
+                res++;
+            }
+        }
+        return res;
+    }
+
+    private List<MyDraggableSeat> initDraggableSeatsList(String nomeSala) {
+        return CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINEFOLDERPATH+nomeSala+".csv");
     }
 
     @FXML
@@ -780,6 +921,7 @@ public class HomeController implements Initializable {
         usernamePane.setVisible(false);
         singleFilmPane.setVisible(false);
         homePane.setVisible(false);
+        hallPanel.setVisible(false);
     }
 
     private void setupLoggedUser() {
