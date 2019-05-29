@@ -111,6 +111,7 @@ class HallEditor extends JFrame {
 
     private void initFrame() {
         setTitle("Editor " + nomeSala);
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/GoldenMovieStudioIcon.png")));
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
