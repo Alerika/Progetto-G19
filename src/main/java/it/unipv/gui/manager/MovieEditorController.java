@@ -139,7 +139,7 @@ public class MovieEditorController implements Initializable {
          || yearTextField.getText().trim().equalsIgnoreCase("")
          || movieTypeComboBox.getValue() == null
          || plotTextArea.getText().trim().equalsIgnoreCase("")){
-            JOptionPane.showMessageDialog(null, "Devi compilare tutti i campi!");
+            GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi compilare tutti i campi!");
         } else {
             if(!wasItAlreadyCreated) {
                 Movie m = getMovieFromTextFields();
@@ -156,7 +156,7 @@ public class MovieEditorController implements Initializable {
                     throw new ApplicationException("Unknown summoner!");
                 }
             }
-            JOptionPane.showMessageDialog(null, "Salvataggio film riuscito con successo!");
+            GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Successo", "Operazione riuscita: ", "Salvataggio film riuscito con successo!");
         }
     }
 

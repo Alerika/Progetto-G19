@@ -1,7 +1,7 @@
 package it.unipv.conversion;
 
 import com.opencsv.CSVWriter;
-import it.unipv.gui.common.MyDraggableSeat;
+import it.unipv.gui.common.Seat;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 
@@ -26,7 +26,7 @@ public class DraggableSeatsToCSV {
      * @param pathCSV -> percorso del file .csv su cui salvare le informazioni
      * @param isItToAppend -> se vero, entra in modalità di scrittura "append"
      */
-    public static void createCSVFromDraggableSeatsList(List<MyDraggableSeat> seats, String pathCSV, boolean isItToAppend) {
+    public static void createCSVFromDraggableSeatsList(List<Seat> seats, String pathCSV, boolean isItToAppend) {
         CSVWriter writer = null;
         FileWriter file = null;
         try {
@@ -41,7 +41,7 @@ public class DraggableSeatsToCSV {
                                   , CSVWriter.NO_QUOTE_CHARACTER
                                   ,"\r\n");
 
-            for(MyDraggableSeat seat : seats) {
+            for(Seat seat : seats) {
                 List<String> csvRow = new ArrayList<>();
                 csvRow.add(seat.getText());
                 csvRow.add(""+seat.getX());

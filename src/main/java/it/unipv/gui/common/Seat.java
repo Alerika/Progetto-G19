@@ -13,13 +13,13 @@ import java.awt.*;
  * Il singolo posto a sedere è trascinabile all'interno della piantina
  * TODO: fare in modo che non possa essere trascinato all'esterno della piantina stessa
  */
-public class MyDraggableSeat extends JLabel {
+public class Seat extends JLabel {
 
     private boolean amISelected;
     private boolean amICopied;
     private SeatTYPE type;
 
-    public MyDraggableSeat(int x, int y, SeatTYPE type) {
+    public Seat(int x, int y, SeatTYPE type) {
         this.type = type;
         setBorder(new LineBorder(Color.BLUE, 3));
         setFont(this.getFont().deriveFont(9f));

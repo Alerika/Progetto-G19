@@ -52,7 +52,43 @@
             </AnchorPane>
             <AnchorPane fx:id="filmContainer" layoutY="141.0" maxHeight="860.0" maxWidth="1601.0" prefHeight="860.0" prefWidth="1601.0" style="-fx-background-color: #000000;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="143.0">
                <children>
-                  <ScrollPane fx:id="hallPanel" layoutX="40.0" layoutY="184.0" prefHeight="753.0" prefWidth="1880.0" style="-fx-background: black; -fx-border-color: black; -fx-outline: none; -fx-background-color: transparent;" stylesheets="@../../css/ScrollBarStyle.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="184.0" />
+                  <AnchorPane fx:id="welcomePanel" prefHeight="937.0" prefWidth="1920.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label fx:id="sloganLabel" alignment="CENTER" layoutX="581.0" layoutY="249.0" prefHeight="73.0" prefWidth="759.0" text="Il cinema come lo hai sempre voluto!" textFill="WHITE">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="56.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="welcomeLabel" alignment="CENTER" layoutX="290.0" layoutY="127.0" prefHeight="95.0" prefWidth="1341.0" text="Benvenuto in Golden Movie Studio" textFill="#db8f00" AnchorPane.topAnchor="127.0">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="73.0" />
+                           </font>
+                        </Label>
+                        <AnchorPane fx:id="welcomeFooter" layoutY="672.0" prefHeight="62.0" prefWidth="1920.0" style="-fx-background-color: #381200;" AnchorPane.bottomAnchor="123.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                           <children>
+                              <Label fx:id="labelCosti1" contentDisplay="CENTER" layoutX="806.0" layoutY="3.0" prefHeight="57.0" prefWidth="267.0" text="Non sei ancora registrato? Clicca per  " textFill="#db8f00">
+                                 <font>
+                                    <Font name="Bebas Neue Regular" size="20.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="welcomeRegisterButton" layoutX="1073.0" layoutY="19.0" onMouseClicked="#welcomeRegisterButtonListener" style="-fx-cursor: hand;" text="Registrati" textFill="WHITE">
+                                 <font>
+                                    <Font name="Bebas Neue Regular" size="20.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane fx:id="singleFilmPane" layoutX="282.0" prefHeight="937.0" prefWidth="1638.0" style="-fx-background-color: #1a1a1a;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="282.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label fx:id="goBackToHomeButton" alignment="CENTER" layoutX="713.0" layoutY="833.0" prefHeight="36.0" prefWidth="195.0" style="-fx-background-color: #db8f00; -fx-background-radius: 10;" text="Torna alla home" textFill="WHITE" AnchorPane.bottomAnchor="68.0" AnchorPane.leftAnchor="713.0" AnchorPane.rightAnchor="713.0">
+                           <font>
+                              <Font name="Bebas Neue Regular" size="24.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
                   <AnchorPane fx:id="anchorInfo" layoutY="97.0" prefHeight="857.0" prefWidth="1600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Label fx:id="infoUtili" alignment="CENTER" layoutX="733.0" layoutY="36.0" prefHeight="85.0" prefWidth="134.0" text="INFO UTILI" textFill="#db8f00" AnchorPane.topAnchor="36.0">
@@ -126,6 +162,7 @@
                         </AnchorPane>
                      </children>
                   </AnchorPane>
+                  <ScrollPane fx:id="hallPanel" layoutX="40.0" layoutY="184.0" prefHeight="753.0" prefWidth="1880.0" style="-fx-background: black; -fx-border-color: black; -fx-outline: none; -fx-background-color: transparent;" stylesheets="@../../css/ScrollBarStyle.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="184.0" />
                   <AnchorPane fx:id="homePane" prefHeight="857.0" prefWidth="1600.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <ScrollPane fx:id="filmScrollFiltered" hbarPolicy="NEVER" layoutX="10.0" layoutY="138.0" prefHeight="729.0" prefWidth="1601.0" style="-fx-background: black; -fx-background-color: black; -fx-outline: none; -fx-border: none;" stylesheets="@../../css/ScrollBarStyle.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="128.0" />
@@ -244,15 +281,6 @@
                         <Label fx:id="registerButton" alignment="CENTER" contentDisplay="CENTER" layoutX="139.0" layoutY="201.0" onMouseClicked="#registrationWindow" prefHeight="31.0" prefWidth="71.0" style="-fx-cursor: hand;" text="registrati" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="139.0">
                            <font>
                               <Font name="Bebas Neue Regular" size="18.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane fx:id="singleFilmPane" layoutX="299.0" prefHeight="937.0" prefWidth="1920.0" style="-fx-background-color: #1a1a1a;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <Label fx:id="goBackToHomeButton" alignment="CENTER" layoutX="713.0" layoutY="833.0" prefHeight="36.0" prefWidth="195.0" style="-fx-background-color: #db8f00; -fx-background-radius: 10;" text="Torna alla home" textFill="WHITE" AnchorPane.bottomAnchor="68.0" AnchorPane.leftAnchor="713.0" AnchorPane.rightAnchor="713.0">
-                           <font>
-                              <Font name="Bebas Neue Regular" size="24.0" />
                            </font>
                         </Label>
                      </children>

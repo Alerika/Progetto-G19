@@ -51,11 +51,11 @@ import org.apache.commons.lang3.StringUtils;
 public class HomeController implements Initializable {
     
     @FXML private Rectangle rectangleMenu, rectangleGenere, rectangle2D3D;
-    @FXML private AnchorPane menuWindow, genereWindow, usernamePane, anchorInfo, homePane, singleFilmPane;
+    @FXML private AnchorPane menuWindow, genereWindow, usernamePane, anchorInfo, homePane, singleFilmPane, welcomePanel, welcomeFooter;
     private GridPane filmGrid = new GridPane();
     @FXML private GridPane filmGridFiltered = new GridPane();
     @FXML private ScrollPane filmScroll, filmScrollFiltered, hallPanel;
-    @FXML private Label labelIVA, labelCellulari, labelCosti, infoUtili, genreLabel, logLabel, nonRegistratoQuestionLabel, registerButton, areaRiservataButton;
+    @FXML private Label labelIVA, labelCellulari, labelCosti, infoUtili, genreLabel, logLabel, nonRegistratoQuestionLabel, registerButton, areaRiservataButton, welcomeLabel, welcomeRegisterButton;
     @FXML private Line lineGenere;
     @FXML private Label goBackToHomeButton;
 
@@ -524,6 +524,7 @@ public class HomeController implements Initializable {
         if(!stageRegistrazione.isShowing()){
             if(loggedUser==null) {
                 openRegistrazione();
+                animationMenu();
             } else {
                 doLogout();
             }
@@ -541,7 +542,20 @@ public class HomeController implements Initializable {
             UserInfo.deleteUserInfoFileInUserDir();
         }
 
-        homeClick();
+        anchorInfo.setVisible(false);
+        singleFilmPane.setVisible(false);
+        homePane.setVisible(false);
+        hallPanel.setVisible(false);
+        welcomePanel.setVisible(true);
+        welcomeLabel.setText("Benvenuto in Golden Movie Studio");
+        welcomeFooter.setVisible(true);
+        animationMenu();
+    }
+
+    @FXML
+    public void welcomeRegisterButtonListener() {
+        System.out.println("cliccato");
+        openRegistrazione();
     }
 
     private MovieTYPE type;
@@ -646,7 +660,6 @@ public class HomeController implements Initializable {
             stageRegistrazione.setTitle("Registrazione");
             stageRegistrazione.show();
             stageRegistrazione.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-            animationMenu();
         } catch (IOException e) {
             throw new ApplicationException(e);
         }
@@ -675,6 +688,7 @@ public class HomeController implements Initializable {
         singleFilmPane.setVisible(false);
         filmScroll.setVisible(false);
         filmScrollFiltered.setVisible(false);
+        welcomePanel.setVisible(false);
         rectangle2D3D.setVisible(false);
         animationMenu();
         Stage stage = (Stage) homePane.getScene().getWindow();
@@ -687,6 +701,7 @@ public class HomeController implements Initializable {
 
     public void homeClick(){
         hallPanel.setVisible(false);
+        welcomePanel.setVisible(false);
         anchorInfo.setVisible(false);
         singleFilmPane.setVisible(false);
         rectangle2D3D.setVisible(false);
@@ -701,6 +716,7 @@ public class HomeController implements Initializable {
 
     public void listaSaleClick(){
         anchorInfo.setVisible(false);
+        welcomePanel.setVisible(false);
         homePane.setVisible(false);
         hallPanel.setVisible(true);
         initHallGrid();
@@ -742,14 +758,14 @@ public class HomeController implements Initializable {
         nomeSalaLabel.setFont(font);
         nomeSalaLabel.setTextFill(Color.WHITE);
 
-        List<MyDraggableSeat> myDraggableSeatList = initDraggableSeatsList(nomeSalaLabel.getText().trim());
+        List<Seat> seatList = initDraggableSeatsList(nomeSalaLabel.getText().trim());
 
-        Label numPostiTotaliLabel = new Label("Capienza: " + myDraggableSeatList.size() + " posti");
+        Label numPostiTotaliLabel = new Label("Capienza: " + seatList.size() + " posti");
         numPostiTotaliLabel.setFont(font);
         numPostiTotaliLabel.setTextFill(Color.WHITE);
 
-        int numPostiVIP = getSeatNumberPerType(myDraggableSeatList, SeatTYPE.VIP);
-        int numPostiDisabili = getSeatNumberPerType(myDraggableSeatList, SeatTYPE.DISABILE);
+        int numPostiVIP = getSeatNumberPerType(seatList, SeatTYPE.VIP);
+        int numPostiDisabili = getSeatNumberPerType(seatList, SeatTYPE.DISABILE);
 
         Label numPostiDisabiliLabel = new Label("Posti per disabili: " + numPostiDisabili);
         numPostiDisabiliLabel.setFont(font);
@@ -824,9 +840,9 @@ public class HomeController implements Initializable {
         }
     }
 
-    private int getSeatNumberPerType(List<MyDraggableSeat> mdsList, SeatTYPE type) {
+    private int getSeatNumberPerType(List<Seat> mdsList, SeatTYPE type) {
         int res = 0;
-        for(MyDraggableSeat mds : mdsList) {
+        for(Seat mds : mdsList) {
             if(mds.getType().equals(type)) {
                 res++;
             }
@@ -834,7 +850,7 @@ public class HomeController implements Initializable {
         return res;
     }
 
-    private List<MyDraggableSeat> initDraggableSeatsList(String nomeSala) {
+    private List<Seat> initDraggableSeatsList(String nomeSala) {
         return CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINEFOLDERPATH+nomeSala+".csv");
     }
 
@@ -915,6 +931,7 @@ public class HomeController implements Initializable {
         singleFilmPane.setVisible(false);
         homePane.setVisible(false);
         hallPanel.setVisible(false);
+        welcomePanel.setVisible(true);
     }
 
     private void setupLoggedUser() {
@@ -926,6 +943,8 @@ public class HomeController implements Initializable {
         } else {
             areaRiservataButton.setText("Area Riservata");
         }
+        welcomeLabel.setText(loggedUser.getName() + ", bentornato in Golden Movie Studio!");
+        welcomeFooter.setVisible(false);
         areaRiservataButton.setVisible(true);
     }
 

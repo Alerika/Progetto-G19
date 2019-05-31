@@ -100,9 +100,9 @@ public class UserListPanelController implements Initializable {
                     users.get(users.indexOf(user)).setPassword(password);
                     UserToCSV.createCSVFromUserList(users, DataReferences.USERFILEPATH, false);
                     refreshUI();
-                    JOptionPane.showMessageDialog(null,"La password dell'utente " + user.getName() + " è stata correttamente cambiata in: " + password);
+                    GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "La password dell'utente " + user.getName() + " è stata correttamente cambiata in: " + password);
                 } else {
-                    JOptionPane.showMessageDialog(null,"Non puoi inserire una password di soli spazi!");
+                    GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Non puoi inserire una password di soli spazi!");
                 }
             }
         });

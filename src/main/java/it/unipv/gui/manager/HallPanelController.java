@@ -17,10 +17,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -150,7 +147,7 @@ public class HallPanelController implements Initializable {
                                                    , DataReferences.PIANTINEFOLDERPATH + newFileName+".csv")
                      && ApplicationUtils.renameFile( DataReferences.PIANTINEPREVIEWSFOLDERPATH + hallName + ".jpg"
                                                    , DataReferences.PIANTINEPREVIEWSFOLDERPATH + newFileName + ".jpg" ) ) {
-                        JOptionPane.showMessageDialog(null, "Sala rinominata con successo!");
+                        GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "Sala rinominata con successo!");
                         labelToModify.setText(newFileName);
                         renameIcon.setTooltip(new Tooltip("Rinomina " + newFileName));
                         deleteIcon.setTooltip(new Tooltip("Elimina " + newFileName));
@@ -158,13 +155,13 @@ public class HallPanelController implements Initializable {
                         hallNames.add(newFileName);
                         hallNames.remove(hallName);
                     } else {
-                        JOptionPane.showMessageDialog(null, "Si è verificato un errore durante la procedura!");
+                        GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Si è verificato un errore durante la procedura!");
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Esiste già una sala con questo nome!");
+                    GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Esiste già una sala con questo nome!");
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Devi compilare il campo!");
+                GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi compilare il campo!");
             }
         }
     }
@@ -188,7 +185,7 @@ public class HallPanelController implements Initializable {
         String nomeSala = JOptionPane.showInputDialog(null, "Inserisci il nome della sala");
         if(nomeSala!=null) {
             if(nomeSala.equalsIgnoreCase("") || nomeSala.trim().length()==0) {
-                JOptionPane.showMessageDialog(null, "Devi inserire un nome!");
+                GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi inserire un nome!");
             } else if(!nomeSala.equalsIgnoreCase("")) {
                 if(checkIfItIsFree(nomeSala)) {
                     int reply = JOptionPane.showConfirmDialog(null, "Vuoi creare una griglia preimpostata?","Scegli una opzione", JOptionPane.YES_NO_OPTION);
@@ -200,15 +197,13 @@ public class HallPanelController implements Initializable {
                             if(rows<27) {
                                 new HallEditor(nomeSala, this, rows, columns);
                             } else {
-                                JOptionPane.showMessageDialog(null, "Numero massimo di righe 26!");
+                                GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Numero massimo di righe 26!");
                             }
                         }
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Esiste già una sala con questo nome!");
+                    GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Esiste già una sala con questo nome!");
                 }
-
-
             }
         }
     }
@@ -224,7 +219,7 @@ public class HallPanelController implements Initializable {
         int option = JOptionPane.showConfirmDialog(null, message, "Inserisci numero di righe e colonne", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             if(rows.getText().trim().equalsIgnoreCase("") || columns.getText().trim().equalsIgnoreCase("")) {
-                JOptionPane.showMessageDialog(null, "Devi inserire entrambi i dati!");
+                GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi inserire entrambi i dati!");
                 canceled = true;
             } else {
                 this.rows = Integer.parseInt(rows.getText());

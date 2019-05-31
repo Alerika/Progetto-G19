@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javax.swing.JOptionPane;
@@ -50,7 +51,7 @@ public class PricesPanelController implements Initializable {
                 || vipTextField.getText().trim().equalsIgnoreCase("")
                 || threeDTextField.getText().trim().equalsIgnoreCase("")
                 || reducedTextField.getText().trim().equalsIgnoreCase("")) {
-            JOptionPane.showMessageDialog(null, "Devi compilare tutti i campi!");
+            GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi compilare tutti i campi!");
         } else {
             if(prices!=null) {
                 prices.setBase(Double.parseDouble(baseTextField.getText()));
@@ -64,7 +65,7 @@ public class PricesPanelController implements Initializable {
                         , Double.parseDouble(reducedTextField.getText()));
             }
             PricesToCSV.createCSVFromPrices(prices, DataReferences.PRICESFILEPATH, false);
-            JOptionPane.showMessageDialog(null, "Salvataggio prezzi riuscito con successo!");
+            GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "Salvataggio prezzi riuscito con successo!");
         }
     }
     

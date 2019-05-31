@@ -41,7 +41,7 @@ public class MoviePrenotationController implements Initializable {
 
     private List<MovieSchedule> schedules;
     private List<Prenotation> prenotations;
-    private List<MyDraggableSeat> selectedMDS = new ArrayList<>();
+    private List<Seat> selectedMDS = new ArrayList<>();
     private File[] listOfPreviews;
     private GridPane grigliaSale = new GridPane();
     private static int rowCount = 0;
@@ -296,7 +296,7 @@ public class MoviePrenotationController implements Initializable {
         return res;
     }
 
-    void triggerSelectedSeats(List<MyDraggableSeat> selectedMDS) {
+    void triggerSelectedSeats(List<Seat> selectedMDS) {
         this.selectedMDS = selectedMDS;
         createSummaryPanel();
     }
@@ -339,7 +339,7 @@ public class MoviePrenotationController implements Initializable {
 
     private String calculateTotalPrices() {
         double res = 0;
-        for(MyDraggableSeat mds : selectedMDS) {
+        for(Seat mds : selectedMDS) {
             switch (mds.getType()) {
                 case NORMALE:
                     res += prices.getBase();

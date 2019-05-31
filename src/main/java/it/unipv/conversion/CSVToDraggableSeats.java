@@ -1,7 +1,7 @@
 package it.unipv.conversion;
 
 import com.opencsv.CSVReader;
-import it.unipv.gui.common.MyDraggableSeat;
+import it.unipv.gui.common.Seat;
 import it.unipv.gui.common.SeatTYPE;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
@@ -30,9 +30,9 @@ public class CSVToDraggableSeats {
      * @param path -> percorso dov'è possibile trovare il file .csv da cui trarre le informazioni
      * @return -> lista di posti a sedere correttamente inizializzati con le informazioni salvate nel file
      */
-    public static List<MyDraggableSeat> getMyDraggableSeatListFromCSV(String path) {
+    public static List<Seat> getMyDraggableSeatListFromCSV(String path) {
         CSVReader reader = null;
-        List<MyDraggableSeat> myDraggableSeats = new ArrayList<>();
+        List<Seat> seats = new ArrayList<>();
         try {
             //Controllo se il file esiste: in caso negativo non faccio niente e ritorno una lista vuota
             File f = new File(path);
@@ -40,8 +40,8 @@ public class CSVToDraggableSeats {
                 reader = new CSVReader(new FileReader(path), DELIMITATOR, VUOTO);
                 String[] line;
                 while((line = reader.readNext()) != null) {
-                    MyDraggableSeat myDraggableSeat = setMyDraggableSeat(line);
-                    myDraggableSeats.add(myDraggableSeat);
+                    Seat seat = setMyDraggableSeat(line);
+                    seats.add(seat);
                 }
             }
         } catch (IOException ex) {
@@ -50,7 +50,7 @@ public class CSVToDraggableSeats {
             CloseableUtils.close(reader);
         }
 
-        return myDraggableSeats;
+        return seats;
     }
 
     /**
@@ -62,23 +62,23 @@ public class CSVToDraggableSeats {
      *               line[2] -> coordinata y del posto a sedere
      *               line[3] -> tipologia del posto a sedere
      */
-    private static MyDraggableSeat setMyDraggableSeat(String[] line) {
-        MyDraggableSeat res;
+    private static Seat setMyDraggableSeat(String[] line) {
+        Seat res;
         switch (line[3]) {
             case "NORMALE":
-                res = new MyDraggableSeat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.NORMALE);
+                res = new Seat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.NORMALE);
                 break;
 
             case "VIP":
-                res = new MyDraggableSeat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.VIP);
+                res = new Seat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.VIP);
                 break;
 
             case "DISABILE":
-                res = new MyDraggableSeat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.DISABILE);
+                res = new Seat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.DISABILE);
                 break;
 
             case "OCCUPATO":
-                res = new MyDraggableSeat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.OCCUPATO);
+                res = new Seat(Integer.parseInt(line[1]), Integer.parseInt(line[2]), SeatTYPE.OCCUPATO);
                 break;
 
                 default:

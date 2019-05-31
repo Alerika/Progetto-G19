@@ -2,11 +2,13 @@ package it.unipv.gui.manager;
 
 import it.unipv.conversion.CSVToDraggableSeats;
 import it.unipv.conversion.DraggableSeatsToCSV;
-import it.unipv.gui.common.MyDraggableSeat;
+import it.unipv.gui.common.GUIUtils;
+import it.unipv.gui.common.Seat;
 import it.unipv.gui.common.SeatTYPE;
 import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.DataReferences;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -170,7 +172,7 @@ class HallEditor extends JFrame {
     private class DraggableSeatPanel extends JPanel {
 
         private List<String> createdSeatsName = new ArrayList<>();
-        private List<MyDraggableSeat> draggableSeatsList = new ArrayList<>();
+        private List<Seat> draggableSeatsList = new ArrayList<>();
 
         DraggableSeatPanel(boolean wasItAlreadyCreated) {
             if(wasItAlreadyCreated) { initDraggableSeatsList(); }
@@ -194,8 +196,8 @@ class HallEditor extends JFrame {
             draggableSeatsList.addAll(initGrid(rows, columns, true));
         }
 
-        private List<MyDraggableSeat> initGrid(int rows, int columns, boolean doYouWantName) {
-            List<MyDraggableSeat> res = new ArrayList<>();
+        private List<Seat> initGrid(int rows, int columns, boolean doYouWantName) {
+            List<Seat> res = new ArrayList<>();
             int x = 5;
             int y = 5;
             int cont = 0;
@@ -206,7 +208,7 @@ class HallEditor extends JFrame {
                 }
                 for(int j=0; j<columns; j++) {
                     if(j>0) { x += DataReferences.MYDRAGGABLESEATWIDTH+5; }
-                    MyDraggableSeat mds = new MyDraggableSeat(x,y, SeatTYPE.NORMALE);
+                    Seat mds = new Seat(x,y, SeatTYPE.NORMALE);
                     configureMDS( mds
                                 , doYouWantName ? DataReferences.ALPHABET[cont]+""+(j+1) : ""
                                 , doYouWantName);
@@ -219,12 +221,12 @@ class HallEditor extends JFrame {
 
         private void initDraggableSeatsList() {
             draggableSeatsList = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINEFOLDERPATH +nomeSala+".csv");
-            for(MyDraggableSeat mds : draggableSeatsList) {
+            for(Seat mds : draggableSeatsList) {
                 configureMDS(mds, mds.getText(), true);
             }
         }
 
-        private void configureMDS(MyDraggableSeat mds, String name, boolean doYouWantName) {
+        private void configureMDS(Seat mds, String name, boolean doYouWantName) {
             if(doYouWantName) {
                 createdSeatsName.add(mds.getText());
                 mds.setText(name);
@@ -235,8 +237,8 @@ class HallEditor extends JFrame {
         }
 
         private void removeSeat(int x, int y) {
-            MyDraggableSeat toRemove = null;
-            for(MyDraggableSeat mds : draggableSeatsList) {
+            Seat toRemove = null;
+            for(Seat mds : draggableSeatsList) {
                 if((x==mds.getX())&&(y==mds.getY())) {
                     toRemove = mds;
                     break;
@@ -253,7 +255,7 @@ class HallEditor extends JFrame {
 
         private void removeSelectedSeats() {
             if (selectedMDSList.size() > 0) {
-                for (MyDraggableSeat mds : selectedMDSList) {
+                for (Seat mds : selectedMDSList) {
                     createdSeatsName.remove(mds.getText());
                     draggableSeatsList.remove(mds);
                     remove(mds);
@@ -264,10 +266,10 @@ class HallEditor extends JFrame {
             selectedMDSList.clear();
         }
 
-        private List<MyDraggableSeat> mdsToPaste = new ArrayList<>();
+        private List<Seat> mdsToPaste = new ArrayList<>();
         private void copySelectedSeats() {
             if(selectedMDSList.size()>0) {
-                for(MyDraggableSeat mds : selectedMDSList) {
+                for(Seat mds : selectedMDSList) {
                     if(!mds.getIsCopied()) {
                         mdsToPaste.add(mds);
                         mds.setIsCopied(true);
@@ -277,10 +279,10 @@ class HallEditor extends JFrame {
         }
 
         private void pasteCopiedSeats() {
-            List<MyDraggableSeat> pasted = new ArrayList<>();
+            List<Seat> pasted = new ArrayList<>();
             if(mdsToPaste.size()>0) {
-                for(MyDraggableSeat mds : mdsToPaste) {
-                    MyDraggableSeat copy = new MyDraggableSeat(mds.getX()-15, mds.getY()-15, mds.getType());
+                for(Seat mds : mdsToPaste) {
+                    Seat copy = new Seat(mds.getX()-15, mds.getY()-15, mds.getType());
                     configureMDS(copy, mds.getText()+" copy", true);
                     repaint();
                     mds.setIsCopied(false);
@@ -289,13 +291,13 @@ class HallEditor extends JFrame {
             }
 
             if(selectedMDSList.size()>0) {
-                for(MyDraggableSeat mds : selectedMDSList) {
+                for(Seat mds : selectedMDSList) {
                     mds.setBorder(new LineBorder(Color.BLUE, 3));
                 }
                 selectedMDSList.clear();
             }
 
-            for(MyDraggableSeat mds : pasted) {
+            for(Seat mds : pasted) {
                 selectedMDSList.add(mds);
                 mds.setBorder(new LineBorder(Color.CYAN, 3));
             }
@@ -308,9 +310,9 @@ class HallEditor extends JFrame {
         }
 
         private void createNewDraggableSeat() {
-            MyDraggableSeat mds = new MyDraggableSeat(0,0, SeatTYPE.NORMALE);
+            Seat mds = new Seat(0,0, SeatTYPE.NORMALE);
             configureMDS(mds, "", false);
-            for(MyDraggableSeat m : selectedMDSList) {
+            for(Seat m : selectedMDSList) {
                 m.setBorder(new LineBorder(Color.BLUE, 3));
             }
             selectedMDSList.clear();
@@ -327,13 +329,13 @@ class HallEditor extends JFrame {
         void addMultipleSeats() {
             configureGridJOptionPaneMenu();
             if(!canceled) {
-                List<MyDraggableSeat> grid = initGrid(rows, columns, false);
+                List<Seat> grid = initGrid(rows, columns, false);
                 draggableSeatsList.addAll(grid);
-                for (MyDraggableSeat mds : selectedMDSList) {
+                for (Seat mds : selectedMDSList) {
                     mds.setBorder(new LineBorder(Color.BLUE, 3));
                 }
                 selectedMDSList.clear();
-                for (MyDraggableSeat mds : grid) {
+                for (Seat mds : grid) {
                     mds.setBorder(new LineBorder(Color.CYAN, 3));
                 }
                 selectedMDSList.addAll(grid);
@@ -364,7 +366,7 @@ class HallEditor extends JFrame {
             }
         }
 
-        private JPopupMenu initJPopupMenu(MyDraggableSeat mds) {
+        private JPopupMenu initJPopupMenu(Seat mds) {
             JPopupMenu popupMenu = new JPopupMenu();
 
             JMenuItem deleteItem = new JMenuItem("Elimina");
@@ -382,7 +384,7 @@ class HallEditor extends JFrame {
         }
 
 
-        private void updateSeatType(MyDraggableSeat mds, SeatTYPE type) {
+        private void updateSeatType(Seat mds, SeatTYPE type) {
             if(type!=null) {
                 mds.setType(type);
                 mds.updateBackgroundForChangingType();
@@ -405,12 +407,12 @@ class HallEditor extends JFrame {
         }
 
         void updateSelectedSeatsType(SeatTYPE type) {
-            for(MyDraggableSeat mds : selectedMDSList) {
+            for(Seat mds : selectedMDSList) {
                 updateSeatType(mds, type);
             }
         }
 
-        private void renameSeat(MyDraggableSeat mds) {
+        private void renameSeat(Seat mds) {
             String name = JOptionPane.showInputDialog(hallEditor, "Rinomina il posto!");
             if(name!=null) {
                 if(!name.trim().equalsIgnoreCase("")) {
@@ -453,7 +455,7 @@ class HallEditor extends JFrame {
         private int myY = 0;
         private List<Integer> myXList = new ArrayList<>();
         private List<Integer> myYList = new ArrayList<>();
-        private void initMouseListenerForMDS(MyDraggableSeat mds) {
+        private void initMouseListenerForMDS(Seat mds) {
             mds.addMouseListener(new MouseAdapter() {
 
                 @Override
@@ -464,7 +466,7 @@ class HallEditor extends JFrame {
                     myY = mds.getY();
                     myXList.clear();
                     myYList.clear();
-                    for(MyDraggableSeat mds : selectedMDSList) {
+                    for(Seat mds : selectedMDSList) {
                         myXList.add(mds.getX());
                         myYList.add(mds.getY());
                     }
@@ -494,12 +496,12 @@ class HallEditor extends JFrame {
         private boolean isNewRect = false;
         private Rectangle mouseRect = new Rectangle();
         private Point mousePt = new Point();
-        private List<MyDraggableSeat> selectedMDSList = new ArrayList<>();
+        private List<Seat> selectedMDSList = new ArrayList<>();
 
         private MouseListener mouseHandler = new MouseAdapter() {
             @Override
             public  void mouseClicked(MouseEvent e) {
-                for(MyDraggableSeat mds : selectedMDSList) {
+                for(Seat mds : selectedMDSList) {
                     mds.setBorder(new LineBorder(Color.BLUE, 3));
                 }
                 selectedMDSList.clear();
@@ -536,7 +538,7 @@ class HallEditor extends JFrame {
                             Math.abs(mousePt.y - e.getY()));
 
                     Rectangle selectionBox = new Rectangle(mouseRect.x, mouseRect.y, mouseRect.width, mouseRect.height);
-                    for(MyDraggableSeat mds : draggableSeatsList) {
+                    for(Seat mds : draggableSeatsList) {
                         if(selectionBox.intersects(mds.getX(), mds.getY(), mds.getWidth(), mds.getHeight())){
                             if(!mds.getIsSelected()) {
                                 mds.setIsSelected(true);

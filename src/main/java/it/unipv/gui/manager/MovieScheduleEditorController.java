@@ -64,11 +64,11 @@ public class MovieScheduleEditorController implements Initializable {
         if( date.trim().equalsIgnoreCase("")
          || time.trim().equalsIgnoreCase("")
          || hall.trim().equalsIgnoreCase("") ){
-            JOptionPane.showMessageDialog(null, "Devi compilare tutti i campi!");
+            GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi compilare tutti i campi!");
         } else if (ApplicationUtils.checkIfDateIsPassed(date + " " + time)) {
-            JOptionPane.showMessageDialog(null, "Non puoi programmare un film nel passato!");
+            GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Non puoi programmare un film nel passato!");
         } else if(checkIfSomethingIsAlreadyScheduledInThatTemporalGap(hall, date + " " + time, Integer.parseInt(movie.getDurata())) ) {
-            JOptionPane.showMessageDialog(null, "C'è già una programmazione in questo periodo!");
+            GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "C'è già una programmazione in questo periodo!");
         } else {
             MovieSchedule movieSchedule = new MovieSchedule();
             movieSchedule.setMovieCode(movie.getCodice());
@@ -77,7 +77,7 @@ public class MovieScheduleEditorController implements Initializable {
             movieSchedule.setHallName(hall);
             MovieScheduleToCSV.createCSVFromMovieSchedule(movieSchedule, DataReferences.MOVIESCHEDULEFILEPATH, true);
             moviePanelController.triggerNewScheduleEvent();
-            JOptionPane.showMessageDialog(null, "Salvataggio riuscito correttamente!");
+            GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Successo", "Operazione riuscita: ", "Salvataggio riuscito correttamente!");
         }
     }
 
