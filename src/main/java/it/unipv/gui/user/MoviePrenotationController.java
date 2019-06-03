@@ -148,7 +148,13 @@ public class MoviePrenotationController implements Initializable {
                 hourLabel.setCursor(Cursor.HAND);
             });
 
-            hourLabel.setOnMouseExited(event -> hourLabel.setCursor(Cursor.DEFAULT));
+            hourLabel.setOnMouseExited(event -> {
+                hourLabel.setCursor(Cursor.DEFAULT);
+                if(!hourLabel.getText().trim().equalsIgnoreCase(clickedHour)) {
+                    hourLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
+                }
+
+            });
 
             hourLabel.setOnMouseClicked(event -> {
                 summaryPanel.getChildren().clear();
