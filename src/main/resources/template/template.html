@@ -3,25 +3,20 @@
 	<head>
 		<title>Fattura</title>
 		<style type="text/css">
-			.firstColumn {
-				font-family: 'BebasNeue-Regular', sans-serif;
-				font-size: 14px;
+            body {
+                font-family: 'Bebas Neue';
+                font-size: 18px;
 				font-weight: normal;
 				line-height: normal;
-				text-transform: uppercase;
 				letter-spacing: 1px;
-				color:#db8f00;
-			}
+                src: url("../font/BebasNeue-Regular.ttf") format('truetype');
+                -fs-pdf-font-embed: embed;
+                -fs-pdf-font-encoding: Identity-H;
+            }
+
+		    .firstColumn { color:#db8f00; }
 			
-			.secondColumn {
-				font-family: 'BebasNeueRegular', sans-serif;
-				font-size: 14px;
-				font-weight: normal;
-				line-height: normal;
-				text-transform: uppercase;
-				letter-spacing: 1px;
-				color:white;
-			}
+			.secondColumn { color:white; }
 		</style>
 	</head>
     <body style="background-color:black">

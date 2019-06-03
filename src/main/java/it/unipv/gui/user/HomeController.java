@@ -552,11 +552,7 @@ public class HomeController implements Initializable {
         animationMenu();
     }
 
-    @FXML
-    public void welcomeRegisterButtonListener() {
-        System.out.println("cliccato");
-        openRegistrazione();
-    }
+    @FXML public void welcomeRegisterButtonListener() { openRegistrazione(); }
 
     private MovieTYPE type;
 

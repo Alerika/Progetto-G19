@@ -1,3 +1,4 @@
+import com.itextpdf.text.pdf.BaseFont;
 import it.unipv.gui.user.Prenotation;
 import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
@@ -30,16 +31,17 @@ public class PDFTester {
         context.setVariable("prenotation", prenotation);
 
         String renderedHtmlContent = templateEngine.process("template/template", context);
-        String xHtml = convertToXhtml(renderedHtmlContent);
 
         ITextRenderer renderer = new ITextRenderer();
+        renderer.getFontResolver().addFont("font/BebasNeueRegular.ttf", "UTF-8", BaseFont.EMBEDDED);
+
         String baseUrl = FileSystems
                 .getDefault()
-                .getPath("src", "main", "resources", "images")
+                .getPath("src", "main", "resources", "images", "font")
                 .toUri()
                 .toURL()
                 .toString();
-        renderer.setDocumentFromString(xHtml, baseUrl);
+        renderer.setDocumentFromString(convertToXhtml(renderedHtmlContent), baseUrl);
         renderer.layout();
 
         OutputStream outputStream = new FileOutputStream(OUTPUT_FILE);
