@@ -24,15 +24,24 @@
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <PasswordField fx:id="passwordTextfield" layoutX="41.0" layoutY="370.0" onKeyPressed="#enterKeyPressed" prefHeight="39.0" prefWidth="331.0" promptText="Password">
+            <TextField fx:id="usernameTextfield" layoutX="41.0" layoutY="271.0" onKeyPressed="#enterKeyPressed" prefHeight="37.0" prefWidth="331.0" promptText="Username">
                <font>
-                  <Font size="18.0" />
-               </font></PasswordField>
+                  <Font name="Antipasto Pro" size="18.0" />
+               </font></TextField>
             <Label layoutX="47.0" layoutY="336.0" text="Password:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
+            <PasswordField fx:id="passwordTextfield" layoutX="41.0" layoutY="370.0" onKeyPressed="#enterKeyPressed" prefHeight="39.0" prefWidth="331.0" promptText="Password">
+               <font>
+                  <Font size="18.0" />
+               </font></PasswordField>
+            <CheckBox fx:id="rememberCheckbox" layoutX="41.0" layoutY="437.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="331.0" text="Ricordati" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </CheckBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#db8f00" height="48.0" layoutX="218.0" layoutY="529.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="3.0" style="-fx-cursor: hand;" width="139.0" />
             <Label fx:id="loginButton" alignment="CENTER" contentDisplay="CENTER" layoutX="218.0" layoutY="537.0" onMouseClicked="#loginButtonListener" prefHeight="32.0" prefWidth="139.0" style="-fx-cursor: hand;" text="Login" textFill="WHITE">
                <font>
@@ -44,15 +53,6 @@
                   <Font name="Bebas" size="22.0" />
                </font>
             </Label>
-            <TextField fx:id="usernameTextfield" layoutX="41.0" layoutY="271.0" onKeyPressed="#enterKeyPressed" prefHeight="37.0" prefWidth="331.0" promptText="Username">
-               <font>
-                  <Font name="Antipasto Pro" size="18.0" />
-               </font></TextField>
-            <CheckBox fx:id="rememberCheckbox" layoutX="41.0" layoutY="437.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="331.0" text="Ricordati" textFill="WHITE">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </CheckBox>
          </children></AnchorPane>
       <AnchorPane prefHeight="122.0" prefWidth="397.0" style="-fx-background-color: #db8f00;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
