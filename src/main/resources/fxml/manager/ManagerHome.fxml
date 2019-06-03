@@ -25,30 +25,30 @@
          <children>
             <VBox alignment="CENTER" prefHeight="660.0" prefWidth="203.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Label fx:id="hallModifierLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="MODIFICA SALE">
+                  <Label fx:id="hallModifierLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="MODIFICA SALE">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <Label fx:id="schedulerLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="PROGRAMMAZIONE">
+                  <Label fx:id="schedulerLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="PROGRAMMAZIONE">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <Label fx:id="movieListLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="LISTA FILM">
+                  <Label fx:id="movieListLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="LISTA FILM">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <Label fx:id="userListLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="LISTA UTENTI">
+                  <Label fx:id="userListLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="LISTA UTENTI">
                      <font>
                         <Font size="18.0" />
                      </font></Label>
-                  <Label fx:id="pricesModifierLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="MODIFICA PREZZI">
+                  <Label fx:id="pricesModifierLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="MODIFICA PREZZI">
                      <font>
                         <Font size="18.0" />
                      </font></Label>
-                  <Label fx:id="exitLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" text="ESCI">
+                  <Label fx:id="exitLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="ESCI">
                      <font>
                         <Font size="18.0" />
                      </font></Label>
@@ -62,7 +62,7 @@
          <top>
             <AnchorPane prefHeight="315.0" prefWidth="854.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label alignment="BOTTOM_CENTER" layoutX="391.0" layoutY="229.0" prefHeight="315.0" prefWidth="854.0" text="Benvenuti nell'Area Manager" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <Label alignment="BOTTOM_CENTER" layoutX="391.0" layoutY="229.0" prefHeight="315.0" prefWidth="854.0" stylesheets="@../../css/BebasNeue.css" text="Benvenuti nell'Area Manager" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <font>
                         <Font size="50.0" />
                      </font>
@@ -73,7 +73,7 @@
          <center>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label alignment="TOP_CENTER" layoutX="413.0" layoutY="66.0" prefHeight="345.0" prefWidth="854.0" text="Per iniziare, clicca su una categoria a sinistra." textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <Label alignment="TOP_CENTER" layoutX="413.0" layoutY="66.0" prefHeight="345.0" prefWidth="854.0" stylesheets="@../../css/BebasNeue.css" text="Per iniziare, clicca su una categoria a sinistra." textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <font>
                         <Font size="30.0" />
                      </font>

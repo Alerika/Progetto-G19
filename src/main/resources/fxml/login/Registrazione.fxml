@@ -27,7 +27,7 @@
             </Label>
             <TextField fx:id="emailTextfield" alignment="CENTER" layoutX="60.0" layoutY="65.0" prefHeight="37.0" prefWidth="331.0" promptText="E-mail">
                <font>
-                  <Font name="Antipasto Pro" size="18.0" />
+                  <Font size="18.0" />
                </font>
             </TextField>
             <Label layoutX="184.0" layoutY="136.0" text="Username:" textFill="WHITE">
@@ -37,7 +37,7 @@
             </Label>
             <TextField fx:id="usernameTextfield" alignment="CENTER" layoutX="60.0" layoutY="169.0" prefHeight="37.0" prefWidth="331.0" promptText="Username">
                <font>
-                  <Font name="Antipasto Pro" size="18.0" />
+                  <Font size="18.0" />
                </font>
             </TextField>
             <Label layoutX="182.0" layoutY="238.0" text="Password:" textFill="WHITE">
@@ -50,7 +50,7 @@
                   <Font size="18.0" />
                </font>
             </PasswordField>
-            <Label layoutX="152.0" layoutY="347.0" text="Ripeti la Password:" textFill="WHITE">
+            <Label layoutX="145.0" layoutY="347.0" text="Ripeti   la   Password:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
@@ -61,12 +61,12 @@
                </font>
             </PasswordField>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#db8f00" height="48.0" layoutX="235.0" layoutY="473.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="3.0" style="-fx-cursor: hand;" width="139.0" />
-            <Label alignment="CENTER" layoutX="259.0" layoutY="481.0" onMouseClicked="#doRegister" style="-fx-cursor: hand;" text="Registrati" textFill="WHITE">
+            <Label alignment="CENTER" layoutX="267.0" layoutY="483.0" onMouseClicked="#doRegister" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Registrati" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>
             </Label>
-            <Label fx:id="cancelLabel" alignment="CENTER" layoutX="73.0" layoutY="481.0" onMouseClicked="#doCancel" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" text="Annulla" textFill="WHITE">
+            <Label fx:id="cancelLabel" alignment="CENTER" layoutX="88.0" layoutY="483.0" onMouseClicked="#doCancel" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Annulla" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>

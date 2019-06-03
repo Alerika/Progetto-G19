@@ -14,7 +14,7 @@
             <AnchorPane prefHeight="82.0" prefWidth="600.0" BorderPane.alignment="CENTER">
                <children>
                   <TextField fx:id="searchBarTextfield" layoutX="32.0" layoutY="29.0" prefHeight="25.0" prefWidth="382.0" promptText="Cerca..." AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="32.0" AnchorPane.topAnchor="29.0" />
-                  <Label fx:id="searchButton" alignment="CENTER" layoutX="422.0" layoutY="29.0" onMouseClicked="#searchButtonListener" prefHeight="25.0" prefWidth="66.0" style="-fx-background-color: #db8f00; -fx-background-radius: 3;" text="Cerca" textFill="WHITE" AnchorPane.leftAnchor="422.0">
+                  <Label fx:id="searchButton" alignment="CENTER" layoutX="422.0" layoutY="29.0" onMouseClicked="#searchButtonListener" prefHeight="25.0" prefWidth="66.0" style="-fx-background-color: #db8f00; -fx-background-radius: 3;" stylesheets="@../../css/BebasNeue.css" text="Cerca" textFill="WHITE" AnchorPane.leftAnchor="422.0">
                      <font>
                         <Font size="15.0" />
                      </font>

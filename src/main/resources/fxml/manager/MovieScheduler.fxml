@@ -12,7 +12,7 @@
          <top>
             <AnchorPane prefHeight="64.0" prefWidth="600.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="nuovaProgrammazioneButton" alignment="CENTER" layoutX="387.0" layoutY="14.0" onMouseClicked="#nuovaProgrammazioneButtonListener" prefHeight="25.0" prefWidth="177.0" style="-fx-background-color: #db8f00; -fx-background-radius: 10;" text="Nuova Programmazione" textFill="WHITE" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="14.0">
+                  <Label fx:id="nuovaProgrammazioneButton" alignment="CENTER" layoutX="387.0" layoutY="14.0" onMouseClicked="#nuovaProgrammazioneButtonListener" prefHeight="25.0" prefWidth="177.0" style="-fx-background-color: #db8f00; -fx-background-radius: 10;" stylesheets="@../../css/BebasNeue.css" text="Nuova Programmazione" textFill="WHITE" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="36.0" AnchorPane.topAnchor="14.0">
                      <font>
                         <Font size="15.0" />
                      </font>

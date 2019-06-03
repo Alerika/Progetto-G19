@@ -12,7 +12,7 @@
          <top>
             <AnchorPane prefHeight="60.0" prefWidth="798.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="welcomeLabel" alignment="CENTER" layoutX="121.0" layoutY="7.0" prefHeight="29.0" prefWidth="798.0" text="Ecco una lista di film che potrebbero interessarti!" textFill="#db8f00" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <Label fx:id="welcomeLabel" alignment="CENTER" layoutX="121.0" layoutY="7.0" prefHeight="29.0" prefWidth="798.0" stylesheets="@../../../css/BebasNeue.css" text="Ecco una lista di film che potrebbero interessarti!" textFill="#db8f00" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <font>
                         <Font name="Bebas Neue Regular" size="26.0" />
                      </font>

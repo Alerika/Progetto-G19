@@ -12,22 +12,22 @@
          <center>
             <AnchorPane prefHeight="214.0" prefWidth="353.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="tariffaBaseLabel" layoutX="31.0" layoutY="36.0" prefHeight="21.0" prefWidth="95.0" text="Tariffa base" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="381.0">
+                  <Label fx:id="tariffaBaseLabel" layoutX="31.0" layoutY="36.0" prefHeight="21.0" prefWidth="95.0" stylesheets="@../../css/BebasNeue.css" text="Tariffa base" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="381.0">
                      <font>
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <Label fx:id="sovrapprezzoVIPLabel" layoutX="31.0" layoutY="75.0" prefHeight="21.0" prefWidth="124.0" text="Sovrapprezzo VIP" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="336.0">
+                  <Label fx:id="sovrapprezzoVIPLabel" layoutX="31.0" layoutY="75.0" prefHeight="21.0" prefWidth="124.0" stylesheets="@../../css/BebasNeue.css" text="Sovrapprezzo VIP" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="336.0">
                      <font>
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <Label fx:id="sovrapprezzoTreDLabel" layoutX="31.0" layoutY="115.0" prefHeight="21.0" prefWidth="127.0" text="Sovrapprezzo 3D" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="333.0">
+                  <Label fx:id="sovrapprezzoTreDLabel" layoutX="31.0" layoutY="115.0" prefHeight="21.0" prefWidth="127.0" stylesheets="@../../css/BebasNeue.css" text="Sovrapprezzo 3D" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="333.0">
                      <font>
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <Label fx:id="riduzioneLabel" layoutX="31.0" layoutY="151.0" prefHeight="21.0" prefWidth="79.0" text="Riduzione" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="381.0">
+                  <Label fx:id="riduzioneLabel" layoutX="31.0" layoutY="151.0" prefHeight="21.0" prefWidth="79.0" stylesheets="@../../css/BebasNeue.css" text="Riduzione" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="381.0">
                      <font>
                         <Font size="15.0" />
                      </font>
@@ -42,7 +42,7 @@
          <top>
             <AnchorPane prefHeight="53.0" prefWidth="629.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="saveButton" alignment="CENTER" layoutX="518.0" layoutY="16.0" onMouseClicked="#doSave" prefHeight="25.0" prefWidth="68.0" style="-fx-background-color: #db8f00; -fx-background-radius: 10; -fx-cursor: hand;" text="Salva" textFill="WHITE" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="38.0" AnchorPane.topAnchor="14.0">
+                  <Label fx:id="saveButton" alignment="CENTER" layoutX="518.0" layoutY="16.0" onMouseClicked="#doSave" prefHeight="25.0" prefWidth="68.0" style="-fx-background-color: #db8f00; -fx-background-radius: 10; -fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Salva" textFill="WHITE" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="38.0" AnchorPane.topAnchor="14.0">
                      <font>
                         <Font size="16.0" />
                      </font>

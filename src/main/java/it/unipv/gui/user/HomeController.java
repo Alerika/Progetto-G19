@@ -271,11 +271,11 @@ public class HomeController implements Initializable {
         programmationsLabel.setText("PROGRAMMATO PER: ");
         programmationsLabel.setTextFill(Color.valueOf("db8f00"));
         programmationsLabel.setLayoutX(title.getLayoutX());
-        programmationsLabel.setLayoutY(year.getLayoutY()+50);
+        programmationsLabel.setLayoutY(year.getLayoutY()+60);
         programmationsLabel.setFont(infoFont);
 
         double x = title.getLayoutX()+20;
-        double y = programmationsLabel.getLayoutY()+35;
+        double y = programmationsLabel.getLayoutY()+40;
         int count = 0;
         int i = 0;
 

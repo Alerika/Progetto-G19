@@ -19,17 +19,17 @@
       </AnchorPane>
       <AnchorPane layoutY="151.0" prefHeight="197.0" prefWidth="693.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="149.0">
          <children>
-            <Label layoutX="77.0" layoutY="43.0" text="grazie per aver scelto golden movie!" textFill="WHITE">
+            <Label layoutX="77.0" layoutY="43.0" stylesheets="@../../css/BebasNeue.css" text="grazie per aver scelto golden movie!" textFill="WHITE">
                <font>
                   <Font name="Bebas Neue Regular" size="44.0" />
                </font>
             </Label>
-            <Label layoutX="45.0" layoutY="110.0" text="il tuo ordine è avvenuto con successo. per ulteriori dettagli visita la tua" textFill="WHITE">
+            <Label layoutX="45.0" layoutY="110.0" stylesheets="@../../css/BebasNeue.css" text="il tuo ordine è avvenuto con successo. per ulteriori dettagli visita la tua" textFill="WHITE">
                <font>
                   <Font name="Bebas Neue Regular" size="20.0" />
                </font>
             </Label>
-            <Label fx:id="areaRiservataButton" layoutX="550.0" layoutY="110.0" onMouseClicked="#openReservedAreaListener" style="-fx-cursor: hand;" text="area riservata" textFill="#db8f00">
+            <Label fx:id="areaRiservataButton" layoutX="550.0" layoutY="110.0" onMouseClicked="#openReservedAreaListener" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="area riservata" textFill="#db8f00">
                <font>
                   <Font name="Bebas Neue Regular" size="20.0" />
                </font>

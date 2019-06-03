@@ -24,7 +24,6 @@ public class RegistrazioneController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         users = CSVToUserList.getUserListFromCSV(DataReferences.USERFILEPATH);
-
     }
 
     @FXML
