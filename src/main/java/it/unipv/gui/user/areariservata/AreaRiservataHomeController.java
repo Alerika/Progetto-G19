@@ -25,11 +25,13 @@ public class AreaRiservataHomeController implements Initializable {
     @FXML private Label homeLabel, prenotationsLabel, seenMoviesLabel, tipsLabel, exitLabel;
     private List<Label> labels = new ArrayList<>();
     private User loggedUser;
+    private boolean summonedByHome;
 
     public void initialize(URL url, ResourceBundle rb) { }
 
-    public void init(User loggedUser) {
+    public void init(User loggedUser, boolean summonedByHome) {
         this.loggedUser = loggedUser;
+        this.summonedByHome = summonedByHome;
         addLabelsToList();
         setOnMouseEnteredToLabels();
         setOnMouseExitedToLabels();
@@ -135,7 +137,9 @@ public class AreaRiservataHomeController implements Initializable {
 
             case "ESCI":
                 Stage stage = (Stage) mainPanel.getScene().getWindow();
-                stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
+                if(summonedByHome) {
+                    stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
+                }
                 stage.close();
                 break;
 

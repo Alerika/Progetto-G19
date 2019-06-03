@@ -54,13 +54,15 @@ public class MoviePrenotationController implements Initializable {
     private Prenotation finalPrenotation;
     private User user;
     private boolean opened = false;
+    private HomeController homeController;
     @FXML private Label closeButton, confirmButton;
     @FXML private AnchorPane orariPanel, salaHeader, summaryPanel;
     @FXML private ScrollPane salaPanel;
 
     @Override public void initialize(URL url, ResourceBundle rb) { }
 
-    public void init(String date, Movie m, User user) {
+    public void init(HomeController homeController, String date, Movie m, User user) {
+        this.homeController = homeController;
         this.movie = m;
         this.scheduleDate = date;
         this.user = user;
@@ -120,7 +122,7 @@ public class MoviePrenotationController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/AvvisoPrenotazione.fxml"));
             Parent p = loader.load();
             AvvisoPrenotazioneController apc = loader.getController();
-            apc.init(user);
+            apc.init(homeController);
             Stage stage = new Stage();
             stage.setScene(new Scene(p));
             stage.setResizable(false);

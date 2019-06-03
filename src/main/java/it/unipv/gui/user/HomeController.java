@@ -394,7 +394,7 @@ public class HomeController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/MoviePrenotation.fxml"));
                 Parent p = loader.load();
                 MoviePrenotationController mpc = loader.getController();
-                mpc.init(scheduleLabel.getText().trim(), movie, loggedUser);
+                mpc.init(this, scheduleLabel.getText().trim(), movie, loggedUser);
                 Stage stage = new Stage();
                 stage.setScene(new Scene(p));
                 stage.setResizable(false);
@@ -655,7 +655,7 @@ public class HomeController implements Initializable {
 
     private void openRegistrazione(){
         try {
-            stageRegistrazione.setScene(new Scene(new FXMLLoader(getClass().getResource("/fxml/user/Registrazione.fxml")).load()));
+            stageRegistrazione.setScene(new Scene(new FXMLLoader(getClass().getResource("/fxml/login/Registrazione.fxml")).load()));
             stageRegistrazione.setResizable(false);
             stageRegistrazione.setTitle("Registrazione");
             stageRegistrazione.show();
@@ -667,7 +667,7 @@ public class HomeController implements Initializable {
     
     private void openLogin(){
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/Login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Login.fxml"));
             Parent p = loader.load();
             LoginController lc = loader.getController();
             lc.init(this);
@@ -718,6 +718,7 @@ public class HomeController implements Initializable {
         anchorInfo.setVisible(false);
         welcomePanel.setVisible(false);
         homePane.setVisible(false);
+        singleFilmPane.setVisible(false);
         hallPanel.setVisible(true);
         initHallGrid();
         animationMenu();
@@ -891,13 +892,13 @@ public class HomeController implements Initializable {
     }
 
     private boolean isReservedAreaOpened = false;
-    private void doOpenReservedArea() {
+    void doOpenReservedArea() {
         if(!isReservedAreaOpened) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/AreaRiservataHome.fxml"));
                 Parent p = loader.load();
                 AreaRiservataHomeController arhc = loader.getController();
-                arhc.init(loggedUser);
+                arhc.init(loggedUser, true);
                 Stage stage = new Stage();
                 stage.setScene(new Scene(p));
                 stage.setMinHeight(850);

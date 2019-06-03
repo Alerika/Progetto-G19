@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 import it.unipv.conversion.CSVToUserList;
 import it.unipv.conversion.UserToCSV;
 import it.unipv.gui.common.GUIUtils;
-import it.unipv.gui.login.User;
 import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
