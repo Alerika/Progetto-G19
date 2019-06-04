@@ -358,7 +358,7 @@ public class MoviePrenotationController implements Initializable {
                     break;
 
                 case VIP:
-                    res += prices.getVip();
+                    res += prices.getBase() + prices.getVip();
                     break;
             }
 
