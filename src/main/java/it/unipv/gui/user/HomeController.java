@@ -51,16 +51,17 @@ import org.apache.commons.lang3.StringUtils;
 public class HomeController implements Initializable {
     
     @FXML private Rectangle rectangleMenu, rectangleGenere, rectangle2D3D;
-    @FXML private AnchorPane menuWindow, genereWindow, usernamePane, anchorInfo, homePane, singleFilmPane, welcomePanel, welcomeFooter;
+    @FXML private AnchorPane menuWindow, genereWindow, anchorInfo, homePane, singleFilmPane, welcomePanel, welcomeFooter, logoutPane;
     private GridPane filmGrid = new GridPane();
     @FXML private GridPane filmGridFiltered = new GridPane();
     @FXML private ScrollPane filmScroll, filmScrollFiltered, hallPanel;
-    @FXML private Label labelIVA, labelCellulari, labelCosti, infoUtili, genreLabel, logLabel, nonRegistratoQuestionLabel, registerButton, areaRiservataButton, welcomeLabel, welcomeRegisterButton;
+    @FXML private Label labelIVA, labelCellulari, labelCosti, infoUtili, genreLabel, logLabel, nonRegistratoQuestionLabel, registerButton, areaRiservataButton, welcomeLabel;
     @FXML private Line lineGenere;
     @FXML private Label goBackToHomeButton;
 
     private final Stage stageRegistrazione = new Stage();
     private final Stage stageLogin = new Stage();
+    private Stage reservedAreaStage, managerAreaStage;
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static int rowCount = 0;
     private static int columnCount = 0;
@@ -504,6 +505,8 @@ public class HomeController implements Initializable {
             }
         }
     }
+
+    @FXML private void logoutListener() { doLogout(); }
     
     public void registrationWindow(MouseEvent event){
         Label label = (Label) event.getSource();
@@ -527,6 +530,7 @@ public class HomeController implements Initializable {
                 animationMenu();
             } else {
                 doLogout();
+                animationMenu();
             }
         }
     }
@@ -536,6 +540,7 @@ public class HomeController implements Initializable {
         nonRegistratoQuestionLabel.setText("non sei registrato?");
         registerButton.setText("Registrati");
         areaRiservataButton.setVisible(false);
+        logoutPane.setVisible(false);
         loggedUser = null;
 
         if(checkIfThereIsAlreadyUserSaved()) {
@@ -549,7 +554,20 @@ public class HomeController implements Initializable {
         welcomePanel.setVisible(true);
         welcomeLabel.setText("Benvenuto in Golden Movie Studio");
         welcomeFooter.setVisible(true);
-        animationMenu();
+
+        if(reservedAreaStage != null) {
+            if(reservedAreaStage.isShowing()) {
+                isReservedAreaOpened = false;
+                reservedAreaStage.close();
+            }
+        }
+
+        if(managerAreaStage != null) {
+            if(managerAreaStage.isShowing()) {
+                isManagerAreaOpened = false;
+                managerAreaStage.close();
+            }
+        }
     }
 
     @FXML public void welcomeRegisterButtonListener() { openRegistrazione(); }
@@ -871,14 +889,14 @@ public class HomeController implements Initializable {
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/manager/ManagerHome.fxml"));
                 Parent root = fxmlLoader.load();
-                Stage stage = new Stage();
-                stage.setScene(new Scene(root));
-                stage.setTitle("Area Manager");
-                stage.setMinHeight(850);
-                stage.setMinWidth(1100);
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-                stage.setOnCloseRequest( event -> isManagerAreaOpened = false);
-                stage.show();
+                managerAreaStage = new Stage();
+                managerAreaStage.setScene(new Scene(root));
+                managerAreaStage.setTitle("Area Manager");
+                managerAreaStage.setMinHeight(850);
+                managerAreaStage.setMinWidth(1100);
+                managerAreaStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                managerAreaStage.setOnCloseRequest( event -> isManagerAreaOpened = false);
+                managerAreaStage.show();
                 isManagerAreaOpened = true;
             } catch (IOException e) {
                 throw new ApplicationException(e);
@@ -895,14 +913,14 @@ public class HomeController implements Initializable {
                 Parent p = loader.load();
                 AreaRiservataHomeController arhc = loader.getController();
                 arhc.init(loggedUser, true);
-                Stage stage = new Stage();
-                stage.setScene(new Scene(p));
-                stage.setMinHeight(850);
-                stage.setMinWidth(1200);
-                stage.setTitle("Area riservata di " + loggedUser.getName());
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-                stage.setOnCloseRequest( event -> isReservedAreaOpened = false);
-                stage.show();
+                reservedAreaStage = new Stage();
+                reservedAreaStage.setScene(new Scene(p));
+                reservedAreaStage.setMinHeight(850);
+                reservedAreaStage.setMinWidth(1200);
+                reservedAreaStage.setTitle("Area riservata di " + loggedUser.getName());
+                reservedAreaStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                reservedAreaStage.setOnCloseRequest( event -> isReservedAreaOpened = false);
+                reservedAreaStage.show();
                 isReservedAreaOpened = true;
             } catch (IOException ex) {
                 throw new ApplicationException(ex);
@@ -916,6 +934,7 @@ public class HomeController implements Initializable {
             loggedUser = UserInfo.getUserInfo();
             setupLoggedUser();
         } else {
+            logoutPane.setVisible(false);
             areaRiservataButton.setVisible(false);
         }
         dtf.format(LocalDateTime.now());
@@ -924,7 +943,6 @@ public class HomeController implements Initializable {
         menuWindow.setVisible(false);
         lineGenere.setVisible(false);
         genereWindow.setVisible(false);
-        usernamePane.setVisible(false);
         singleFilmPane.setVisible(false);
         homePane.setVisible(false);
         hallPanel.setVisible(false);
@@ -933,6 +951,7 @@ public class HomeController implements Initializable {
 
     private void setupLoggedUser() {
         logLabel.setText(loggedUser.getName());
+        logoutPane.setVisible(true);
         nonRegistratoQuestionLabel.setText("Vuoi uscire?");
         registerButton.setText("logout");
         if(!isHimANormalUser(loggedUser)) {
