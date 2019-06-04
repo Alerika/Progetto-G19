@@ -28,6 +28,8 @@ Parte gestore:
 [X] Implementare tipologia del film (se 2D o 3D)
 [X] Implementare pagina programmazione e pagina lista film
 [X] Portare tutto su JAVAFX ed eliminare le classi AWT/SWING (ho lasciato solo l'editor delle sale)
+[X] Implementare cancellazione delle prenotazioni durante eliminazione dell'utente
+[ ] Implementare trigger da manager area a home
 [ ] Portare i JOPtionPane in Alert di FX
 [ ] Risolvere bug con l'andata a capo delle textarea (trama film) (anche se non credo ci sarà bisogno con un ipotetico db)
 [ ] Fare in modo che i posti a sedere non possano essere trascinati all'esterno della finestra
@@ -41,11 +43,12 @@ Parte cliente
 [X] Implementare la visualizzazione dell'ordine (quindi far vedere i posti selezionati, il film, data/ora, ecc)
 [X] Risolvere problema dell'admin che può fare login infiniti
 [X] Implementare lista sale inserendo elenco delle sale e per ogni sala indicare posti totali, vip e riservati ai disabili
-[ ] Pagina di benvenuto iniziale
-[ ] Prenotazione posti più intuitiva
-[-] Ritorno alla pagina di benvenuto/home nel momento in cui un utente fa il logout (attualmente va alla home, ma sarebbe meglio alla schermata di benvenuto credo)
+[X] Pagina di benvenuto iniziale
+[-] Prenotazione posti più intuitiva (boh ho messo il menu, chiedere se va bene)
+[X] Ritorno alla pagina di benvenuto/home nel momento in cui un utente fa il logout
 [X] Risolvere il bug della pagina "info utili" che si sovrappone alle altre
 [X] Risolvere il problema delle pagine che rimangono aperte nonostante si chiuda la pagina "principale"
 [-] Modificare il pdf della prenotazione cambiando font (capire perché non cambia font)
 [X] Aggiungere i film suggeriti nell'area riservata
+[ ] Aggiungere logout nell'area riservata e difianco al nome utente
 [ ] ...
