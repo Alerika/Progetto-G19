@@ -10,45 +10,55 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="rootPane" prefHeight="747.0" prefWidth="397.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipv.gui.login.LoginController">
+<AnchorPane id="AnchorPane" fx:id="rootPane" prefHeight="750.0" prefWidth="397.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipv.gui.login.LoginController">
    <children>
-      <AnchorPane layoutY="112.0" prefHeight="637.0" prefWidth="397.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <AnchorPane layoutY="122.0" prefHeight="784.0" prefWidth="397.0" style="-fx-background-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ImageView fitHeight="167.0" fitWidth="161.0" layoutX="126.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="167.0" fitWidth="161.0" layoutX="120.0" layoutY="150.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../images/iconaLogin.png" />
                </image>
             </ImageView>
-            <Label layoutX="45.0" layoutY="236.0" stylesheets="@../../css/BebasNeue.css" text="Username:" textFill="WHITE">
+            <Label layoutX="39.0" layoutY="328.0" stylesheets="@../../css/BebasNeue.css" text="Username:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <TextField fx:id="usernameTextfield" layoutX="41.0" layoutY="271.0" onKeyPressed="#enterKeyPressed" prefHeight="37.0" prefWidth="331.0" promptText="Username">
+            <TextField fx:id="usernameTextfield" layoutX="35.0" layoutY="363.0" onKeyPressed="#enterKeyPressed" prefHeight="37.0" prefWidth="331.0" promptText="Username">
                <font>
                   <Font name="Antipasto Pro" size="18.0" />
                </font></TextField>
-            <Label layoutX="47.0" layoutY="336.0" stylesheets="@../../css/BebasNeue.css" text="Password:" textFill="WHITE">
+            <Label layoutX="41.0" layoutY="428.0" stylesheets="@../../css/BebasNeue.css" text="Password:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <PasswordField fx:id="passwordTextfield" layoutX="41.0" layoutY="370.0" onKeyPressed="#enterKeyPressed" prefHeight="39.0" prefWidth="331.0" promptText="Password">
+            <PasswordField fx:id="passwordTextfield" layoutX="35.0" layoutY="462.0" onKeyPressed="#enterKeyPressed" prefHeight="39.0" prefWidth="331.0" promptText="Password">
                <font>
                   <Font size="18.0" />
                </font></PasswordField>
-            <CheckBox fx:id="rememberCheckbox" layoutX="41.0" layoutY="437.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="331.0" text="Ricordati" textFill="WHITE">
+            <CheckBox fx:id="rememberCheckbox" layoutX="35.0" layoutY="529.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="331.0" text="Ricordati" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
             </CheckBox>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#db8f00" height="48.0" layoutX="218.0" layoutY="529.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="3.0" style="-fx-cursor: hand;" width="139.0" />
-            <Label fx:id="loginButton" alignment="CENTER" contentDisplay="CENTER" layoutX="218.0" layoutY="537.0" onMouseClicked="#loginButtonListener" prefHeight="32.0" prefWidth="139.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Login" textFill="WHITE">
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#db8f00" height="48.0" layoutX="199.0" layoutY="656.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="3.0" style="-fx-cursor: hand;" width="139.0" />
+            <Label layoutX="31.0" layoutY="598.0" prefHeight="32.0" prefWidth="256.0" text="Non ricordi la password?  Clicca" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="passwordResetButton" alignment="CENTER" layoutX="287.0" layoutY="601.0" onMouseClicked="#passwordResetButtonListener" prefHeight="27.0" prefWidth="35.0" text="QUI" textFill="#db8f00">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="loginButton" alignment="CENTER" contentDisplay="CENTER" layoutX="199.0" layoutY="664.0" onMouseClicked="#loginButtonListener" prefHeight="32.0" prefWidth="139.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Login" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>
             </Label>
-            <Label fx:id="cancel" alignment="CENTER" layoutX="63.0" layoutY="537.0" onMouseClicked="#doCancel" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Annulla" textFill="WHITE">
+            <Label fx:id="cancel" alignment="CENTER" layoutX="64.0" layoutY="660.0" onMouseClicked="#doCancel" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Annulla" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>

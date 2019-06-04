@@ -98,6 +98,7 @@ public class UserToCSV {
         csvRow.add(user.getName());
         csvRow.add(user.getPassword());
         csvRow.add(user.getEmail());
+        csvRow.add(user.getCodice());
         return new String[csvRow.size()];
     }
 }

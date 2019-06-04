@@ -10,6 +10,7 @@ public class User implements Comparable<User> {
     private String name;
     private String password;
     private String email;
+    private String codice;
 
     User() {}
 
@@ -18,10 +19,11 @@ public class User implements Comparable<User> {
         this.password = password;
     }
 
-    public User(String name, String password, String email) {
+    public User(String name, String password, String email, String codice) {
         this.name = name;
         this.password = password;
         this.email = email;
+        this.codice = codice;
     }
 
     public String getName() { return name; }
@@ -38,6 +40,10 @@ public class User implements Comparable<User> {
 
     public void setEmail(String email) { this.email = email; }
 
+    public String getCodice() { return codice; }
+
+    public void setCodice(String codice) { this.codice = codice; }
+
     @Override
     public int compareTo(User o) {
         return this.getName().compareToIgnoreCase(o.getName());
@@ -48,6 +54,7 @@ public class User implements Comparable<User> {
         return
                 "Username: " + this.name + "\n"
               + "Password: " + this.password + "\n"
-              + "E-mail " + this.email;
+              + "E-mail " + this.email
+              + "Codice " + this.codice;
     }
 }

@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.RandomStringUtils;
 
 public class RegistrazioneController implements Initializable {
 
@@ -38,13 +39,19 @@ public class RegistrazioneController implements Initializable {
                 if(!isAlreadyThereThisEmail()) {
                     if(isEmailValid()) {
                         if(passwordTextfield.getText().equals(retryPasswordTextfield.getText())) {
+                            String codice = getUserCode();
                             UserToCSV.appendUserToCSV(
                                     new User( usernameTextfield.getText()
                                             , passwordTextfield.getText()
-                                            , emailTextfield.getText())
+                                            , emailTextfield.getText()
+                                            , codice)
                                     , DataReferences.USERFILEPATH
                                     , true );
-                            GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Info", "Informazione:",  "Registrazione avvenuta con successo!");
+                            GUIUtils.showAlert( Alert.AlertType.INFORMATION
+                                              , "Info"
+                                              , "Informazione:"
+                                              , "Registrazione avvenuta con successo!\n"
+                                                       + "Codice utente: " + codice + ". Ricordati di non smarrirlo, potrebbe esserti utile per reimpostare la password!");
                             doExit();
                         } else {
                             GUIUtils.showAlert(Alert.AlertType.ERROR,  "Errore", "Si è verificato un errore:", "Le password non coincidono!");
@@ -63,6 +70,26 @@ public class RegistrazioneController implements Initializable {
                 clearTextField(usernameTextfield, passwordTextfield, retryPasswordTextfield);
             }
         }
+    }
+
+    private String getUserCode() {
+        boolean shouldDie = false;
+        String res = "";
+        while(!shouldDie) {
+            String codice = RandomStringUtils.random(5, "0123456789abcdefghijklmnopqrstuvzxy").toUpperCase();
+            boolean status = false;
+            for(User u : users) {
+                if(u.getCodice().equalsIgnoreCase(codice)) {
+                    status = true;
+                    break;
+                }
+            }
+            if(!status) {
+                res = codice;
+                shouldDie = true;
+            }
+        }
+        return res;
     }
 
     private boolean isAlreadyThereThisUsername() {

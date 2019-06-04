@@ -14,10 +14,12 @@ public class HomePanelController implements Initializable {
 
     @FXML private Label usernameInjectedLabel;
     @FXML private Label emailInjectedLabel;
+    @FXML private Label codeInjectedLabel;
 
     public void init(User loggedUser) {
         usernameInjectedLabel.setText(loggedUser.getName());
         emailInjectedLabel.setText(loggedUser.getEmail());
+        codeInjectedLabel.setText(loggedUser.getCodice());
     }
     
 }

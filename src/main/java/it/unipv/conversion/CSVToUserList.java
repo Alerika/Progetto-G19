@@ -58,8 +58,9 @@ public class CSVToUserList {
      *    line[0] -> Username
      *    line[1] -> Password
      *    line[2] -> Email
+     *    line[3] -> Codice
      * @param line -> la singola riga del .csv
      * @return -> l'utente inizializzato con le informazioni presenti sulla riga
      */
-    private static User setUser(String[] line) { return new User(line[0], line[1], line[2]); }
+    private static User setUser(String[] line) { return new User(line[0], line[1], line[2], line[3]); }
 }

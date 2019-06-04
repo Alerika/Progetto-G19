@@ -1,5 +1,6 @@
 package it.unipv.conversion;
 
+import com.itextpdf.text.pdf.BaseFont;
 import it.unipv.gui.user.Prenotation;
 import it.unipv.utils.ApplicationException;
 import org.thymeleaf.TemplateEngine;
@@ -28,22 +29,21 @@ public class PrenotationToPDF {
         Context context = new Context();
         context.setVariable("prenotation", prenotation);
 
-        String xHtml = convertToXhtml(templateEngine.process("template/template", context), encoding);
-
         ITextRenderer renderer = new ITextRenderer();
+        renderer.getFontResolver().addFont("font/BebasNeueRegular.ttf", "UTF-8", BaseFont.EMBEDDED);
+
         String baseUrl = FileSystems
                 .getDefault()
-                .getPath("src", "main", "resources", "images")
+                .getPath("src", "main", "resources", "images", "font")
                 .toUri()
                 .toURL()
                 .toString();
-        renderer.setDocumentFromString(xHtml, baseUrl);
+        renderer.setDocumentFromString(convertToXhtml(templateEngine.process("template/template", context), encoding), baseUrl);
         renderer.layout();
 
         OutputStream outputStream = new FileOutputStream(outputfilePath);
         renderer.createPDF(outputStream);
         outputStream.close();
-
     }
 
     private static String convertToXhtml(String html, String encoding) {

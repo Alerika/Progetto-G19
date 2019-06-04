@@ -1,6 +1,7 @@
 import it.unipv.gui.common.MovieSchedule;
 import it.unipv.utils.ApplicationException;
 import junit.framework.TestCase;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -142,5 +143,10 @@ public class TestUtils extends TestCase {
             res.addAll(Arrays.asList(supp));
         }
         return res;
+    }
+
+    @Test
+    public void userCodeTest() {
+        System.out.println(RandomStringUtils.random(5, "0123456789abcdefghijklmnopqrstuvzxy").toUpperCase());
     }
 }

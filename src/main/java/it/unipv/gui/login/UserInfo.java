@@ -23,13 +23,14 @@ public class UserInfo {
      * @param username -> nickname dell'utente
      * @param password -> password dell'utente
      */
-    public static void createUserInfoFileInUserDir(String username, String password, String email) {
+    public static void createUserInfoFileInUserDir(String username, String password, String email, String codice) {
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(DataReferences.INFOUSERFILE, "UTF-8");
             writer.println(username);
             writer.println(password);
             writer.println(email);
+            writer.println(codice);
         } catch (FileNotFoundException e) {
             throw new ApplicationException("File " + DataReferences.INFOUSERFILE + " non trovato!", e);
         } catch (UnsupportedEncodingException e) {
@@ -82,12 +83,13 @@ public class UserInfo {
                 line = br.readLine();
             }
 
-            if(infoFromFile.size()!=3) {
+            if(infoFromFile.size()!=4) {
                 throw new ApplicationException("Impossibile, formato file inatteso!");
             } else {
                 res.setName(infoFromFile.get(0));
                 res.setPassword(infoFromFile.get(1));
                 res.setEmail(infoFromFile.get(2));
+                res.setCodice(infoFromFile.get(3));
             }
 
             return res;
