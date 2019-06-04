@@ -29,7 +29,7 @@ Parte gestore:
 [X] Implementare pagina programmazione e pagina lista film
 [X] Portare tutto su JAVAFX ed eliminare le classi AWT/SWING (ho lasciato solo l'editor delle sale)
 [X] Implementare cancellazione delle prenotazioni durante eliminazione dell'utente
-[ ] Implementare trigger da manager area a home
+[ ] Implementare trigger da manager area a home per gli aggiornamenti (sale e film)
 [ ] Portare i JOPtionPane in Alert di FX
 [ ] Risolvere bug con l'andata a capo delle textarea (trama film) (anche se non credo ci sarà bisogno con un ipotetico db)
 [ ] Fare in modo che i posti a sedere non possano essere trascinati all'esterno della finestra
@@ -50,5 +50,5 @@ Parte cliente
 [X] Risolvere il problema delle pagine che rimangono aperte nonostante si chiuda la pagina "principale"
 [-] Modificare il pdf della prenotazione cambiando font (capire perché non cambia font)
 [X] Aggiungere i film suggeriti nell'area riservata
-[ ] Aggiungere logout nell'area riservata e difianco al nome utente
+[X] Aggiungere logout nell'area riservata o difianco al nome utente
 [ ] ...
