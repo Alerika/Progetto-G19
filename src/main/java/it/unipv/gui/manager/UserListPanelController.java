@@ -1,21 +1,20 @@
 package it.unipv.gui.manager;
 
-import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
+import it.unipv.conversion.CSVToPrenotationList;
 import it.unipv.conversion.CSVToUserList;
+import it.unipv.conversion.PrenotationsToCSV;
 import it.unipv.conversion.UserToCSV;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.login.User;
-import it.unipv.utils.CloseableUtils;
+import it.unipv.gui.user.Prenotation;
 import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -110,8 +109,9 @@ public class UserListPanelController implements Initializable {
         deleteIcon.setLayoutY(userLabel.getLayoutY());
         deleteIcon.setLayoutX(userLabel.getLayoutX()+305);
         deleteIcon.setOnMouseClicked(e -> {
-            int reply = JOptionPane.showConfirmDialog(null, "Sei sicuro di voler eliminare questo utente?");
+            int reply = JOptionPane.showConfirmDialog(null, "Sei sicuro di voler eliminare questo utente e le sue relative prenotazioni?");
             if(reply == JOptionPane.YES_OPTION) {
+                removeConcerningPrenotations(user);
                 users.remove(user);
                 UserToCSV.createCSVFromUserList(users, DataReferences.USERFILEPATH, false);
                 refreshUI();
@@ -121,6 +121,18 @@ public class UserListPanelController implements Initializable {
         pane.getChildren().addAll(userLabel, editIcon, deleteIcon);
     }
 
+    private void removeConcerningPrenotations(User user) {
+        List<Prenotation> prenotations = CSVToPrenotationList.getPrenotationListFromCSV(DataReferences.PRENOTATIONSFILEPATH);
+        List<Prenotation> temp = new ArrayList<>();
+        for(Prenotation p : prenotations) {
+            if(p.getNomeUtente().equalsIgnoreCase(user.getName())) {
+                temp.add(p);
+            }
+        }
+        prenotations.removeAll(temp);
+        PrenotationsToCSV.createCSVFromPrenotationList(prenotations, DataReferences.PRENOTATIONSFILEPATH, false);
+    }
+
     private void refreshUI() {
         grigliaUser.getChildren().clear();
         createUserListGrid();
@@ -128,7 +140,7 @@ public class UserListPanelController implements Initializable {
 
     @FXML public void searchButtonListener() {
         String searchedUserName = searchBarTextfield.getText();
-        if(searchedUserName!=null || searchedUserName.trim().equalsIgnoreCase("")) {
+        if(searchedUserName!=null || searchedUserName.equalsIgnoreCase("")) {
             grigliaUser.getChildren().clear();
             for(User u : users) {
                 if(u.getName().toLowerCase().trim().contains(searchedUserName.toLowerCase())){
