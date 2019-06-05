@@ -59,7 +59,13 @@ class HallEditor extends JFrame {
 
         JMenuItem saveItem = new JMenuItem("Salva");
         fileMenu.add(saveItem);
-        saveItem.addActionListener(e -> draggableSeatsPanel.doSave());
+        saveItem.addActionListener(e -> {
+            if(draggableSeatsPanel.areAllSeatsBeenNamed()) {
+                draggableSeatsPanel.doSave();
+            } else {
+                JOptionPane.showMessageDialog(this, "Devi dare un nome a tutti i posti prima di poter salvare!");
+            }
+        });
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 
         JMenu editMenu = new JMenu("Modifica");
@@ -120,7 +126,7 @@ class HallEditor extends JFrame {
                 doDisposeOnExit();
             }
         });
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLayout(new GridLayout(1, 1));
         add(draggableSeatsPanel);
         setSize(1200, 720);
@@ -130,11 +136,19 @@ class HallEditor extends JFrame {
     }
 
     private void doDisposeOnExit() {
-        if(isSomethingChanged) {
-            int reply = JOptionPane.showConfirmDialog(hallEditor, "Salvare le modifiche prima di uscire?", "", JOptionPane.YES_NO_OPTION);
-            if(reply == JOptionPane.YES_OPTION) {
-                draggableSeatsPanel.doSave();
+        if(!draggableSeatsPanel.areAllSeatsBeenNamed()) {
+            int reply = JOptionPane.showConfirmDialog(this, "La piantina non verrà salvata perché non a tutti i posti è stato assegnato un nome.\nSicuro di voler uscire?", "Scegli", JOptionPane.YES_NO_OPTION);
+            if (reply == JOptionPane.YES_OPTION) {
+                dispose();
             }
+        } else {
+            if (isSomethingChanged) {
+                int reply = JOptionPane.showConfirmDialog(this, "Salvare le modifiche prima di uscire?", "Scegli", JOptionPane.YES_NO_OPTION);
+                if (reply == JOptionPane.YES_OPTION) {
+                    draggableSeatsPanel.doSave();
+                }
+            }
+            dispose();
         }
     }
 
@@ -434,10 +448,8 @@ class HallEditor extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(hallEditor, "Devi inserire un nome!");
                 }
-                isSomethingChanged = false;
             }
         }
-
 
         private void doSave() {
             DraggableSeatsToCSV.createCSVFromDraggableSeatsList( draggableSeatsList
@@ -447,6 +459,17 @@ class HallEditor extends JFrame {
             ApplicationUtils.saveSnapshot(DataReferences.PIANTINEPREVIEWSFOLDERPATH + nomeSala + ".jpg", this, "jpg");
             Platform.runLater(() -> hallPanelController.triggerModificationToHallList());
             isSomethingChanged = false;
+        }
+
+        private boolean areAllSeatsBeenNamed() {
+            boolean canExit = true;
+            for(Seat s : draggableSeatsList) {
+                if(s.getText().isEmpty()) {
+                    canExit = false;
+                    break;
+                }
+            }
+            return canExit;
         }
 
         private int screenX = 0;
