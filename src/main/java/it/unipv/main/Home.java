@@ -7,11 +7,11 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-public class UserHome extends Application {
+public class Home extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Scene scene = new Scene(FXMLLoader.load(getClass().getResource("/fxml/user/UserHome.fxml")));
+        Scene scene = new Scene(FXMLLoader.load(getClass().getResource("/fxml/user/Home.fxml")));
         stage.setScene(scene);
         stage.setTitle("Golden Movie Studio");
         stage.setResizable(false);

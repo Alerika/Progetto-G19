@@ -3,11 +3,9 @@ package it.unipv.gui.manager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.ResourceBundle;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
@@ -15,7 +13,6 @@ import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -30,7 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.*;
 
-public class HallPanelController implements Initializable {
+public class HallPanelController {
 
     @FXML ScrollPane hallPanel;
     @FXML Label nuovaSalaButton;
@@ -40,10 +37,10 @@ public class HallPanelController implements Initializable {
     private int columnMax = 3;
     private List<String> hallNames = new ArrayList<>();
     private File[] listOfPreviews;
+    private ManagerHomeController managerHomeController;
 
-    @Override public void initialize(URL url, ResourceBundle rb) { }
-
-    public void init(double initialWidth) {
+    public void init(ManagerHomeController managerHomeController, double initialWidth) {
+        this.managerHomeController = managerHomeController;
         initListOfPreviews();
         columnMax = getColumnMaxFromPageWidth(initialWidth);
         createHallGrid();
@@ -134,6 +131,7 @@ public class HallPanelController implements Initializable {
             ApplicationUtils.removeFileFromPath(DataReferences.PIANTINEFOLDERPATH + hallName + ".csv");
             ApplicationUtils.removeFileFromPath(DataReferences.PIANTINEPREVIEWSFOLDERPATH + hallName + ".jpg");
             hallNames.remove(hallName);
+            managerHomeController.triggerToHomeNewHallEvent();
             refreshUIandHallList();
         }
     }
@@ -147,13 +145,15 @@ public class HallPanelController implements Initializable {
                                                    , DataReferences.PIANTINEFOLDERPATH + newFileName+".csv")
                      && ApplicationUtils.renameFile( DataReferences.PIANTINEPREVIEWSFOLDERPATH + hallName + ".jpg"
                                                    , DataReferences.PIANTINEPREVIEWSFOLDERPATH + newFileName + ".jpg" ) ) {
-                        GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "Sala rinominata con successo!");
                         labelToModify.setText(newFileName);
                         renameIcon.setTooltip(new Tooltip("Rinomina " + newFileName));
                         deleteIcon.setTooltip(new Tooltip("Elimina " + newFileName));
 
                         hallNames.add(newFileName);
                         hallNames.remove(hallName);
+
+                        managerHomeController.triggerToHomeNewHallEvent();
+                        GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "Sala rinominata con successo!");
                     } else {
                         GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Si è verificato un errore durante la procedura!");
                     }
@@ -231,7 +231,10 @@ public class HallPanelController implements Initializable {
         }
     }
 
-    void triggerModificationToHallList() { refreshUIandHallList(); }
+    void triggerModificationToHallList() {
+        refreshUIandHallList();
+        managerHomeController.triggerToHomeNewHallEvent();
+    }
 
     private void refreshUIandHallList() {
         grigliaSale.getChildren().clear();

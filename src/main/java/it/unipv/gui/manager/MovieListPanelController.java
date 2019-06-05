@@ -1,11 +1,9 @@
 package it.unipv.gui.manager;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import it.unipv.conversion.CSVToMovieList;
 import it.unipv.conversion.CSVToMovieScheduleList;
@@ -19,12 +17,10 @@ import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -36,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 
-public class MovieListPanelController implements Initializable {
+public class MovieListPanelController {
 
     @FXML TextField searchBarTextfield;
     @FXML Label searchButton;
@@ -46,18 +42,20 @@ public class MovieListPanelController implements Initializable {
     private static int rowCount = 0;
     private static int columnCount = 0;
     private List<Movie> movies = new ArrayList<>();
+    private ManagerHomeController managerHomeController;
+
+    public void init(ManagerHomeController managerHomeController) {
+        this.managerHomeController = managerHomeController;
+        createMovieListGrid();
+    }
 
     private void initMoviesList() {
         movies = CSVToMovieList.getMovieListFromCSV(DataReferences.MOVIEFILEPATH);
         Collections.sort(movies);
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) { createMovieListGrid(); }
-
     private void createMovieListGrid() {
         grigliaFilm.getChildren().clear();
-
         initMoviesList();
 
         for (Movie movie : movies) {
@@ -65,7 +63,6 @@ public class MovieListPanelController implements Initializable {
         }
 
         GUIUtils.setScaleTransitionOnControl(searchButton);
-
         initRowAndColumnCount();
     }
 
@@ -122,6 +119,7 @@ public class MovieListPanelController implements Initializable {
             if(reply == JOptionPane.YES_OPTION) {
                 movies.get(movies.indexOf(movie)).setStatus(MovieStatusTYPE.AVAILABLE);
                 MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
+                managerHomeController.triggerToHomeNewMovieEvent();
                 refreshUI();
             }
         });
@@ -153,6 +151,7 @@ public class MovieListPanelController implements Initializable {
                 removeAssociatedSchedules(movie);
                 movies.remove(movie);
                 MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
+                managerHomeController.triggerToHomeNewMovieEvent();
                 refreshUI();
             }
 
@@ -212,6 +211,7 @@ public class MovieListPanelController implements Initializable {
             movies.remove(toRemove);
             movies.add(movie);
             MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
+            managerHomeController.triggerToHomeNewMovieEvent();
             refreshUI();
         }
     }

@@ -1,7 +1,6 @@
 package it.unipv.gui.manager;
 
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 
 import it.unipv.conversion.CSVToMovieList;
@@ -18,7 +17,6 @@ import it.unipv.utils.DataReferences;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -38,7 +36,7 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 
-public class ProgrammationPanelController implements Initializable {
+public class ProgrammationPanelController {
 
     @FXML Label nuovoFilmButton;
     @FXML ScrollPane moviePanel;
@@ -47,10 +45,10 @@ public class ProgrammationPanelController implements Initializable {
     private static int columnCount = 0;
     private int columnMax = 2;
     private List<Movie> movies = new ArrayList<>();
+    private ManagerHomeController managerHomeController;
 
-    @Override public void initialize(URL url, ResourceBundle rb) { }
-
-    public void init(double initialWidth) {
+    public void init(ManagerHomeController managerHomeController, double initialWidth) {
+        this.managerHomeController = managerHomeController;
         initMoviesList();
         columnMax = getColumnMaxFromPageWidth(initialWidth);
         createMovieGrid();
@@ -72,7 +70,10 @@ public class ProgrammationPanelController implements Initializable {
         }
 
         GUIUtils.setScaleTransitionOnControl(nuovoFilmButton);
+        initRowAndColumnCount();
+    }
 
+    private void initRowAndColumnCount() {
         rowCount = 0;
         columnCount = 0;
     }
@@ -164,6 +165,7 @@ public class ProgrammationPanelController implements Initializable {
                 if(reply == JOptionPane.YES_OPTION) {
                     movies.get(movies.indexOf(movie)).setStatus(MovieStatusTYPE.NOT_AVAILABLE);
                     MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
+                    managerHomeController.triggerToHomeNewMovieEvent();
                     refreshUIandMovieList();
                 }
             });
@@ -182,6 +184,7 @@ public class ProgrammationPanelController implements Initializable {
                     removeAssociatedSchedules(movie);
                     movies.remove(movie);
                     MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
+                    managerHomeController.triggerToHomeNewMovieEvent();
                     refreshUIandMovieList();
                 }
             });
@@ -271,7 +274,10 @@ public class ProgrammationPanelController implements Initializable {
        openMovieEditor(null, true);
     }
 
-    void triggerNewMovieEvent() { refreshUIandMovieList(); }
+    void triggerNewMovieEvent() {
+        refreshUIandMovieList();
+        managerHomeController.triggerToHomeNewMovieEvent();
+    }
 
     void triggerOverwriteMovieEvent(Movie movie) {
         Movie toRemove = null;
@@ -285,6 +291,7 @@ public class ProgrammationPanelController implements Initializable {
             movies.remove(toRemove);
             movies.add(movie);
             MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
+            managerHomeController.triggerToHomeNewMovieEvent();
             refreshUIandMovieList();
         }
     }

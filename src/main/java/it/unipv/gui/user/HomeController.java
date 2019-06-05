@@ -13,6 +13,7 @@ import it.unipv.gui.common.*;
 import it.unipv.gui.login.LoginController;
 import it.unipv.gui.login.User;
 import it.unipv.gui.login.UserInfo;
+import it.unipv.gui.manager.ManagerHomeController;
 import it.unipv.gui.user.areariservata.AreaRiservataHomeController;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
@@ -69,7 +70,124 @@ public class HomeController implements Initializable {
     private List<Movie> film = new ArrayList<>();
     private User loggedUser;
 
-    private void initGrid(){
+    /* ************************************************************* METODO PRINCIPALE **************************************************************/
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        if(checkIfThereIsAlreadyUserSaved()) {
+            loggedUser = UserInfo.getUserInfo();
+            setupLoggedUser();
+        } else {
+            logoutPane.setVisible(false);
+            areaRiservataButton.setVisible(false);
+        }
+        dtf.format(LocalDateTime.now());
+        rectangle2D3D.setVisible(false);
+        anchorInfo.setVisible(false);
+        menuWindow.setVisible(false);
+        lineGenere.setVisible(false);
+        genereWindow.setVisible(false);
+        singleFilmPane.setVisible(false);
+        homePane.setVisible(false);
+        hallPanel.setVisible(false);
+        welcomePanel.setVisible(true);
+    }
+    /* **********************************************************************************************************************************************/
+
+
+    /* ************************************************************* METODI RIGUARDANTI IL MENU **************************************************************/
+    public void homeClick(){
+        hallPanel.setVisible(false);
+        welcomePanel.setVisible(false);
+        anchorInfo.setVisible(false);
+        singleFilmPane.setVisible(false);
+        rectangle2D3D.setVisible(false);
+        animationMenu();
+        homePane.setVisible(true);
+        filmScroll.setVisible(true);
+        filmScrollFiltered.setVisible(false);
+        if(film.isEmpty()){ initMovieGrid(); }
+        genreLabel.setText("genere");
+        type = null;
+    }
+
+    public void listaSaleClick(){
+        anchorInfo.setVisible(false);
+        welcomePanel.setVisible(false);
+        homePane.setVisible(false);
+        singleFilmPane.setVisible(false);
+        hallPanel.setVisible(true);
+        initHallGrid();
+        animationMenu();
+    }
+
+    public void infoClick() {
+        hallPanel.setVisible(false);
+        homePane.setVisible(false);
+        singleFilmPane.setVisible(false);
+        filmScroll.setVisible(false);
+        filmScrollFiltered.setVisible(false);
+        welcomePanel.setVisible(false);
+        rectangle2D3D.setVisible(false);
+        animationMenu();
+        Stage stage = (Stage) homePane.getScene().getWindow();
+        infoUtili.setLayoutX(stage.getWidth()/2-infoUtili.getWidth()/2);
+        labelCellulari.setLayoutX(stage.getWidth()/2-labelCellulari.getWidth()/2);
+        labelIVA.setLayoutX(stage.getWidth()/2-labelIVA.getWidth()/2);
+        labelCosti.setLayoutX(stage.getWidth()/2-labelCosti.getWidth()/2);
+        anchorInfo.setVisible(true);
+    }
+
+    @FXML
+    public void areaRiservataClick() {
+        openReservedArea();
+        animationMenu();
+    }
+
+    public void animationMenu(){
+        KeyValue widthValueForward = new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() +81);
+        KeyValue widthValueBackwards = new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() -81);
+        KeyValue heightValueForward = new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()+244);
+        KeyValue heightValueBackwards = new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()-244);
+        KeyFrame forwardW = new KeyFrame(javafx.util.Duration.seconds(0.3), widthValueForward);
+        KeyFrame backwardW = new KeyFrame(javafx.util.Duration.seconds(0.15), widthValueBackwards);
+        KeyFrame forwardH = new KeyFrame(javafx.util.Duration.seconds(0.3), heightValueForward);
+        KeyFrame backwardH = new KeyFrame(javafx.util.Duration.seconds(0.15), heightValueBackwards);
+        Timeline timelineForwardH = new Timeline(forwardH);
+        Timeline timelineBackwardH = new Timeline(backwardH);
+        Timeline timelineForwardW = new Timeline(forwardW);
+        Timeline timelineBackwardW = new Timeline(backwardW);
+        FadeTransition fadeIn = new FadeTransition(javafx.util.Duration.seconds(0.4), menuWindow);
+        FadeTransition fadeOut = new FadeTransition(javafx.util.Duration.seconds(0.1), menuWindow);
+
+        if(!menuWindow.isVisible()){
+            menuWindow.setOpacity(0);
+            menuWindow.setVisible(true);
+            timelineForwardW.play();
+            timelineForwardH.play();
+
+            fadeIn.setDelay(javafx.util.Duration.seconds(0.2));
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1.0);
+            fadeIn.play();
+        } else {
+            if(menuWindow.isVisible()){
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0);
+                fadeOut.play();
+                menuWindow.setVisible(false);
+
+                timelineBackwardH.play();
+                timelineBackwardW.play();
+            }
+        }
+    }
+    /* *******************************************************************************************************************************************************/
+
+
+    /* ************************************************************* METODI RIGUARDANTI LA HOME **************************************************************/
+    private void initMovieGrid(){
+        filmGrid.getChildren().clear();
+        filmGridFiltered.getChildren().clear();
         film = CSVToMovieList.getMovieListFromCSV(DataReferences.MOVIEFILEPATH);
         Collections.sort(film);
 
@@ -102,40 +220,45 @@ public class HomeController implements Initializable {
     }
 
     private void addMovie(Movie movie, GridPane grid, ScrollPane scroll){
+        FileInputStream fis = null;
+        ImageView posterPreview;
+
         try {
-            FileInputStream fis = new FileInputStream(movie.getLocandinaPath());
-            ImageView posterPreview = new ImageView(new Image(fis, 1000, 0, true, true));
-            posterPreview.setPreserveRatio(true);
-            posterPreview.setFitWidth(200);
-            CloseableUtils.close(fis);
-
-            AnchorPane anchor = new AnchorPane();
-
-
-            if(columnCount == columnCountMax){
-                columnCount = 0;
-                rowCount++;
-            }
-
-            grid.add(anchor, columnCount, rowCount);
-            columnCount++;
-
-            scroll.setContent(grid);
-            GridPane.setMargin(anchor, new Insets(15,0,5,15));
-
-            anchor.getChildren().addAll(posterPreview);
-            posterPreview.setLayoutX(30);
-            if(rowCount==0) {
-                posterPreview.setLayoutY(20);
-            }
-
-            posterPreview.setOnMouseClicked(e -> populateSingleFilmPane(movie));
-
-            GUIUtils.setScaleTransitionOnControl(posterPreview);
-
+            fis = new FileInputStream(movie.getLocandinaPath());
+            posterPreview = new ImageView(new Image(fis, 1000, 0, true, true));
         } catch(FileNotFoundException ex) {
             throw new ApplicationException(ex);
+        } finally {
+            CloseableUtils.close(fis);
         }
+
+        posterPreview.setPreserveRatio(true);
+        posterPreview.setFitWidth(200);
+        CloseableUtils.close(fis);
+
+        AnchorPane anchor = new AnchorPane();
+
+
+        if (columnCount == columnCountMax) {
+            columnCount = 0;
+            rowCount++;
+        }
+
+        grid.add(anchor, columnCount, rowCount);
+        columnCount++;
+
+        scroll.setContent(grid);
+        GridPane.setMargin(anchor, new Insets(15, 0, 5, 15));
+
+        anchor.getChildren().addAll(posterPreview);
+        posterPreview.setLayoutX(30);
+        if (rowCount == 0) {
+            posterPreview.setLayoutY(20);
+        }
+
+        posterPreview.setOnMouseClicked(e -> populateSingleFilmPane(movie));
+
+        GUIUtils.setScaleTransitionOnControl(posterPreview);
     }
 
     private void populateSingleFilmPane(Movie movie) {
@@ -177,14 +300,17 @@ public class HomeController implements Initializable {
         Label programmationsLabel = new Label();
 
         Font infoFont = new Font("Bebas Neue Regular", 24);
+
         ImageView poster;
+        FileInputStream fis = null;
         try {
-            FileInputStream fis2 = new FileInputStream(movie.getLocandinaPath());
-            poster = new ImageView(new Image(fis2, 1000, 0, true, true));
+            fis = new FileInputStream(movie.getLocandinaPath());
+            poster = new ImageView(new Image(fis, 1000, 0, true, true));
             poster.setPreserveRatio(true);
-            CloseableUtils.close(fis2);
         } catch (FileNotFoundException exce){
             throw new ApplicationException(exce);
+        } finally {
+            CloseableUtils.close(fis);
         }
 
         poster.setFitWidth(350);
@@ -426,45 +552,6 @@ public class HomeController implements Initializable {
         return res;
     }
 
-    public void animationMenu(){
-        KeyValue widthValueForward = new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() +81);
-        KeyValue widthValueBackwards = new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() -81);
-        KeyValue heightValueForward = new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()+244);
-        KeyValue heightValueBackwards = new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()-244);
-        KeyFrame forwardW = new KeyFrame(javafx.util.Duration.seconds(0.3), widthValueForward);
-        KeyFrame backwardW = new KeyFrame(javafx.util.Duration.seconds(0.15), widthValueBackwards);
-        KeyFrame forwardH = new KeyFrame(javafx.util.Duration.seconds(0.3), heightValueForward);
-        KeyFrame backwardH = new KeyFrame(javafx.util.Duration.seconds(0.15), heightValueBackwards);
-        Timeline timelineForwardH = new Timeline(forwardH);
-        Timeline timelineBackwardH = new Timeline(backwardH);
-        Timeline timelineForwardW = new Timeline(forwardW);
-        Timeline timelineBackwardW = new Timeline(backwardW);
-        FadeTransition fadeIn = new FadeTransition(javafx.util.Duration.seconds(0.4), menuWindow);
-        FadeTransition fadeOut = new FadeTransition(javafx.util.Duration.seconds(0.1), menuWindow);
-              
-        if(!menuWindow.isVisible()){
-            menuWindow.setOpacity(0);
-            menuWindow.setVisible(true);
-            timelineForwardW.play();
-            timelineForwardH.play();
-
-            fadeIn.setDelay(javafx.util.Duration.seconds(0.2));
-            fadeIn.setFromValue(0);
-            fadeIn.setToValue(1.0);
-            fadeIn.play();
-        } else {
-            if(menuWindow.isVisible()){
-                fadeOut.setFromValue(1.0);
-                fadeOut.setToValue(0);
-                fadeOut.play();
-                menuWindow.setVisible(false);
-                
-                timelineBackwardH.play();
-                timelineBackwardW.play();
-            }
-        }
-    }
-    
     public void animationGenere(){
         KeyValue heightValueForward = new KeyValue(rectangleGenere.heightProperty(), rectangleGenere.getHeight()+305);
         KeyValue heightValueBackwards = new KeyValue(rectangleGenere.heightProperty(), rectangleGenere.getHeight()-305);
@@ -474,103 +561,28 @@ public class HomeController implements Initializable {
         Timeline timelineBackwardH = new Timeline(backwardH);
         FadeTransition fadeIn = new FadeTransition(javafx.util.Duration.seconds(0.4), genereWindow);
         FadeTransition fadeOut = new FadeTransition(javafx.util.Duration.seconds(0.1), genereWindow);
-        
-        if(!genereWindow.isVisible()){
-        genereWindow.setOpacity(0);
-        genereWindow.setVisible(true);
-        timelineForwardH.play();
 
-        fadeIn.setDelay(javafx.util.Duration.seconds(0.2));
-        fadeIn.setFromValue(0);
-        fadeIn.setToValue(1.0);
-        fadeIn.play();
+        if(!genereWindow.isVisible()){
+            genereWindow.setOpacity(0);
+            genereWindow.setVisible(true);
+            timelineForwardH.play();
+
+            fadeIn.setDelay(javafx.util.Duration.seconds(0.2));
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1.0);
+            fadeIn.play();
         } else {
             if(genereWindow.isVisible()){
                 fadeOut.setFromValue(1.0);
                 fadeOut.setToValue(0);
                 fadeOut.play();
                 genereWindow.setVisible(false);
-                
+
                 timelineBackwardH.play();
             }
         }
     }
-    
-    public void loginWindow(){
-        if(!stageLogin.isShowing()){
-            if(loggedUser==null) {
-                openLogin();
-            } else {
-                openReservedArea();
-            }
-        }
-    }
 
-    @FXML private void logoutListener() { doLogout(); }
-    
-    public void registrationWindow(MouseEvent event){
-        Label label = (Label) event.getSource();
-        
-        KeyValue XValue = new KeyValue(label.scaleXProperty(), 0.85);
-        KeyFrame forwardX = new KeyFrame(javafx.util.Duration.seconds(0.125), XValue);
-        Timeline timelineX = new Timeline(forwardX);
-        timelineX.setAutoReverse(true);
-        timelineX.setCycleCount(2);
-        timelineX.play();
-        KeyValue YValue = new KeyValue(label.scaleYProperty(), 0.85);
-        KeyFrame forwardY = new KeyFrame(javafx.util.Duration.seconds(0.125), YValue);
-        Timeline timelineY = new Timeline(forwardY);
-        timelineY.setAutoReverse(true);
-        timelineY.setCycleCount(2);
-        timelineY.play();
-        
-        if(!stageRegistrazione.isShowing()){
-            if(loggedUser==null) {
-                openRegistrazione();
-                animationMenu();
-            } else {
-                doLogout();
-                animationMenu();
-            }
-        }
-    }
-
-    private void doLogout() {
-        logLabel.setText("effettua il login");
-        nonRegistratoQuestionLabel.setText("non sei registrato?");
-        registerButton.setText("Registrati");
-        areaRiservataButton.setVisible(false);
-        logoutPane.setVisible(false);
-        loggedUser = null;
-
-        if(checkIfThereIsAlreadyUserSaved()) {
-            UserInfo.deleteUserInfoFileInUserDir();
-        }
-
-        anchorInfo.setVisible(false);
-        singleFilmPane.setVisible(false);
-        homePane.setVisible(false);
-        hallPanel.setVisible(false);
-        welcomePanel.setVisible(true);
-        welcomeLabel.setText("Benvenuto in Golden Movie Studio");
-        welcomeFooter.setVisible(true);
-
-        if(reservedAreaStage != null) {
-            if(reservedAreaStage.isShowing()) {
-                isReservedAreaOpened = false;
-                reservedAreaStage.close();
-            }
-        }
-
-        if(managerAreaStage != null) {
-            if(managerAreaStage.isShowing()) {
-                isManagerAreaOpened = false;
-                managerAreaStage.close();
-            }
-        }
-    }
-
-    @FXML public void welcomeRegisterButtonListener() { openRegistrazione(); }
 
     private MovieTYPE type;
 
@@ -579,7 +591,7 @@ public class HomeController implements Initializable {
         if(genereWindow.isVisible()){
             lineGenere.setVisible(true);
         }
-        
+
         lineGenere.setLayoutY(label.getLayoutY()+32);
         lineGenere.setStartX(-label.getWidth()/2);
         lineGenere.setEndX(label.getWidth()/2);
@@ -666,78 +678,10 @@ public class HomeController implements Initializable {
         filmScroll.setVisible(false);
         filmScrollFiltered.setVisible(true);
     }
+    /* ****************************************************************************************************************************************************/
 
-    private void openRegistrazione(){
-        try {
-            stageRegistrazione.setScene(new Scene(new FXMLLoader(getClass().getResource("/fxml/login/Registrazione.fxml")).load()));
-            stageRegistrazione.setResizable(false);
-            stageRegistrazione.setTitle("Registrazione");
-            stageRegistrazione.show();
-            stageRegistrazione.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
-    }
-    
-    private void openLogin(){
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Login.fxml"));
-            Parent p = loader.load();
-            LoginController lc = loader.getController();
-            lc.init(this);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(p));
-            stage.setTitle("Login");
-            stage.setResizable(false);
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-            stage.show();
-        } catch (IOException ex) {
-            throw new ApplicationException(ex);
-        }
-    }
-    
-    public void infoPaneClick() {
-        hallPanel.setVisible(false);
-        homePane.setVisible(false);
-        singleFilmPane.setVisible(false);
-        filmScroll.setVisible(false);
-        filmScrollFiltered.setVisible(false);
-        welcomePanel.setVisible(false);
-        rectangle2D3D.setVisible(false);
-        animationMenu();
-        Stage stage = (Stage) homePane.getScene().getWindow();
-        infoUtili.setLayoutX(stage.getWidth()/2-infoUtili.getWidth()/2);
-        labelCellulari.setLayoutX(stage.getWidth()/2-labelCellulari.getWidth()/2);
-        labelIVA.setLayoutX(stage.getWidth()/2-labelIVA.getWidth()/2);
-        labelCosti.setLayoutX(stage.getWidth()/2-labelCosti.getWidth()/2);
-        anchorInfo.setVisible(true);
-    }
 
-    public void homeClick(){
-        hallPanel.setVisible(false);
-        welcomePanel.setVisible(false);
-        anchorInfo.setVisible(false);
-        singleFilmPane.setVisible(false);
-        rectangle2D3D.setVisible(false);
-        animationMenu();
-        homePane.setVisible(true);
-        filmScroll.setVisible(true);
-        filmScrollFiltered.setVisible(false);
-        if(film.isEmpty()){ initGrid(); }
-        genreLabel.setText("genere");
-        type = null;
-    }
-
-    public void listaSaleClick(){
-        anchorInfo.setVisible(false);
-        welcomePanel.setVisible(false);
-        homePane.setVisible(false);
-        singleFilmPane.setVisible(false);
-        hallPanel.setVisible(true);
-        initHallGrid();
-        animationMenu();
-    }
-
+    /* ************************************************************* METODI RIGUARDANTI LISTA SALE **************************************************************/
     private File[] listOfPreviews;
     private static int hallRowCount = 0;
     private static int hallColumnCount = 0;
@@ -800,13 +744,16 @@ public class HomeController implements Initializable {
         grigliaSale.setVgap(60);
 
         ImageView snapHallView;
+        FileInputStream fis = null;
         try {
-            FileInputStream fis = new FileInputStream(file);
+            fis = new FileInputStream(file);
             snapHallView = new ImageView(new Image(fis, 220, 395, true, true));
-            CloseableUtils.close(fis);
+
             snapHallView.setOnMouseClicked(event -> openHallPreview(file, nomeSalaLabel));
         } catch (FileNotFoundException ex) {
             throw new ApplicationException(ex);
+        } finally {
+            CloseableUtils.close(fis);
         }
 
         AnchorPane pane = new AnchorPane();
@@ -826,33 +773,40 @@ public class HomeController implements Initializable {
         numPostiVIPLabel.setLayoutY(numPostiDisabiliLabel.getLayoutY() + 15);
 
         pane.getChildren().addAll( snapHallView
-                                 , nomeSalaLabel
-                                 , numPostiTotaliLabel
-                                 , numPostiDisabiliLabel
-                                 , numPostiVIPLabel);
+                , nomeSalaLabel
+                , numPostiTotaliLabel
+                , numPostiDisabiliLabel
+                , numPostiVIPLabel);
 
         GUIUtils.setScaleTransitionOnControl(snapHallView);
     }
 
     private void openHallPreview(File file, Label nomeSalaLabel) {
+        BorderPane borderPane = new BorderPane();
+        ImageView imageView = new ImageView();
+
+        Image image;
+        FileInputStream fis = null;
         try {
-            BorderPane borderPane = new BorderPane();
-            ImageView imageView = new ImageView();
-            Image image = new Image(new FileInputStream(file));
-            imageView.setImage(image);
-            imageView.setPreserveRatio(true);
-            imageView.setSmooth(true);
-            imageView.setCache(true);
-            borderPane.setCenter(imageView);
-            Stage stage = new Stage();
-            stage.setTitle(nomeSalaLabel.getText());
-            Scene scene = new Scene(borderPane);
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-            stage.setScene(scene);
-            stage.show();
+            fis = new FileInputStream(file);
+            image = new Image(fis);
         } catch (FileNotFoundException e) {
             throw new ApplicationException(e);
+        } finally {
+            CloseableUtils.close(fis);
         }
+
+        imageView.setImage(image);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        imageView.setCache(true);
+        borderPane.setCenter(imageView);
+        Stage stage = new Stage();
+        stage.setTitle(nomeSalaLabel.getText());
+        Scene scene = new Scene(borderPane);
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+        stage.setScene(scene);
+        stage.show();
     }
 
     private int getSeatNumberPerType(List<Seat> mdsList, SeatTYPE type) {
@@ -868,12 +822,115 @@ public class HomeController implements Initializable {
     private List<Seat> initDraggableSeatsList(String nomeSala) {
         return CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINEFOLDERPATH+nomeSala+".csv");
     }
+    /* **********************************************************************************************************************************************************/
 
-    @FXML
-    public void areaRiservataClick() {
-        openReservedArea();
-        animationMenu();
+
+    /* ************************************************************* METODI RIGUARDANTI LOGIN/LOGOUT/REGISTRAZIONE **************************************************************/
+    private void openRegistrazione(){
+        try {
+            stageRegistrazione.setScene(new Scene(new FXMLLoader(getClass().getResource("/fxml/login/Registrazione.fxml")).load()));
+            stageRegistrazione.setResizable(false);
+            stageRegistrazione.setTitle("Registrazione");
+            stageRegistrazione.show();
+            stageRegistrazione.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+        } catch (IOException e) {
+            throw new ApplicationException(e);
+        }
     }
+
+    private void openLogin(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Login.fxml"));
+            Parent p = loader.load();
+            LoginController lc = loader.getController();
+            lc.init(this);
+            Stage stage = new Stage();
+            stage.setScene(new Scene(p));
+            stage.setTitle("Login");
+            stage.setResizable(false);
+            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+            stage.show();
+        } catch (IOException ex) {
+            throw new ApplicationException(ex);
+        }
+    }
+
+    public void loginWindow(){
+        if(!stageLogin.isShowing()){
+            if(loggedUser==null) {
+                openLogin();
+            } else {
+                openReservedArea();
+            }
+        }
+    }
+
+    private void doLogout() {
+        logLabel.setText("effettua il login");
+        nonRegistratoQuestionLabel.setText("non sei registrato?");
+        registerButton.setText("Registrati");
+        areaRiservataButton.setVisible(false);
+        logoutPane.setVisible(false);
+        loggedUser = null;
+
+        if(checkIfThereIsAlreadyUserSaved()) {
+            UserInfo.deleteUserInfoFileInUserDir();
+        }
+
+        anchorInfo.setVisible(false);
+        singleFilmPane.setVisible(false);
+        homePane.setVisible(false);
+        hallPanel.setVisible(false);
+        welcomePanel.setVisible(true);
+        welcomeLabel.setText("Benvenuto in Golden Movie Studio");
+        welcomeFooter.setVisible(true);
+
+        if(reservedAreaStage != null) {
+            if(reservedAreaStage.isShowing()) {
+                isReservedAreaOpened = false;
+                reservedAreaStage.close();
+            }
+        }
+
+        if(managerAreaStage != null) {
+            if(managerAreaStage.isShowing()) {
+                isManagerAreaOpened = false;
+                managerAreaStage.close();
+            }
+        }
+    }
+
+    @FXML private void logoutListener() { doLogout(); }
+
+    public void registrationWindow(MouseEvent event){
+        Label label = (Label) event.getSource();
+        
+        KeyValue XValue = new KeyValue(label.scaleXProperty(), 0.85);
+        KeyFrame forwardX = new KeyFrame(javafx.util.Duration.seconds(0.125), XValue);
+        Timeline timelineX = new Timeline(forwardX);
+        timelineX.setAutoReverse(true);
+        timelineX.setCycleCount(2);
+        timelineX.play();
+        KeyValue YValue = new KeyValue(label.scaleYProperty(), 0.85);
+        KeyFrame forwardY = new KeyFrame(javafx.util.Duration.seconds(0.125), YValue);
+        Timeline timelineY = new Timeline(forwardY);
+        timelineY.setAutoReverse(true);
+        timelineY.setCycleCount(2);
+        timelineY.play();
+        
+        if(!stageRegistrazione.isShowing()){
+            if(loggedUser==null) {
+                openRegistrazione();
+                animationMenu();
+            } else {
+                doLogout();
+                animationMenu();
+            }
+        }
+    }
+
+    @FXML public void welcomeRegisterButtonListener() { openRegistrazione(); }
+
 
     private void openReservedArea() {
         if(!isHimANormalUser(loggedUser)) {
@@ -887,8 +944,10 @@ public class HomeController implements Initializable {
     private void doOpenManagerArea() {
         if(!isManagerAreaOpened) {
             try {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/manager/ManagerHome.fxml"));
-                Parent root = fxmlLoader.load();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/ManagerHome.fxml"));
+                Parent root = loader.load();
+                ManagerHomeController mhc = loader.getController();
+                mhc.init(this);
                 managerAreaStage = new Stage();
                 managerAreaStage.setScene(new Scene(root));
                 managerAreaStage.setTitle("Area Manager");
@@ -928,27 +987,6 @@ public class HomeController implements Initializable {
         }
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        if(checkIfThereIsAlreadyUserSaved()) {
-            loggedUser = UserInfo.getUserInfo();
-            setupLoggedUser();
-        } else {
-            logoutPane.setVisible(false);
-            areaRiservataButton.setVisible(false);
-        }
-        dtf.format(LocalDateTime.now());
-        rectangle2D3D.setVisible(false);
-        anchorInfo.setVisible(false);
-        menuWindow.setVisible(false);
-        lineGenere.setVisible(false);
-        genereWindow.setVisible(false);
-        singleFilmPane.setVisible(false);
-        homePane.setVisible(false);
-        hallPanel.setVisible(false);
-        welcomePanel.setVisible(true);
-    }
-
     private void setupLoggedUser() {
         logLabel.setText(loggedUser.getName());
         logoutPane.setVisible(true);
@@ -966,15 +1004,33 @@ public class HomeController implements Initializable {
 
     private boolean isHimANormalUser(User user) {
         return !( user.getName().equalsIgnoreCase(DataReferences.ADMINUSERNAME)
-               &&  user.getPassword().equalsIgnoreCase(DataReferences.ADMINPASSWORD));
+                &&  user.getPassword().equalsIgnoreCase(DataReferences.ADMINPASSWORD));
     }
 
     private boolean checkIfThereIsAlreadyUserSaved() {
         return UserInfo.checkIfUserInfoFileExists();
     }
+    /* ************************************************************************************************************************************************************************/
 
+
+    /* ************************************************************* TRIGGER DI AGGIORNAMENTO **************************************************************/
     public void triggerNewLogin(User user) {
         loggedUser = user;
         setupLoggedUser();
     }
+
+    public void triggerNewMovieEvent() {
+        if(homePane.isVisible() || singleFilmPane.isVisible()) {
+            filmScroll.setVisible(true);
+            homePane.setVisible(true);
+            filmScrollFiltered.setVisible(false);
+            rectangle2D3D.setVisible(false);
+            singleFilmPane.setVisible(false);
+            genreLabel.setText("genere");
+        }
+        initMovieGrid();
+    }
+
+    public void triggerNewHallEvent() { initHallGrid(); }
+    /* *****************************************************************************************************************************************************/
 }

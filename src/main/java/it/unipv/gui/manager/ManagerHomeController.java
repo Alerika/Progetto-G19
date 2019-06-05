@@ -1,5 +1,6 @@
 package it.unipv.gui.manager;
 
+import it.unipv.gui.user.HomeController;
 import it.unipv.utils.ApplicationException;
 import java.io.IOException;
 import java.net.URL;
@@ -23,13 +24,16 @@ public class ManagerHomeController implements Initializable {
     @FXML private BorderPane mainPanel;
     @FXML Label hallModifierLabel, schedulerLabel, movieListLabel, userListLabel, pricesModifierLabel, exitLabel;
     private List<Label> labels = new ArrayList<>();
+    private HomeController homeController;
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void init(HomeController homeController) {
+        this.homeController = homeController;
         addLabelsToList();
         setOnMouseEnteredToLabels();
         setOnMouseExitedToLabels();
     }
+
+    @Override public void initialize(URL url, ResourceBundle rb) { }
 
     private void addLabelsToList() {
         labels.add(hallModifierLabel);
@@ -79,7 +83,7 @@ public class ManagerHomeController implements Initializable {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/HallPanel.fxml"));
                         AnchorPane hallPanel = loader.load();
                         HallPanelController hpc = loader.getController();
-                        hpc.init(mainPanel.getWidth());
+                        hpc.init(this, mainPanel.getWidth());
                         mainPanel.setCenter(hallPanel);
                         openedPane = "MODIFICA SALE";
                     }
@@ -98,7 +102,7 @@ public class ManagerHomeController implements Initializable {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/ProgrammationPanel.fxml"));
                         AnchorPane programmationPanel = loader.load();
                         ProgrammationPanelController ppc = loader.getController();
-                        ppc.init(mainPanel.getWidth());
+                        ppc.init(this, mainPanel.getWidth());
                         mainPanel.setCenter(programmationPanel);
                         openedPane = "PROGRAMMAZIONE";
                     }
@@ -112,8 +116,12 @@ public class ManagerHomeController implements Initializable {
                     if(!openedPane.equals("LISTA FILM")) {
                         movieListLabel.setStyle("-fx-background-color:#db8f00");
                         setTransparentOtherLabels("LISTA FILM");
+
                         mainPanel.getChildren().clear();
-                        AnchorPane movieListPanel = FXMLLoader.load(getClass().getResource("/fxml/manager/MovieListPanel.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieListPanel.fxml"));
+                        AnchorPane movieListPanel = loader.load();
+                        MovieListPanelController mlpc = loader.getController();
+                        mlpc.init(this);
                         mainPanel.setCenter(movieListPanel);
                         openedPane = "LISTA FILM";
                     }
@@ -170,4 +178,7 @@ public class ManagerHomeController implements Initializable {
             }
         }
     }
+
+    void triggerToHomeNewMovieEvent() { homeController.triggerNewMovieEvent(); }
+    void triggerToHomeNewHallEvent() { homeController.triggerNewHallEvent(); }
 }
