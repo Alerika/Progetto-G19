@@ -7,10 +7,7 @@ import it.unipv.conversion.CSVToMovieList;
 import it.unipv.conversion.CSVToMovieScheduleList;
 import it.unipv.conversion.MovieScheduleToCSV;
 import it.unipv.conversion.MovieToCSV;
-import it.unipv.gui.common.GUIUtils;
-import it.unipv.gui.common.Movie;
-import it.unipv.gui.common.MovieSchedule;
-import it.unipv.gui.common.MovieStatusTYPE;
+import it.unipv.gui.common.*;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
@@ -36,7 +33,7 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 
-public class ProgrammationPanelController {
+public class ProgrammationPanelController implements IPane {
 
     @FXML Label nuovoFilmButton;
     @FXML ScrollPane moviePanel;
@@ -46,6 +43,8 @@ public class ProgrammationPanelController {
     private int columnMax = 2;
     private List<Movie> movies = new ArrayList<>();
     private ManagerHomeController managerHomeController;
+    private Stage movieEditorStage, movieSchedulerStage;
+    private MovieSchedulerController msc;
 
     public void init(ManagerHomeController managerHomeController, double initialWidth) {
         this.managerHomeController = managerHomeController;
@@ -53,6 +52,7 @@ public class ProgrammationPanelController {
         columnMax = getColumnMaxFromPageWidth(initialWidth);
         createMovieGrid();
         checkPageDimension();
+
     }
 
     private void initMoviesList() {
@@ -212,14 +212,17 @@ public class ProgrammationPanelController {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieScheduler.fxml"));
                 Parent p = loader.load();
-                MovieSchedulerController msc = loader.getController();
+                msc = loader.getController();
                 msc.init(movie);
-                Stage stage = new Stage();
-                stage.setScene(new Scene(p));
-                stage.setTitle("Programmazione " + movie.getTitolo());
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-                stage.setOnCloseRequest(event -> isMovieSchedulerAlreadyOpened = false);
-                stage.show();
+                movieSchedulerStage = new Stage();
+                movieSchedulerStage.setScene(new Scene(p));
+                movieSchedulerStage.setTitle("Programmazione " + movie.getTitolo());
+                movieSchedulerStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                movieSchedulerStage.setOnCloseRequest(event -> {
+                    isMovieSchedulerAlreadyOpened = false;
+                    msc.closeAllSubWindows();
+                });
+                movieSchedulerStage.show();
                 isMovieSchedulerAlreadyOpened = true;
             } catch (IOException ex) {
                 throw new ApplicationException(ex);
@@ -234,19 +237,19 @@ public class ProgrammationPanelController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieEditor.fxml"));
                 Parent p = loader.load();
                 MovieEditorController mec = loader.getController();
-                Stage stage = new Stage();
-                stage.setScene(new Scene(p));
+                movieEditorStage = new Stage();
+                movieEditorStage.setScene(new Scene(p));
                 if(isANewFilm) {
                     mec.init(this);
-                    stage.setTitle("Editor Film");
+                    movieEditorStage.setTitle("Editor Film");
 
                 } else {
                     mec.init(movie, this);
-                    stage.setTitle("Modifica: " + movie.getTitolo());
+                    movieEditorStage.setTitle("Modifica: " + movie.getTitolo());
                 }
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-                stage.setOnCloseRequest(event -> isMovieEditorAlreadyOpened=false);
-                stage.show();
+                movieEditorStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                movieEditorStage.setOnCloseRequest(event -> isMovieEditorAlreadyOpened=false);
+                movieEditorStage.show();
                 isMovieEditorAlreadyOpened = true;
             } catch (IOException ex) {
                 throw new ApplicationException(ex);
@@ -332,6 +335,24 @@ public class ProgrammationPanelController {
             return 4;
         } else {
             return 5;
+        }
+    }
+
+    @Override
+    public void closeAllSubWindows() {
+        if(movieEditorStage != null) {
+            if(movieEditorStage.isShowing()) {
+                isMovieEditorAlreadyOpened = false;
+                movieEditorStage.close();
+            }
+        }
+
+        if(movieSchedulerStage != null) {
+            if(movieSchedulerStage.isShowing()) {
+                msc.closeAllSubWindows();
+                movieSchedulerStage.close();
+                isMovieSchedulerAlreadyOpened = false;
+            }
         }
     }
 }

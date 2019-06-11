@@ -60,9 +60,11 @@ public class HomeController implements Initializable {
     @FXML private Line lineGenere;
     @FXML private Label goBackToHomeButton;
 
+    private ManagerHomeController mhc;
+    private AreaRiservataHomeController arhc;
     private final Stage stageRegistrazione = new Stage();
     private final Stage stageLogin = new Stage();
-    private Stage reservedAreaStage, managerAreaStage;
+    private Stage reservedAreaStage, managerAreaStage, prenotationStage;
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static int rowCount = 0;
     private static int columnCount = 0;
@@ -522,13 +524,13 @@ public class HomeController implements Initializable {
                 Parent p = loader.load();
                 MoviePrenotationController mpc = loader.getController();
                 mpc.init(this, scheduleLabel.getText().trim(), movie, loggedUser);
-                Stage stage = new Stage();
-                stage.setScene(new Scene(p));
-                stage.setResizable(false);
-                stage.setTitle("Prenotazione " + movie.getTitolo() + " " + scheduleLabel.getText().trim());
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-                stage.setOnCloseRequest( event -> isPrenotationAreaOpened = false);
-                stage.show();
+                prenotationStage = new Stage();
+                prenotationStage.setScene(new Scene(p));
+                prenotationStage.setResizable(false);
+                prenotationStage.setTitle("Prenotazione " + movie.getTitolo() + " " + scheduleLabel.getText().trim());
+                prenotationStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                prenotationStage.setOnCloseRequest( event -> isPrenotationAreaOpened = false);
+                prenotationStage.show();
                 isPrenotationAreaOpened = true;
             } catch (IOException ex) {
                 throw new ApplicationException(ex);
@@ -888,6 +890,7 @@ public class HomeController implements Initializable {
         if(reservedAreaStage != null) {
             if(reservedAreaStage.isShowing()) {
                 isReservedAreaOpened = false;
+                arhc.closeAllSubWindows();
                 reservedAreaStage.close();
             }
         }
@@ -895,7 +898,15 @@ public class HomeController implements Initializable {
         if(managerAreaStage != null) {
             if(managerAreaStage.isShowing()) {
                 isManagerAreaOpened = false;
+                mhc.closeAllSubWindows();
                 managerAreaStage.close();
+            }
+        }
+
+        if(prenotationStage != null) {
+            if(prenotationStage.isShowing()) {
+                isPrenotationAreaOpened = false;
+                prenotationStage.close();
             }
         }
     }
@@ -946,7 +957,7 @@ public class HomeController implements Initializable {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/ManagerHome.fxml"));
                 Parent root = loader.load();
-                ManagerHomeController mhc = loader.getController();
+                mhc = loader.getController();
                 mhc.init(this);
                 managerAreaStage = new Stage();
                 managerAreaStage.setScene(new Scene(root));
@@ -954,7 +965,10 @@ public class HomeController implements Initializable {
                 managerAreaStage.setMinHeight(850);
                 managerAreaStage.setMinWidth(1100);
                 managerAreaStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-                managerAreaStage.setOnCloseRequest( event -> isManagerAreaOpened = false);
+                managerAreaStage.setOnCloseRequest( event -> {
+                    isManagerAreaOpened = false;
+                    mhc.closeAllSubWindows();
+                });
                 managerAreaStage.show();
                 isManagerAreaOpened = true;
             } catch (IOException e) {
@@ -970,7 +984,7 @@ public class HomeController implements Initializable {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/AreaRiservataHome.fxml"));
                 Parent p = loader.load();
-                AreaRiservataHomeController arhc = loader.getController();
+                arhc = loader.getController();
                 arhc.init(loggedUser, true);
                 reservedAreaStage = new Stage();
                 reservedAreaStage.setScene(new Scene(p));
@@ -978,7 +992,10 @@ public class HomeController implements Initializable {
                 reservedAreaStage.setMinWidth(1200);
                 reservedAreaStage.setTitle("Area riservata di " + loggedUser.getName());
                 reservedAreaStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-                reservedAreaStage.setOnCloseRequest( event -> isReservedAreaOpened = false);
+                reservedAreaStage.setOnCloseRequest( event -> {
+                    isReservedAreaOpened = false;
+                    arhc.closeAllSubWindows();
+                });
                 reservedAreaStage.show();
                 isReservedAreaOpened = true;
             } catch (IOException ex) {

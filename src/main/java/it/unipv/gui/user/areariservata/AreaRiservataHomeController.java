@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import it.unipv.gui.common.IPane;
 import it.unipv.gui.login.User;
 import it.unipv.utils.ApplicationException;
 import javafx.fxml.FXML;
@@ -26,6 +27,7 @@ public class AreaRiservataHomeController implements Initializable {
     private List<Label> labels = new ArrayList<>();
     private User loggedUser;
     private boolean summonedByHome;
+    private List<IPane> iPanes = new ArrayList<>();
 
     public void initialize(URL url, ResourceBundle rb) { }
 
@@ -111,6 +113,9 @@ public class AreaRiservataHomeController implements Initializable {
                         hpc.init(loggedUser, mainPanel.getWidth());
                         mainPanel.setCenter(historyPanel);
                         openedPane = "FILM VISTI";
+                        if(!iPanes.contains(hpc)) {
+                            iPanes.add(hpc);
+                        }
                     }
                 } catch (IOException e) {
                     throw new ApplicationException(e);
@@ -140,6 +145,7 @@ public class AreaRiservataHomeController implements Initializable {
                 if(summonedByHome) {
                     stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
                 }
+                closeAllSubWindows();
                 stage.close();
                 break;
 
@@ -171,6 +177,12 @@ public class AreaRiservataHomeController implements Initializable {
             if(!l.getText().toLowerCase().equalsIgnoreCase(nameToExclude.toLowerCase())) {
                 l.setStyle("-fx-background-color:transparent");
             }
+        }
+    }
+
+    public void closeAllSubWindows() {
+        for(IPane i : iPanes) {
+            i.closeAllSubWindows();
         }
     }
 }

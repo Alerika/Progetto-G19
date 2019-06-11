@@ -1,5 +1,6 @@
 package it.unipv.gui.manager;
 
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import it.unipv.gui.common.GUIUtils;
+import it.unipv.gui.common.IPane;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.CloseableUtils;
@@ -27,7 +29,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.*;
 
-public class HallPanelController {
+public class HallPanelController implements IPane {
 
     @FXML ScrollPane hallPanel;
     @FXML Label nuovaSalaButton;
@@ -38,6 +40,7 @@ public class HallPanelController {
     private List<String> hallNames = new ArrayList<>();
     private File[] listOfPreviews;
     private ManagerHomeController managerHomeController;
+    private HallEditor hallEditor;
 
     public void init(ManagerHomeController managerHomeController, double initialWidth) {
         this.managerHomeController = managerHomeController;
@@ -113,7 +116,7 @@ public class HallPanelController {
 
             pane.getChildren().addAll(snapHallView, nomeSalaLabel, deleteIcon, renameIcon);
 
-            snapHallView.setOnMouseClicked(event -> new HallEditor(nomeSalaLabel.getText(), this, true));
+            snapHallView.setOnMouseClicked(event -> hallEditor = new HallEditor(nomeSalaLabel.getText(), this, true));
 
             GUIUtils.setScaleTransitionOnControl(snapHallView);
             renameIcon.setOnMouseClicked(event -> renameHall(nomeSalaLabel.getText(), nomeSalaLabel, renameIcon, deleteIcon));
@@ -190,12 +193,12 @@ public class HallPanelController {
                 if(checkIfItIsFree(nomeSala)) {
                     int reply = JOptionPane.showConfirmDialog(null, "Vuoi creare una griglia preimpostata?","Scegli una opzione", JOptionPane.YES_NO_OPTION);
                     if(reply == JOptionPane.NO_OPTION) {
-                        new HallEditor(nomeSala, this, false);
+                        hallEditor = new HallEditor(nomeSala, this, false);
                     } else {
                         configureGridJOptionPaneMenu();
                         if(!canceled) {
                             if(rows<27) {
-                                new HallEditor(nomeSala, this, rows, columns);
+                                hallEditor = new HallEditor(nomeSala, this, rows, columns);
                             } else {
                                 GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Numero massimo di righe 26!");
                             }
@@ -275,6 +278,13 @@ public class HallPanelController {
             return 6;
         } else {
             throw new ApplicationException("Impossibile settare numero colonne per width: " + width);
+        }
+    }
+
+    @Override
+    public void closeAllSubWindows() {
+        if(hallEditor!=null) {
+            hallEditor.dispatchEvent(new WindowEvent(hallEditor, WindowEvent.WINDOW_CLOSING));
         }
     }
 }

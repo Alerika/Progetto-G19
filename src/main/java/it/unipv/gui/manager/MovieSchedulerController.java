@@ -1,22 +1,20 @@
 package it.unipv.gui.manager;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import it.unipv.conversion.CSVToMovieScheduleList;
 import it.unipv.conversion.MovieScheduleToCSV;
 import it.unipv.gui.common.GUIUtils;
+import it.unipv.gui.common.IPane;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieSchedule;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -35,17 +33,14 @@ import javafx.stage.Stage;
 
 import javax.swing.*;
 
-public class MovieSchedulerController implements Initializable {
-
-    @Override public void initialize(URL url, ResourceBundle rb) { }
+public class MovieSchedulerController implements IPane {
 
     @FXML Label nuovaProgrammazioneButton;
     @FXML ScrollPane schedulerPanel;
-
+    private Stage movieSchedulerEditorStage;
     private GridPane grigliaProgrammazione = new GridPane();
     private static int rowCount = 0;
     private static int columnCount = 0;
-
     private List<MovieSchedule> movieSchedules = new ArrayList<>();
     private List<MovieSchedule> actualMovieSchedules = new ArrayList<>();
     private Movie movie;
@@ -74,12 +69,12 @@ public class MovieSchedulerController implements Initializable {
                 Parent p = loader.load();
                 MovieScheduleEditorController msec = loader.getController();
                 msec.init(this, movie);
-                Stage stage = new Stage();
-                stage.setScene(new Scene(p));
-                stage.setTitle("Nuova programmazione per " + movie.getTitolo());
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-                stage.setOnCloseRequest(event -> isMovieSchedulerEditorAlreadyOpened = false);
-                stage.show();
+                movieSchedulerEditorStage = new Stage();
+                movieSchedulerEditorStage.setScene(new Scene(p));
+                movieSchedulerEditorStage.setTitle("Nuova programmazione per " + movie.getTitolo());
+                movieSchedulerEditorStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                movieSchedulerEditorStage.setOnCloseRequest(event -> isMovieSchedulerEditorAlreadyOpened = false);
+                movieSchedulerEditorStage.show();
                 isMovieSchedulerEditorAlreadyOpened = true;
             } catch (IOException ex) {
                 throw new ApplicationException(ex);
@@ -143,5 +138,15 @@ public class MovieSchedulerController implements Initializable {
     private void refreshUI() {
         grigliaProgrammazione.getChildren().clear();
         init(movie);
+    }
+
+    @Override
+    public void closeAllSubWindows() {
+        if(movieSchedulerEditorStage != null) {
+            if(movieSchedulerEditorStage.isShowing()) {
+                isMovieSchedulerEditorAlreadyOpened = false;
+                movieSchedulerEditorStage.close();
+            }
+        }
     }
 }

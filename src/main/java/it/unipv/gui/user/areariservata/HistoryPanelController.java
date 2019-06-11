@@ -3,15 +3,14 @@ package it.unipv.gui.user.areariservata;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import it.unipv.conversion.CSVToMovieList;
 import it.unipv.conversion.CSVToPrenotationList;
 import it.unipv.gui.common.GUIUtils;
+import it.unipv.gui.common.IPane;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.login.User;
 import it.unipv.gui.user.Prenotation;
@@ -22,7 +21,6 @@ import it.unipv.utils.DataReferences;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -38,7 +36,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 
-public class HistoryPanelController implements Initializable {
+public class HistoryPanelController implements IPane {
 
     private User loggedUser;
     private static int rowCount = 0;
@@ -47,11 +45,11 @@ public class HistoryPanelController implements Initializable {
     private List<Movie> movies = new ArrayList<>();
     private List<Prenotation> prenotations = new ArrayList<>();
     private GridPane grigliaFilm = new GridPane();
+    private Stage oldestPrenotationStage;
     @FXML private ScrollPane historyPanel;
     @FXML private TextField searchBarTextfield;
     @FXML private Label searchButton;
 
-    @Override public void initialize(URL url, ResourceBundle rb) { }
 
     public void init(User loggedUser, double initialWidth) {
         this.loggedUser = loggedUser;
@@ -195,11 +193,12 @@ public class HistoryPanelController implements Initializable {
                 Parent p = loader.load();
                 OldestPrenotationController opc = loader.getController();
                 opc.init(toInject);
-                Stage stage = new Stage();
-                stage.setScene(new Scene(p));
-                stage.setTitle("Storico prenotazioni " + movie.getTitolo());
-                stage.setOnCloseRequest(event -> isAlreadyOpened = false);
-                stage.show();
+                oldestPrenotationStage = new Stage();
+                oldestPrenotationStage.setScene(new Scene(p));
+                oldestPrenotationStage.setTitle("Storico prenotazioni " + movie.getTitolo());
+                oldestPrenotationStage.setOnCloseRequest(event -> isAlreadyOpened = false);
+                oldestPrenotationStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                oldestPrenotationStage.show();
                 isAlreadyOpened = true;
             } catch (IOException ex) {
                 throw new ApplicationException(ex);
@@ -228,4 +227,13 @@ public class HistoryPanelController implements Initializable {
         columnCount=0;
     }
 
+    @Override
+    public void closeAllSubWindows() {
+        if(oldestPrenotationStage!=null) {
+            if(oldestPrenotationStage.isShowing()) {
+                oldestPrenotationStage.close();
+                isAlreadyOpened = false;
+            }
+        }
+    }
 }

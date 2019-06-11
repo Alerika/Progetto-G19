@@ -1,16 +1,14 @@
 package it.unipv.gui.manager;
 
+import it.unipv.gui.common.IPane;
 import it.unipv.gui.user.HomeController;
 import it.unipv.utils.ApplicationException;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -19,12 +17,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class ManagerHomeController implements Initializable {
+public class ManagerHomeController {
 
     @FXML private BorderPane mainPanel;
     @FXML Label hallModifierLabel, schedulerLabel, movieListLabel, userListLabel, pricesModifierLabel, exitLabel;
     private List<Label> labels = new ArrayList<>();
     private HomeController homeController;
+    private List<IPane> iPanes = new ArrayList<>();
 
     public void init(HomeController homeController) {
         this.homeController = homeController;
@@ -32,8 +31,6 @@ public class ManagerHomeController implements Initializable {
         setOnMouseEnteredToLabels();
         setOnMouseExitedToLabels();
     }
-
-    @Override public void initialize(URL url, ResourceBundle rb) { }
 
     private void addLabelsToList() {
         labels.add(hallModifierLabel);
@@ -86,6 +83,9 @@ public class ManagerHomeController implements Initializable {
                         hpc.init(this, mainPanel.getWidth());
                         mainPanel.setCenter(hallPanel);
                         openedPane = "MODIFICA SALE";
+                        if(!iPanes.contains(hpc)) {
+                            iPanes.add(hpc);
+                        }
                     }
                 } catch (IOException ex) {
                     throw new ApplicationException(ex);
@@ -105,6 +105,9 @@ public class ManagerHomeController implements Initializable {
                         ppc.init(this, mainPanel.getWidth());
                         mainPanel.setCenter(programmationPanel);
                         openedPane = "PROGRAMMAZIONE";
+                        if(!iPanes.contains(ppc)) {
+                            iPanes.add(ppc);
+                        }
                     }
                 } catch (IOException e) {
                     throw new ApplicationException(e);
@@ -124,6 +127,9 @@ public class ManagerHomeController implements Initializable {
                         mlpc.init(this);
                         mainPanel.setCenter(movieListPanel);
                         openedPane = "LISTA FILM";
+                        if(!iPanes.contains(mlpc)) {
+                            iPanes.add(mlpc);
+                        }
                     }
                 } catch (IOException e) {
                     throw new ApplicationException(e);
@@ -163,11 +169,18 @@ public class ManagerHomeController implements Initializable {
             case "ESCI":
                 Stage stage = (Stage) mainPanel.getScene().getWindow();
                 stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
+                closeAllSubWindows();
                 stage.close();
                 break;
 
             default:
                 break;
+        }
+    }
+
+    public void closeAllSubWindows() {
+        for(IPane i : iPanes) {
+            i.closeAllSubWindows();
         }
     }
 

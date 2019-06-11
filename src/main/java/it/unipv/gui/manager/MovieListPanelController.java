@@ -9,10 +9,7 @@ import it.unipv.conversion.CSVToMovieList;
 import it.unipv.conversion.CSVToMovieScheduleList;
 import it.unipv.conversion.MovieScheduleToCSV;
 import it.unipv.conversion.MovieToCSV;
-import it.unipv.gui.common.GUIUtils;
-import it.unipv.gui.common.Movie;
-import it.unipv.gui.common.MovieSchedule;
-import it.unipv.gui.common.MovieStatusTYPE;
+import it.unipv.gui.common.*;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
@@ -21,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -32,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 
-public class MovieListPanelController {
+public class MovieListPanelController implements IPane {
 
     @FXML TextField searchBarTextfield;
     @FXML Label searchButton;
@@ -43,6 +41,7 @@ public class MovieListPanelController {
     private static int columnCount = 0;
     private List<Movie> movies = new ArrayList<>();
     private ManagerHomeController managerHomeController;
+    private Stage movieEditorControllerStage;
 
     public void init(ManagerHomeController managerHomeController) {
         this.managerHomeController = managerHomeController;
@@ -126,20 +125,7 @@ public class MovieListPanelController {
 
         editIcon.setLayoutY(movieTitleLabel.getLayoutY());
         editIcon.setLayoutX(movieTitleLabel.getLayoutX()+305);
-        editIcon.setOnMouseClicked( event -> {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieEditor.fxml"));
-                Parent p = loader.load();
-                MovieEditorController mec = loader.getController();
-                mec.init(movie, this);
-                Stage stage = new Stage();
-                stage.setScene(new Scene(p));
-                stage.setTitle("Modifica a: " + movie.getTitolo());
-                stage.show();
-            } catch (IOException ex) {
-                throw new ApplicationException(ex);
-            }
-        });
+        editIcon.setOnMouseClicked( event -> openMovieEditor(movie));
 
         deleteIcon.setLayoutY(movieTitleLabel.getLayoutY());
         deleteIcon.setLayoutX(movieTitleLabel.getLayoutX()+340);
@@ -163,6 +149,28 @@ public class MovieListPanelController {
         }
         pane.getChildren().addAll(editIcon, deleteIcon);
     }
+
+    private boolean isMovieEditorAlreadyOpened = false;
+    private void openMovieEditor(Movie movie) {
+        if(!isMovieEditorAlreadyOpened) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieEditor.fxml"));
+                Parent p = loader.load();
+                MovieEditorController mec = loader.getController();
+                mec.init(movie, this);
+                movieEditorControllerStage = new Stage();
+                movieEditorControllerStage.setScene(new Scene(p));
+                movieEditorControllerStage.setTitle("Modifica a: " + movie.getTitolo());
+                movieEditorControllerStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                movieEditorControllerStage.setOnCloseRequest(e -> isMovieEditorAlreadyOpened = false);
+                movieEditorControllerStage.show();
+                isMovieEditorAlreadyOpened = true;
+            } catch (IOException ex) {
+                throw new ApplicationException(ex);
+            }
+        }
+    }
+
     private void removeAssociatedSchedules(Movie movie) {
         List<MovieSchedule> movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH);
         List<MovieSchedule> toRemove = new ArrayList<>();
@@ -213,6 +221,16 @@ public class MovieListPanelController {
             MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
             managerHomeController.triggerToHomeNewMovieEvent();
             refreshUI();
+        }
+    }
+
+    @Override
+    public void closeAllSubWindows() {
+        if(movieEditorControllerStage!=null) {
+            if(movieEditorControllerStage.isShowing()) {
+                movieEditorControllerStage.close();
+                isMovieEditorAlreadyOpened = false;
+            }
         }
     }
 }
