@@ -1,6 +1,7 @@
 Parte comune:
 [X] Login
 [X] Logout
+[ ] Capire perché i JFrame vanno in background quando chiusi e poi riaperti
 [ ] Portare tutto su database
 [ ] ...
 
