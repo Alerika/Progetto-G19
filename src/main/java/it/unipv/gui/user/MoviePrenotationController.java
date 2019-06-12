@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 
 import it.unipv.conversion.CSVToMovieScheduleList;
@@ -19,7 +18,6 @@ import it.unipv.utils.DataReferences;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
@@ -37,7 +35,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.commons.io.FilenameUtils;
 
-public class MoviePrenotationController implements Initializable {
+public class MoviePrenotationController implements IPane {
 
     private List<MovieSchedule> schedules;
     private List<Prenotation> prenotations;
@@ -55,11 +53,10 @@ public class MoviePrenotationController implements Initializable {
     private User user;
     private boolean opened = false;
     private HomeController homeController;
+    private HallViewer hallViewer;
     @FXML private Label closeButton, confirmButton;
     @FXML private AnchorPane orariPanel, salaHeader, summaryPanel;
     @FXML private ScrollPane salaPanel;
-
-    @Override public void initialize(URL url, ResourceBundle rb) { }
 
     public void init(HomeController homeController, String date, Movie m, User user) {
         this.homeController = homeController;
@@ -238,9 +235,11 @@ public class MoviePrenotationController implements Initializable {
                 if(!opened) {
                     clickedHall = nomeSalaLabel.getText().trim();
                     if(selectedMDS.size()>0) {
-                        new HallViewer(this, nomeSalaLabel.getText().trim(), selectedMDS, getOccupiedSeatNames());
+                        hallViewer = new HallViewer(this, nomeSalaLabel.getText().trim(), selectedMDS, getOccupiedSeatNames());
+                        hallViewer.setAlwaysOnTop(true);
                     } else {
-                        new HallViewer(this, nomeSalaLabel.getText().trim(), getOccupiedSeatNames());
+                        hallViewer = new HallViewer(this, nomeSalaLabel.getText().trim(), getOccupiedSeatNames());
+                        hallViewer.setAlwaysOnTop(true);
                     }
                     opened = true;
                 }
@@ -372,5 +371,13 @@ public class MoviePrenotationController implements Initializable {
 
     void triggerClosingHallViewer() {
         opened = false;
+    }
+
+    @Override
+    public void closeAllSubWindows() {
+        if(hallViewer!=null) {
+            hallViewer.dispose();
+            hallViewer.dispatchEvent(new java.awt.event.WindowEvent(hallViewer, java.awt.event.WindowEvent.WINDOW_CLOSING));
+        }
     }
 }

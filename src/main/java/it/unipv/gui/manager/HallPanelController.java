@@ -116,7 +116,10 @@ public class HallPanelController implements IPane {
 
             pane.getChildren().addAll(snapHallView, nomeSalaLabel, deleteIcon, renameIcon);
 
-            snapHallView.setOnMouseClicked(event -> hallEditor = new HallEditor(nomeSalaLabel.getText(), this, true));
+            snapHallView.setOnMouseClicked(event -> {
+                hallEditor = new HallEditor(nomeSalaLabel.getText(), this, true);
+                hallEditor.setAlwaysOnTop(true);
+            });
 
             GUIUtils.setScaleTransitionOnControl(snapHallView);
             renameIcon.setOnMouseClicked(event -> renameHall(nomeSalaLabel.getText(), nomeSalaLabel, renameIcon, deleteIcon));
@@ -194,11 +197,13 @@ public class HallPanelController implements IPane {
                     int reply = JOptionPane.showConfirmDialog(null, "Vuoi creare una griglia preimpostata?","Scegli una opzione", JOptionPane.YES_NO_OPTION);
                     if(reply == JOptionPane.NO_OPTION) {
                         hallEditor = new HallEditor(nomeSala, this, false);
+                        hallEditor.setAlwaysOnTop(true);
                     } else {
                         configureGridJOptionPaneMenu();
                         if(!canceled) {
                             if(rows<27) {
                                 hallEditor = new HallEditor(nomeSala, this, rows, columns);
+                                hallEditor.setAlwaysOnTop(true);
                             } else {
                                 GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Numero massimo di righe 26!");
                             }
@@ -284,6 +289,7 @@ public class HallPanelController implements IPane {
     @Override
     public void closeAllSubWindows() {
         if(hallEditor!=null) {
+            hallEditor.dispose();
             hallEditor.dispatchEvent(new WindowEvent(hallEditor, WindowEvent.WINDOW_CLOSING));
         }
     }

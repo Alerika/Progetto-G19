@@ -62,6 +62,7 @@ public class HomeController implements Initializable {
 
     private ManagerHomeController mhc;
     private AreaRiservataHomeController arhc;
+    private MoviePrenotationController mpc;
     private final Stage stageRegistrazione = new Stage();
     private final Stage stageLogin = new Stage();
     private Stage reservedAreaStage, managerAreaStage, prenotationStage;
@@ -522,7 +523,7 @@ public class HomeController implements Initializable {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/MoviePrenotation.fxml"));
                 Parent p = loader.load();
-                MoviePrenotationController mpc = loader.getController();
+                mpc = loader.getController();
                 mpc.init(this, scheduleLabel.getText().trim(), movie, loggedUser);
                 prenotationStage = new Stage();
                 prenotationStage.setScene(new Scene(p));
@@ -906,6 +907,7 @@ public class HomeController implements Initializable {
         if(prenotationStage != null) {
             if(prenotationStage.isShowing()) {
                 isPrenotationAreaOpened = false;
+                mpc.closeAllSubWindows();
                 prenotationStage.close();
             }
         }
