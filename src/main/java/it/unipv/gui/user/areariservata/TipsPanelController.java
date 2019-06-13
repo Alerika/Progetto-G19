@@ -12,7 +12,6 @@ import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -30,11 +29,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.*;
-public class TipsPanelController implements Initializable {
-
-    @Override public void initialize(URL location, ResourceBundle resources) { }
+public class TipsPanelController {
 
     private User loggedUser;
     private static int rowCount = 0;

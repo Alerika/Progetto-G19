@@ -1,6 +1,5 @@
 package it.unipv.gui.manager;
 
-import java.net.URL;
 import java.util.*;
 
 import it.unipv.conversion.CSVToPrenotationList;
@@ -12,7 +11,6 @@ import it.unipv.gui.login.User;
 import it.unipv.gui.user.Prenotation;
 import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -25,13 +23,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 
-public class UserListPanelController implements Initializable {
+public class UserListPanelController {
 
     @FXML ScrollPane userListPanel;
     @FXML TextField searchBarTextfield;
     @FXML Label searchButton;
 
-    @Override public void initialize(URL url, ResourceBundle rb) { createUserListGrid(); }
+    public void init() { createUserListGrid(); }
 
     private GridPane grigliaUser = new GridPane();
     private static int rowCount = 0;

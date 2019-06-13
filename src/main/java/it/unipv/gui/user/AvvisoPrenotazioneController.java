@@ -1,20 +1,14 @@
 package it.unipv.gui.user;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import it.unipv.gui.common.GUIUtils;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
-public class AvvisoPrenotazioneController implements Initializable {
+public class AvvisoPrenotazioneController {
 
     @FXML private Label areaRiservataButton;
     private HomeController homeController;
-
-    @Override public void initialize(URL url, ResourceBundle rb) { }
 
     public void init(HomeController homeController) {
         this.homeController = homeController;

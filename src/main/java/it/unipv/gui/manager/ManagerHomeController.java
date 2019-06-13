@@ -83,9 +83,7 @@ public class ManagerHomeController {
                         hpc.init(this, mainPanel.getWidth());
                         mainPanel.setCenter(hallPanel);
                         openedPane = "MODIFICA SALE";
-                        if(!iPanes.contains(hpc)) {
-                            iPanes.add(hpc);
-                        }
+                        if(!iPanes.contains(hpc)) { iPanes.add(hpc); }
                     }
                 } catch (IOException ex) {
                     throw new ApplicationException(ex);
@@ -105,9 +103,7 @@ public class ManagerHomeController {
                         ppc.init(this, mainPanel.getWidth());
                         mainPanel.setCenter(programmationPanel);
                         openedPane = "PROGRAMMAZIONE";
-                        if(!iPanes.contains(ppc)) {
-                            iPanes.add(ppc);
-                        }
+                        if(!iPanes.contains(ppc)) { iPanes.add(ppc); }
                     }
                 } catch (IOException e) {
                     throw new ApplicationException(e);
@@ -119,7 +115,6 @@ public class ManagerHomeController {
                     if(!openedPane.equals("LISTA FILM")) {
                         movieListLabel.setStyle("-fx-background-color:#db8f00");
                         setTransparentOtherLabels("LISTA FILM");
-
                         mainPanel.getChildren().clear();
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieListPanel.fxml"));
                         AnchorPane movieListPanel = loader.load();
@@ -127,9 +122,7 @@ public class ManagerHomeController {
                         mlpc.init(this);
                         mainPanel.setCenter(movieListPanel);
                         openedPane = "LISTA FILM";
-                        if(!iPanes.contains(mlpc)) {
-                            iPanes.add(mlpc);
-                        }
+                        if(!iPanes.contains(mlpc)) { iPanes.add(mlpc); }
                     }
                 } catch (IOException e) {
                     throw new ApplicationException(e);
@@ -142,7 +135,10 @@ public class ManagerHomeController {
                         userListLabel.setStyle("-fx-background-color:#db8f00");
                         setTransparentOtherLabels("LISTA UTENTI");
                         mainPanel.getChildren().clear();
-                        AnchorPane userListPanel = FXMLLoader.load(getClass().getResource("/fxml/manager/UserListPanel.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/UserListPanel.fxml"));
+                        AnchorPane userListPanel = loader.load();
+                        UserListPanelController ulpc = loader.getController();
+                        ulpc.init();
                         mainPanel.setCenter(userListPanel);
                         openedPane = "LISTA UTENTI";
                     }
@@ -157,7 +153,10 @@ public class ManagerHomeController {
                         pricesModifierLabel.setStyle("-fx-background-color:#db8f00");
                         setTransparentOtherLabels("MODIFICA PREZZI");
                         mainPanel.getChildren().clear();
-                        AnchorPane modifyPricesPanel = FXMLLoader.load(getClass().getResource("/fxml/manager/PricesPanel.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/PricesPanel.fxml"));
+                        AnchorPane modifyPricesPanel = loader.load();
+                        PricesPanelController ppc = loader.getController();
+                        ppc.init();
                         mainPanel.setCenter(modifyPricesPanel);
                         openedPane = "MODIFICA PREZZI";
                     }

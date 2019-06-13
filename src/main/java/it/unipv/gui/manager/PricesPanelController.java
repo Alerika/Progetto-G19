@@ -5,16 +5,12 @@ import it.unipv.conversion.PricesToCSV;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.Prices;
 import it.unipv.utils.DataReferences;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javax.swing.JOptionPane;
 
-public class PricesPanelController implements Initializable {
+public class PricesPanelController {
 
     private Prices prices = null;
     
@@ -25,13 +21,12 @@ public class PricesPanelController implements Initializable {
 
     @FXML Label saveButton;
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void init() {
         initPricesIfExists();
         setComponentIfPricesExists();
         GUIUtils.setScaleTransitionOnControl(saveButton);
-    }    
-    
+    }
+
     private void initPricesIfExists(){
         prices = CSVToPrices.getPricesFromCSV(DataReferences.PRICESFILEPATH);
     }

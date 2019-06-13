@@ -1,17 +1,14 @@
 package it.unipv.gui.user.areariservata;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import it.unipv.gui.common.IPane;
 import it.unipv.gui.login.User;
 import it.unipv.utils.ApplicationException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -20,7 +17,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class AreaRiservataHomeController implements Initializable {
+public class AreaRiservataHomeController {
 
     @FXML private BorderPane mainPanel;
     @FXML private Label homeLabel, prenotationsLabel, seenMoviesLabel, tipsLabel, exitLabel;
@@ -28,8 +25,6 @@ public class AreaRiservataHomeController implements Initializable {
     private User loggedUser;
     private boolean summonedByHome;
     private List<IPane> iPanes = new ArrayList<>();
-
-    public void initialize(URL url, ResourceBundle rb) { }
 
     public void init(User loggedUser, boolean summonedByHome) {
         this.loggedUser = loggedUser;

@@ -1,9 +1,7 @@
 package it.unipv.gui.manager;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Arrays;
-import java.util.ResourceBundle;
 
 import it.unipv.conversion.MovieToCSV;
 import it.unipv.gui.common.GUIUtils;
@@ -15,15 +13,11 @@ import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.DataReferences;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 
-import javax.swing.*;
 
-public class MovieEditorController implements Initializable {
-
-    @Override public void initialize(URL url, ResourceBundle rb) { }
+public class MovieEditorController {
 
     @FXML TextField imgTextField;
     @FXML Button searchButton;

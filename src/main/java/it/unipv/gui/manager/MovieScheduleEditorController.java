@@ -1,6 +1,5 @@
 package it.unipv.gui.manager;
 
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -17,15 +16,10 @@ import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.DataReferences;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
-import javax.swing.*;
-
-public class MovieScheduleEditorController implements Initializable {
-
-    @Override public void initialize(URL url, ResourceBundle rb) { }
+public class MovieScheduleEditorController {
 
     @FXML DatePicker datePicker;
     @FXML AnchorPane timeSpinnerContainer;

@@ -22,8 +22,10 @@ import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -34,6 +36,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class MoviePrenotationController implements IPane {
 
@@ -104,6 +107,8 @@ public class MoviePrenotationController implements IPane {
                 PrenotationsToCSV.appendInfoMovieToCSV(finalPrenotation, DataReferences.PRENOTATIONSFILEPATH, true);
                 openAvvisoPrenotazioneController();
                 doClose();
+            } else {
+                GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore: ", "Non è ancora stata creata una prenotazione!");
             }
         });
     }
@@ -169,7 +174,7 @@ public class MoviePrenotationController implements IPane {
                 hallListLabel.setLayoutY(50);
                 hallListLabel.setLayoutX(50);
                 salaHeader.getChildren().add(hallListLabel);
-                List<String> hallNames = test(hourLabel.getText().trim());
+                List<String> hallNames = getHallsInvolvedInThatHour(hourLabel.getText().trim());
                 for (File file : Objects.requireNonNull(listOfPreviews)) {
                     if(hallNames.contains(FilenameUtils.removeExtension(file.getName()))) {
                         createHallViews(file);
@@ -277,7 +282,7 @@ public class MoviePrenotationController implements IPane {
         return res;
     }
 
-    private List<String> test(String orario) {
+    private List<String> getHallsInvolvedInThatHour(String orario) {
         List<String> res = new ArrayList<>();
         for(MovieSchedule ms : schedules) {
             if(ms.getTime().equals(orario)) {
@@ -325,12 +330,17 @@ public class MoviePrenotationController implements IPane {
                             + scheduleDate + "    "
                             + clickedHour + "    "
                             + clickedHall + ": ";
+
                 StringBuilder selectedMDSName = new StringBuilder(selectedMDS.get(0).getText());
                 for(int i=1; i<selectedMDS.size(); i++) {
                     selectedMDSName.append("-").append(selectedMDS.get(i).getText());
                 }
                 text = text + selectedMDSName + "    Prezzo totale: " + calculateTotalPrices() + "€";
-                actualSummaryLabel.setText(text);
+                actualSummaryLabel.setText(StringUtils.abbreviate(text,94));
+                if(text.length()>94) {
+                    actualSummaryLabel.setTooltip(new Tooltip(text));
+                }
+                System.out.println(text);
                 summaryPanel.getChildren().addAll(summaryLabel, actualSummaryLabel);
                 finalPrenotation = new Prenotation( user.getName()
                                                   , movie.getTitolo()

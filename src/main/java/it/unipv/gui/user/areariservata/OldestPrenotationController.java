@@ -1,18 +1,15 @@
 package it.unipv.gui.user.areariservata;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import it.unipv.conversion.PrenotationToPDF;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.user.Prenotation;
 import it.unipv.utils.ApplicationException;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -25,9 +22,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class OldestPrenotationController implements Initializable {
-
-    @Override public void initialize(URL url, ResourceBundle rb) { }
+public class OldestPrenotationController {
 
     private List<Prenotation> prenotations = new ArrayList<>();
     @FXML private ScrollPane prenotationPanel;

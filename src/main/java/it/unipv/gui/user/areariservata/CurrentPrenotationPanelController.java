@@ -1,7 +1,6 @@
 package it.unipv.gui.user.areariservata;
 
 import java.io.File;
-import java.net.URL;
 import java.util.*;
 
 import it.unipv.conversion.CSVToPrenotationList;
@@ -13,10 +12,8 @@ import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -26,7 +23,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import org.apache.commons.lang3.StringUtils;
 
-public class CurrentPrenotationPanelController implements Initializable {
+public class CurrentPrenotationPanelController {
 
     private User user;
     private List<Prenotation> prenotations = new ArrayList<>();
@@ -36,8 +33,6 @@ public class CurrentPrenotationPanelController implements Initializable {
     @FXML private ScrollPane prenotationsPanel;
     @FXML private TextField searchBarTextfield;
     @FXML private Label searchButton;
-
-    @Override public void initialize(URL url, ResourceBundle rb) { }
 
     public void init(User user) {
         this.user = user;
