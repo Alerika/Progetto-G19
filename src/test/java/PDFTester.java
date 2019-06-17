@@ -33,7 +33,7 @@ public class PDFTester {
         String renderedHtmlContent = templateEngine.process("template/template", context);
 
         ITextRenderer renderer = new ITextRenderer();
-        renderer.getFontResolver().addFont("font/BebasNeueRegular.ttf", "UTF-8", BaseFont.EMBEDDED);
+        renderer.getFontResolver().addFont("css/BebasNeueRegular.ttf", "UTF-8", BaseFont.EMBEDDED);
 
         String baseUrl = FileSystems
                 .getDefault()
