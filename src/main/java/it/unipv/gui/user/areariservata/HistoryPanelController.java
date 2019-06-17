@@ -1,14 +1,13 @@
 package it.unipv.gui.user.areariservata;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import it.unipv.conversion.CSVToMovieList;
-import it.unipv.conversion.CSVToPrenotationList;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.MovieOperations;
+import it.unipv.DB.PrenotationOperations;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.IPane;
 import it.unipv.gui.common.Movie;
@@ -16,8 +15,6 @@ import it.unipv.gui.login.User;
 import it.unipv.gui.user.Prenotation;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
-import it.unipv.utils.CloseableUtils;
-import it.unipv.utils.DataReferences;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -46,12 +43,16 @@ public class HistoryPanelController implements IPane {
     private List<Prenotation> prenotations = new ArrayList<>();
     private GridPane grigliaFilm = new GridPane();
     private Stage oldestPrenotationStage;
+    private MovieOperations movieOperations;
+    private PrenotationOperations prenotationOperations;
     @FXML private ScrollPane historyPanel;
     @FXML private TextField searchBarTextfield;
     @FXML private Label searchButton;
 
 
-    public void init(User loggedUser, double initialWidth) {
+    public void init(User loggedUser, double initialWidth, DBConnection dbConnection) {
+        this.movieOperations = new MovieOperations(dbConnection);
+        this.prenotationOperations = new PrenotationOperations(dbConnection);
         this.loggedUser = loggedUser;
         GUIUtils.setScaleTransitionOnControl(searchButton);
         initMovieAndPrenotationList();
@@ -95,7 +96,7 @@ public class HistoryPanelController implements IPane {
     }
 
     private void initMovieAndPrenotationList() {
-        List<Prenotation> x = CSVToPrenotationList.getPrenotationListFromCSV(DataReferences.PRENOTATIONSFILEPATH);
+        List<Prenotation> x = prenotationOperations.retrievePrenotationList();
         for(Prenotation p : x) {
             if(p.getNomeUtente().equalsIgnoreCase(loggedUser.getName())) {
                 prenotations.add(p);
@@ -103,7 +104,7 @@ public class HistoryPanelController implements IPane {
         }
         Collections.sort(prenotations);
 
-        List<Movie> y = CSVToMovieList.getMovieListFromCSV(DataReferences.MOVIEFILEPATH);
+        List<Movie> y = movieOperations.retrieveCompleteMovieList(130,0,true,true);
         String temp = "";
         for(Movie m : y) {
             for(Prenotation p : prenotations) {
@@ -128,55 +129,47 @@ public class HistoryPanelController implements IPane {
     }
 
     private void createViewFromMoviesList(Movie movie) {
-        try{
-            Label nomeFilmLabel = new Label(StringUtils.abbreviate(movie.getTitolo(), 17));
-            if(movie.getTitolo().length()>17) {
-                nomeFilmLabel.setTooltip(new Tooltip(movie.getTitolo()));
-            }
-            nomeFilmLabel.setFont(Font.font("system", FontWeight.BOLD, FontPosture.REGULAR, 20));
-            nomeFilmLabel.setTextFill(Color.WHITE);
-
-            grigliaFilm.setHgap(80);
-            grigliaFilm.setVgap(80);
-
-            FileInputStream fis = new FileInputStream(movie.getLocandinaPath());
-            ImageView posterPreview = new ImageView(new Image(fis, 130, 0, true, true));
-            posterPreview.setFitWidth(130);
-            CloseableUtils.close(fis);
-
-
-            Label oldestPrenotationIcon = new Label();
-            oldestPrenotationIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            oldestPrenotationIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Schedule.png")));
-            oldestPrenotationIcon.setTooltip(new Tooltip("Storico fatture"));
-            GUIUtils.setFadeInOutOnControl(oldestPrenotationIcon);
-
-            AnchorPane pane = new AnchorPane();
-            if(columnCount==columnMax) {
-                columnCount=0;
-                rowCount++;
-            }
-            grigliaFilm.add(pane, columnCount, rowCount);
-            columnCount++;
-
-            historyPanel.setContent(grigliaFilm);
-            GridPane.setMargin(pane, new Insets(15,0,5,15));
-
-            posterPreview.setLayoutX(48);
-
-            nomeFilmLabel.setLayoutY(posterPreview.getLayoutY()+215);
-
-            oldestPrenotationIcon.setLayoutY(nomeFilmLabel.getLayoutY());
-            oldestPrenotationIcon.setLayoutX(nomeFilmLabel.getLayoutX()+200);
-            oldestPrenotationIcon.setOnMouseClicked(e -> openOldestPrenotationWindow(movie));
-
-            pane.getChildren().addAll(posterPreview);
-            pane.getChildren().addAll(nomeFilmLabel);
-            pane.getChildren().addAll(oldestPrenotationIcon);
-
-        } catch(FileNotFoundException ex) {
-            throw new ApplicationException(ex);
+        Label nomeFilmLabel = new Label(StringUtils.abbreviate(movie.getTitolo(), 17));
+        if(movie.getTitolo().length()>17) {
+            nomeFilmLabel.setTooltip(new Tooltip(movie.getTitolo()));
         }
+        nomeFilmLabel.setFont(Font.font("system", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        nomeFilmLabel.setTextFill(Color.WHITE);
+
+        grigliaFilm.setHgap(80);
+        grigliaFilm.setVgap(80);
+
+        ImageView posterPreview = new ImageView(movie.getLocandina());
+        posterPreview.setFitWidth(130);
+
+        Label oldestPrenotationIcon = new Label();
+        oldestPrenotationIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        oldestPrenotationIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Schedule.png")));
+        oldestPrenotationIcon.setTooltip(new Tooltip("Storico fatture"));
+        GUIUtils.setFadeInOutOnControl(oldestPrenotationIcon);
+
+        AnchorPane pane = new AnchorPane();
+        if(columnCount==columnMax) {
+            columnCount=0;
+            rowCount++;
+        }
+        grigliaFilm.add(pane, columnCount, rowCount);
+        columnCount++;
+
+        historyPanel.setContent(grigliaFilm);
+        GridPane.setMargin(pane, new Insets(15,0,5,15));
+
+        posterPreview.setLayoutX(48);
+
+        nomeFilmLabel.setLayoutY(posterPreview.getLayoutY()+215);
+
+        oldestPrenotationIcon.setLayoutY(nomeFilmLabel.getLayoutY());
+        oldestPrenotationIcon.setLayoutX(nomeFilmLabel.getLayoutX()+200);
+        oldestPrenotationIcon.setOnMouseClicked(e -> openOldestPrenotationWindow(movie));
+
+        pane.getChildren().addAll(posterPreview);
+        pane.getChildren().addAll(nomeFilmLabel);
+        pane.getChildren().addAll(oldestPrenotationIcon);
     }
 
     private boolean isAlreadyOpened = false;

@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Bebas Neue';
-    src: url('BebasNeueRegular.ttf');
+    src: url('../font/BebasNeueRegular.ttf');
 }
 
 .label {

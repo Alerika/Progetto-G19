@@ -60,9 +60,11 @@ public class TestDB extends TestCase {
 
     @Test
     public void testPricesOperations() {
-        PricesOperations po = new PricesOperations();
-        Prices p = po.getPrices();
+        DBConnection dbConnection = new DBConnection();
+        PricesOperations po = new PricesOperations(dbConnection);
+        Prices p = po.retrievePrices();
         System.out.println(p.toString());
+        dbConnection.close();
     }
 
 

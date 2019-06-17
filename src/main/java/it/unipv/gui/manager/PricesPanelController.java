@@ -1,19 +1,19 @@
 package it.unipv.gui.manager;
 
-import it.unipv.conversion.CSVToPrices;
-import it.unipv.conversion.PricesToCSV;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.PricesOperations;
 import it.unipv.gui.common.GUIUtils;
+import it.unipv.gui.common.IPane;
 import it.unipv.gui.common.Prices;
-import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class PricesPanelController {
+public class PricesPanelController implements IPane {
 
     private Prices prices = null;
-    
+    private PricesOperations po;
     @FXML TextField baseTextField;
     @FXML TextField vipTextField;
     @FXML TextField threeDTextField;
@@ -21,15 +21,14 @@ public class PricesPanelController {
 
     @FXML Label saveButton;
 
-    public void init() {
+    public void init(DBConnection dbConnection) {
+        po = new PricesOperations(dbConnection);
         initPricesIfExists();
         setComponentIfPricesExists();
         GUIUtils.setScaleTransitionOnControl(saveButton);
     }
 
-    private void initPricesIfExists(){
-        prices = CSVToPrices.getPricesFromCSV(DataReferences.PRICESFILEPATH);
-    }
+    private void initPricesIfExists(){ prices = po.retrievePrices(); }
 
     private void setComponentIfPricesExists(){
         if(prices!=null){
@@ -59,9 +58,10 @@ public class PricesPanelController {
                         , Double.parseDouble(threeDTextField.getText())
                         , Double.parseDouble(reducedTextField.getText()));
             }
-            PricesToCSV.createCSVFromPrices(prices, DataReferences.PRICESFILEPATH, false);
+            po.updatePrices(prices);
             GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "Salvataggio prezzi riuscito con successo!");
         }
     }
-    
+
+    @Override public void closeAllSubWindows() { }
 }

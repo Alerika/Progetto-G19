@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import it.unipv.conversion.CSVToMovieScheduleList;
-import it.unipv.conversion.MovieScheduleToCSV;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.ScheduleOperations;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.IPane;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieSchedule;
 import it.unipv.utils.ApplicationException;
-import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -44,8 +43,16 @@ public class MovieSchedulerController implements IPane {
     private List<MovieSchedule> movieSchedules = new ArrayList<>();
     private List<MovieSchedule> actualMovieSchedules = new ArrayList<>();
     private Movie movie;
+    private DBConnection dbConnection;
+    private ScheduleOperations so;
 
-    void init(Movie movie) {
+    void init(Movie movie, DBConnection dbConnection) {
+        this.dbConnection = dbConnection;
+        so = new ScheduleOperations(dbConnection);
+        initScheduleGrid(movie);
+    }
+
+    private void initScheduleGrid(Movie movie) {
         grigliaProgrammazione.getChildren().clear();
 
         this.movie = movie;
@@ -68,7 +75,7 @@ public class MovieSchedulerController implements IPane {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieScheduleEditor.fxml"));
                 Parent p = loader.load();
                 MovieScheduleEditorController msec = loader.getController();
-                msec.init(this, movie);
+                msec.init(this, movie, dbConnection);
                 movieSchedulerEditorStage = new Stage();
                 movieSchedulerEditorStage.setScene(new Scene(p));
                 movieSchedulerEditorStage.setTitle("Nuova programmazione per " + movie.getTitolo());
@@ -112,8 +119,7 @@ public class MovieSchedulerController implements IPane {
         deleteIcon.setOnMouseClicked(e -> {
             int reply = JOptionPane.showConfirmDialog(null, "Sei sicuro di voler eliminare dalla lista questa programmazione?");
             if(reply == JOptionPane.YES_OPTION) {
-                movieSchedules.remove(schedule);
-                MovieScheduleToCSV.createCSVFromMovieScheduleList(movieSchedules, DataReferences.MOVIESCHEDULEFILEPATH, false);
+                so.deleteMovieSchedule(schedule);
                 refreshUI();
             }
         });
@@ -124,7 +130,7 @@ public class MovieSchedulerController implements IPane {
     private void initMovieSchedulesList() {
         movieSchedules.clear();
         actualMovieSchedules.clear();
-        movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH);
+        movieSchedules = so.retrieveMovieSchedules();
         Collections.sort(movieSchedules);
         for(MovieSchedule ms : movieSchedules) {
             if(ms.getMovieCode().equalsIgnoreCase(movie.getCodice())) {
@@ -137,7 +143,7 @@ public class MovieSchedulerController implements IPane {
 
     private void refreshUI() {
         grigliaProgrammazione.getChildren().clear();
-        init(movie);
+        initScheduleGrid(movie);
     }
 
     @Override

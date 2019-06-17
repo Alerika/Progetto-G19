@@ -1,16 +1,18 @@
 package it.unipv.gui.manager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 
-import it.unipv.conversion.MovieToCSV;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.MovieOperations;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieStatusTYPE;
 import it.unipv.gui.common.MovieTYPE;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
-import it.unipv.utils.DataReferences;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -32,14 +34,14 @@ public class MovieEditorController {
     @FXML Label saveButton;
     private boolean wasItAlreadyCreated;
     private Movie movie;
-
-
     private ProgrammationPanelController programmationPanelController;
     private MovieListPanelController movieListPanelController;
+    private MovieOperations mo;
 
     public MovieEditorController() {}
 
-    void init(ProgrammationPanelController programmationPanelController) {
+    void init(ProgrammationPanelController programmationPanelController, DBConnection dbConnection) {
+        this.mo = new MovieOperations(dbConnection);
         this.programmationPanelController = programmationPanelController;
         wasItAlreadyCreated = false;
         initMovieTypeComboBox();
@@ -47,6 +49,7 @@ public class MovieEditorController {
         setFileChooser();
         setMaxCharToPlotTextArea();
         setTextfieldToNumericOnlyTextfield(timeTextField, yearTextField);
+        imgTextField.setEditable(false);
     }
 
     void init(Movie movie, ProgrammationPanelController programmationPanelController) {
@@ -59,6 +62,18 @@ public class MovieEditorController {
         setFileChooser();
         setMaxCharToPlotTextArea();
         setTextfieldToNumericOnlyTextfield(timeTextField, yearTextField);
+        imgTextField.setEditable(false);
+    }
+
+    void init(Movie movie, MovieListPanelController movieListPanelController) {
+        this.movieListPanelController = movieListPanelController;
+        this.movie = movie;
+        wasItAlreadyCreated = true;
+        GUIUtils.setScaleTransitionOnControl(saveButton);
+        initMovieTypeComboBox();
+        setComponents();
+        setFileChooser();
+        imgTextField.setEditable(false);
     }
 
     private void setMaxCharToPlotTextArea() {
@@ -77,23 +92,13 @@ public class MovieEditorController {
         }
     }
 
-    void init(Movie movie, MovieListPanelController movieListPanelController) {
-        this.movieListPanelController = movieListPanelController;
-        this.movie = movie;
-        wasItAlreadyCreated = true;
-        GUIUtils.setScaleTransitionOnControl(saveButton);
-        initMovieTypeComboBox();
-        setComponents();
-        setFileChooser();
-    }
-
     private void initMovieTypeComboBox() {
         movieTypeComboBox.getItems().clear();
         movieTypeComboBox.setItems(FXCollections.observableList(Arrays.asList("2D", "3D")));
     }
 
     private void setComponents() {
-        imgTextField.setText(movie.getLocandinaPath());
+        //imgTextField.setText(movie.getLocandinaPath());
         titleTextField.setText(movie.getTitolo());
         genreTextField.setText(movie.getGenere());
         directionTextField.setText(movie.getRegia());
@@ -124,8 +129,7 @@ public class MovieEditorController {
     }
 
     @FXML public void saveButtonListener() {
-        if( imgTextField.getText().trim().equalsIgnoreCase("")
-         || titleTextField.getText().trim().equalsIgnoreCase("")
+        if( titleTextField.getText().trim().equalsIgnoreCase("")
          || genreTextField.getText().trim().equalsIgnoreCase("")
          || directionTextField.getText().trim().equalsIgnoreCase("")
          || castTextField.getText().trim().equalsIgnoreCase("")
@@ -136,27 +140,64 @@ public class MovieEditorController {
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi compilare tutti i campi!");
         } else {
             if(!wasItAlreadyCreated) {
-                Movie m = getMovieFromTextFields();
-                MovieToCSV.appendInfoMovieToCSV(m, DataReferences.MOVIEFILEPATH, true);
-                programmationPanelController.triggerNewMovieEvent();
-                wasItAlreadyCreated = true;
-                movie = m;
+                if(imgTextField.getText().trim().equalsIgnoreCase("")) {
+                    GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi compilare tutti i campi!");
+                } else {
+                    createNewMovie();
+                    GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Successo", "Operazione riuscita: ", "Inserimento nuovo film riuscito con successo!");
+                }
             } else {
-                if(programmationPanelController ==null) {
-                    movieListPanelController.triggerOverwriteMovieEvent(getMovieFromTextFields());
+                if(programmationPanelController==null) {
+                    updateMovieAndTriggerToMovieListPanelController();
+                    GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Successo", "Operazione riuscita: ", "Aggiornamento film riuscito con successo!");
                 } else if(movieListPanelController==null) {
-                    programmationPanelController.triggerOverwriteMovieEvent(getMovieFromTextFields());
+                    updateMovieAndTriggerToProgrammationListPanelController();
+                    GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Successo", "Operazione riuscita: ", "Aggiornamento film riuscito con successo!");
                 } else {
                     throw new ApplicationException("Unknown summoner!");
                 }
             }
-            GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Successo", "Operazione riuscita: ", "Salvataggio film riuscito con successo!");
+        }
+    }
+
+    private void createNewMovie() {
+        Movie m = getMovieFromTextFields();
+        try {
+            mo.insertNewMovie(m, new FileInputStream(imgTextField.getText()));
+        } catch (FileNotFoundException e) {
+            throw new ApplicationException(e);
+        }
+        programmationPanelController.triggerNewMovieEvent();
+        wasItAlreadyCreated = true;
+        movie = m;
+    }
+
+    private void updateMovieAndTriggerToMovieListPanelController() {
+        if(imgTextField.getText().trim().equalsIgnoreCase("")) {
+            movieListPanelController.triggerOverwriteMovieButNotPosterEvent(getMovieFromTextFields());
+        } else {
+            try {
+                movieListPanelController.triggerOverwriteMovieEvent(getMovieFromTextFields(), new FileInputStream(imgTextField.getText()));
+            } catch (FileNotFoundException e) {
+                throw new ApplicationException(e);
+            }
+        }
+    }
+
+    private void updateMovieAndTriggerToProgrammationListPanelController() {
+        if(imgTextField.getText().trim().equalsIgnoreCase("")) {
+            programmationPanelController.triggerOverwriteMovieButNotPosterEvent(getMovieFromTextFields());
+        } else {
+            try {
+                programmationPanelController.triggerOverwriteMovieEvent(getMovieFromTextFields(), new FileInputStream(imgTextField.getText()));
+            } catch (FileNotFoundException e) {
+                throw new ApplicationException(e);
+            }
         }
     }
 
     private Movie getMovieFromTextFields() {
         Movie m = new Movie();
-        m.setLocandinaPath(imgTextField.getText());
         m.setTitolo(titleTextField.getText());
         m.setGenere(genreTextField.getText());
         m.setRegia(directionTextField.getText());

@@ -1,5 +1,7 @@
 package it.unipv.gui.common;
 
+import javafx.scene.image.Image;
+
 /**
  * Oggetto che rappresenta un film.
  * Il parametro "Codice" viene usato come identificativo
@@ -9,6 +11,7 @@ package it.unipv.gui.common;
 public class Movie implements Comparable<Movie> {
     private String codice;
     private String locandinaPath;
+    private Image locandina;
     private String titolo;
     private String genere;
     private String regia;
@@ -23,9 +26,9 @@ public class Movie implements Comparable<Movie> {
 
     public void setCodice(String codice) { this.codice = codice; }
 
-    public String getLocandinaPath() { return locandinaPath; }
+    public Image getLocandina() { return locandina; }
 
-    public void setLocandinaPath(String locan) { this.locandinaPath = locan; }
+    public void setLocandina(Image locandina) { this.locandina = locandina; }
 
     public String getTitolo() { return titolo; }
 

@@ -9,40 +9,45 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PricesOperations {
-    private DBConnection dbConnection = new DBConnection();
+    private DBConnection dbConnection;
 
-    public Prices getPrices() { return doGetPrices(); }
+    public PricesOperations(DBConnection dbConnection) {
+        this.dbConnection = dbConnection;
+    }
+
+    public Prices retrievePrices() { return doRetrievePrices(); }
 
     public void updatePrices(Prices p) {
         doTruncate();
         doInsert(p);
     }
 
-    private Prices doGetPrices() {
+    private Prices doRetrievePrices() {
         try {
-            return getPricesFromResultSet(dbConnection.getResultFromQuery("select * from " + DataReferences.DBNAME + ".PRICES"));
+            return retrievePricesFromResultSet(dbConnection.getResultFromQuery("select * from " + DataReferences.DBNAME + ".PRICES"));
         } catch (SQLException e) {
             throw new ApplicationException(e);
-        } finally {
-            dbConnection.close();
         }
     }
 
-    private Prices getPricesFromResultSet(ResultSet resultSet) throws SQLException {
+    private Prices retrievePricesFromResultSet(ResultSet resultSet) throws SQLException {
         Prices res = null;
-        while(resultSet.next()) {
-            res = new Prices( resultSet.getDouble("BASE")
-                            , resultSet.getDouble("VIP")
-                            , resultSet.getDouble("THREED")
-                            , resultSet.getDouble("REDUCED"));
+        try {
+            while(resultSet.next()) {
+                res = new Prices( resultSet.getDouble("BASE")
+                        , resultSet.getDouble("VIP")
+                        , resultSet.getDouble("THREED")
+                        , resultSet.getDouble("REDUCED"));
+            }
+            return res;
+        } finally {
+            resultSet.close();
         }
-        return res;
     }
 
     private void doInsert(Prices p){
-        try {
-            String query = "INSERT INTO " + DataReferences.DBNAME + ".PRICES(BASE, VIP, THREED, REDUCED) values (?,?,?,?)";
-            PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query);
+        String query = "INSERT INTO " + DataReferences.DBNAME + ".PRICES(BASE, VIP, THREED, REDUCED) values (?,?,?,?)";
+        try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {
             ps.setDouble(1, p.getBase());
             ps.setDouble(2, p.getVip());
             ps.setDouble(3, p.getThreed());
@@ -50,19 +55,15 @@ public class PricesOperations {
             ps.execute();
         } catch (SQLException e) {
             throw new ApplicationException(e);
-        } finally {
-            dbConnection.close();
         }
     }
 
     private void doTruncate() {
-        try {
-            String query = "TRUNCATE "+ DataReferences.DBNAME + ".PRICES";
-            dbConnection.getPreparedStatementFromQuery(query).execute();
+        String query = "TRUNCATE "+ DataReferences.DBNAME + ".PRICES";
+        try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {
+            ps.execute();
         } catch (SQLException e) {
             throw new ApplicationException(e);
-        } finally {
-            dbConnection.close();
         }
     }
 }

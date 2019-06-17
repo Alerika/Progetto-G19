@@ -1,18 +1,19 @@
 package it.unipv.gui.user;
 
 import java.io.*;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import it.unipv.conversion.CSVToDraggableSeats;
-import it.unipv.conversion.CSVToMovieList;
-import it.unipv.conversion.CSVToMovieScheduleList;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.HallOperations;
+import it.unipv.DB.MovieOperations;
+import it.unipv.DB.ScheduleOperations;
 import it.unipv.gui.common.*;
 import it.unipv.gui.login.LoginController;
+import it.unipv.gui.login.RegistrazioneController;
 import it.unipv.gui.login.User;
-import it.unipv.gui.login.UserInfo;
+import it.unipv.conversion.UserInfo;
 import it.unipv.gui.manager.ManagerHomeController;
 import it.unipv.gui.user.areariservata.AreaRiservataHomeController;
 import it.unipv.utils.ApplicationException;
@@ -28,7 +29,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -49,7 +49,7 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public class HomeController implements Initializable {
+public class HomeController {
     
     @FXML private Rectangle rectangleMenu, rectangleGenere, rectangle2D3D;
     @FXML private AnchorPane menuWindow, genereWindow, anchorInfo, homePane, singleFilmPane, welcomePanel, welcomeFooter, logoutPane;
@@ -72,10 +72,17 @@ public class HomeController implements Initializable {
     private static int columnCountMax = 0;
     private List<Movie> film = new ArrayList<>();
     private User loggedUser;
+    private DBConnection dbConnection;
+    private HallOperations ho;
+    private MovieOperations mo;
+    private ScheduleOperations so;
 
     /* ************************************************************* METODO PRINCIPALE **************************************************************/
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void init(DBConnection dbConnection) {
+        this.dbConnection = dbConnection;
+        ho = new HallOperations(dbConnection);
+        mo = new MovieOperations(dbConnection);
+        so = new ScheduleOperations(dbConnection);
         if(checkIfThereIsAlreadyUserSaved()) {
             loggedUser = UserInfo.getUserInfo();
             setupLoggedUser();
@@ -189,9 +196,10 @@ public class HomeController implements Initializable {
 
     /* ************************************************************* METODI RIGUARDANTI LA HOME **************************************************************/
     private void initMovieGrid(){
+        mo = new MovieOperations(dbConnection);
         filmGrid.getChildren().clear();
         filmGridFiltered.getChildren().clear();
-        film = CSVToMovieList.getMovieListFromCSV(DataReferences.MOVIEFILEPATH);
+        film = mo.retrieveCompleteMovieList(1000, 0, true, true);
         Collections.sort(film);
 
         filmGrid.setHgap(80);
@@ -223,24 +231,11 @@ public class HomeController implements Initializable {
     }
 
     private void addMovie(Movie movie, GridPane grid, ScrollPane scroll){
-        FileInputStream fis = null;
-        ImageView posterPreview;
-
-        try {
-            fis = new FileInputStream(movie.getLocandinaPath());
-            posterPreview = new ImageView(new Image(fis, 1000, 0, true, true));
-        } catch(FileNotFoundException ex) {
-            throw new ApplicationException(ex);
-        } finally {
-            CloseableUtils.close(fis);
-        }
-
+        ImageView posterPreview = new ImageView(movie.getLocandina());
         posterPreview.setPreserveRatio(true);
         posterPreview.setFitWidth(200);
-        CloseableUtils.close(fis);
 
         AnchorPane anchor = new AnchorPane();
-
 
         if (columnCount == columnCountMax) {
             columnCount = 0;
@@ -304,18 +299,8 @@ public class HomeController implements Initializable {
 
         Font infoFont = new Font("Bebas Neue Regular", 24);
 
-        ImageView poster;
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(movie.getLocandinaPath());
-            poster = new ImageView(new Image(fis, 1000, 0, true, true));
-            poster.setPreserveRatio(true);
-        } catch (FileNotFoundException exce){
-            throw new ApplicationException(exce);
-        } finally {
-            CloseableUtils.close(fis);
-        }
-
+        ImageView poster = new ImageView(movie.getLocandina());
+        poster.setPreserveRatio(true);
         poster.setFitWidth(350);
 
         title.setText("TITOLO: ");
@@ -525,7 +510,7 @@ public class HomeController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/MoviePrenotation.fxml"));
                 Parent p = loader.load();
                 mpc = loader.getController();
-                mpc.init(this, scheduleLabel.getText().trim(), movie, loggedUser);
+                mpc.init(this, scheduleLabel.getText().trim(), movie, loggedUser, dbConnection);
                 prenotationStage = new Stage();
                 prenotationStage.setScene(new Scene(p));
                 prenotationStage.setResizable(false);
@@ -542,7 +527,7 @@ public class HomeController implements Initializable {
 
     private List<MovieSchedule> getProgrammationListFromMovie(Movie m) {
         String date = "";
-        List<MovieSchedule> allSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH);
+        List<MovieSchedule> allSchedules = so.retrieveMovieSchedules();
         Collections.sort(allSchedules);
         List<MovieSchedule> res = new ArrayList<>();
         for(MovieSchedule ms : allSchedules) {
@@ -686,18 +671,30 @@ public class HomeController implements Initializable {
 
 
     /* ************************************************************* METODI RIGUARDANTI LISTA SALE **************************************************************/
-    private File[] listOfPreviews;
+    private List<String> hallNames = new ArrayList<>();
+    private List<Image> previews = new ArrayList<>();
+    private int hallNamesSize = 0;
     private static int hallRowCount = 0;
     private static int hallColumnCount = 0;
     private static int hallColumnCountMax = 0;
     private GridPane grigliaSale = new GridPane();
 
-    private void initListOfPreviews() {
-        listOfPreviews = new File(DataReferences.PIANTINEPREVIEWSFOLDERPATH).listFiles();
+    private void initHallNameList() {
+        hallNames = ho.retrieveHallNames();
+        Collections.sort(hallNames);
+        hallNamesSize = hallNames.size();
+    }
+
+    private void initPreview() {
+        previews.clear();
+        for(int i = 0; i<hallNamesSize; i++) {
+            previews.add(ho.retrieveHallPreviewAsImage(hallNames.get(i), 220, 395, true, true));
+        }
     }
 
     private void initHallGrid() {
-        initListOfPreviews();
+        initHallNameList();
+        initPreview();
         grigliaSale.getChildren().clear();
         if (lineGenere.getScene().getWindow().getWidth() > 1360) {
             hallColumnCountMax = 5;
@@ -706,18 +703,18 @@ public class HomeController implements Initializable {
         }
 
 
-        for (File file : Objects.requireNonNull(listOfPreviews)) {
-            createViewFromPreviews(file);
+        for(int i = 0; i<hallNamesSize; i++) {
+            createViewFromPreviews(hallNames.get(i), previews.get(i));
         }
 
         hallRowCount = 0;
         hallColumnCount = 0;
     }
 
-    private void createViewFromPreviews(File file) {
+    private void createViewFromPreviews(String hallName, Image preview) {
         Font font = Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15);
 
-        Label nomeSalaLabel = new Label(FilenameUtils.removeExtension(file.getName()));
+        Label nomeSalaLabel = new Label(FilenameUtils.removeExtension(hallName));
         nomeSalaLabel.setFont(font);
         nomeSalaLabel.setTextFill(Color.WHITE);
 
@@ -747,18 +744,9 @@ public class HomeController implements Initializable {
         grigliaSale.setHgap(150);
         grigliaSale.setVgap(60);
 
-        ImageView snapHallView;
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(file);
-            snapHallView = new ImageView(new Image(fis, 220, 395, true, true));
+        ImageView snapHallView = new ImageView(preview);
+        snapHallView.setOnMouseClicked(event -> openHallPreview(nomeSalaLabel.getText()));
 
-            snapHallView.setOnMouseClicked(event -> openHallPreview(file, nomeSalaLabel));
-        } catch (FileNotFoundException ex) {
-            throw new ApplicationException(ex);
-        } finally {
-            CloseableUtils.close(fis);
-        }
 
         AnchorPane pane = new AnchorPane();
         if (hallColumnCount == hallColumnCountMax) {
@@ -785,28 +773,25 @@ public class HomeController implements Initializable {
         GUIUtils.setScaleTransitionOnControl(snapHallView);
     }
 
-    private void openHallPreview(File file, Label nomeSalaLabel) {
+    private void openHallPreview(String nomeSala) {
         BorderPane borderPane = new BorderPane();
-        ImageView imageView = new ImageView();
 
         Image image;
-        FileInputStream fis = null;
+        InputStream fis = null;
         try {
-            fis = new FileInputStream(file);
+            fis = ho.retrieveHallPreviewAsStream(nomeSala);
             image = new Image(fis);
-        } catch (FileNotFoundException e) {
-            throw new ApplicationException(e);
         } finally {
             CloseableUtils.close(fis);
         }
 
-        imageView.setImage(image);
+        ImageView imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
         imageView.setCache(true);
         borderPane.setCenter(imageView);
         Stage stage = new Stage();
-        stage.setTitle(nomeSalaLabel.getText());
+        stage.setTitle(nomeSala);
         Scene scene = new Scene(borderPane);
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
         stage.setScene(scene);
@@ -823,16 +808,18 @@ public class HomeController implements Initializable {
         return res;
     }
 
-    private List<Seat> initDraggableSeatsList(String nomeSala) {
-        return CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINEFOLDERPATH+nomeSala+".csv");
-    }
+    private List<Seat> initDraggableSeatsList(String nomeSala) { return ho.retrieveSeats(nomeSala); }
     /* **********************************************************************************************************************************************************/
 
 
     /* ************************************************************* METODI RIGUARDANTI LOGIN/LOGOUT/REGISTRAZIONE **************************************************************/
     private void openRegistrazione(){
         try {
-            stageRegistrazione.setScene(new Scene(new FXMLLoader(getClass().getResource("/fxml/login/Registrazione.fxml")).load()));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Registrazione.fxml"));
+            Parent p = loader.load();
+            RegistrazioneController rc = loader.getController();
+            rc.init(dbConnection);
+            stageRegistrazione.setScene(new Scene(p));
             stageRegistrazione.setResizable(false);
             stageRegistrazione.setTitle("Registrazione");
             stageRegistrazione.show();
@@ -847,7 +834,7 @@ public class HomeController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Login.fxml"));
             Parent p = loader.load();
             LoginController lc = loader.getController();
-            lc.init(this);
+            lc.init(this, dbConnection);
             Stage stage = new Stage();
             stage.setScene(new Scene(p));
             stage.setTitle("Login");
@@ -961,7 +948,7 @@ public class HomeController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/ManagerHome.fxml"));
                 Parent root = loader.load();
                 mhc = loader.getController();
-                mhc.init(this);
+                mhc.init(this, dbConnection);
                 managerAreaStage = new Stage();
                 managerAreaStage.setScene(new Scene(root));
                 managerAreaStage.setTitle("Area Manager");
@@ -988,7 +975,7 @@ public class HomeController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/AreaRiservataHome.fxml"));
                 Parent p = loader.load();
                 arhc = loader.getController();
-                arhc.init(loggedUser, true);
+                arhc.init(loggedUser, true, dbConnection);
                 reservedAreaStage = new Stage();
                 reservedAreaStage.setScene(new Scene(p));
                 reservedAreaStage.setMinHeight(850);

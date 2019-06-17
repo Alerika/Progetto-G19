@@ -1,5 +1,6 @@
-package it.unipv.gui.login;
+package it.unipv.conversion;
 
+import it.unipv.gui.login.User;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;

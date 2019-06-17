@@ -12,7 +12,7 @@ public class User implements Comparable<User> {
     private String email;
     private String codice;
 
-    User() {}
+    public User() {}
 
     public User(String name, String password) {
         this.name = name;

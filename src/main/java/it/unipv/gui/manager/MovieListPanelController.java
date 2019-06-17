@@ -1,17 +1,16 @@
 package it.unipv.gui.manager;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import it.unipv.conversion.CSVToMovieList;
-import it.unipv.conversion.CSVToMovieScheduleList;
-import it.unipv.conversion.MovieScheduleToCSV;
-import it.unipv.conversion.MovieToCSV;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.MovieOperations;
+import it.unipv.DB.ScheduleOperations;
 import it.unipv.gui.common.*;
 import it.unipv.utils.ApplicationException;
-import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -42,14 +41,18 @@ public class MovieListPanelController implements IPane {
     private List<Movie> movies = new ArrayList<>();
     private ManagerHomeController managerHomeController;
     private Stage movieEditorControllerStage;
+    private MovieOperations mo;
+    private ScheduleOperations so;
 
-    public void init(ManagerHomeController managerHomeController) {
+    public void init(ManagerHomeController managerHomeController, DBConnection dbConnection) {
+        this.mo = new MovieOperations(dbConnection);
+        this.so = new ScheduleOperations(dbConnection);
         this.managerHomeController = managerHomeController;
         createMovieListGrid();
     }
 
     private void initMoviesList() {
-        movies = CSVToMovieList.getMovieListFromCSV(DataReferences.MOVIEFILEPATH);
+        movies = mo.retrieveMovieListWithoutPoster();
         Collections.sort(movies);
     }
 
@@ -116,8 +119,8 @@ public class MovieListPanelController implements IPane {
             int reply = JOptionPane.showConfirmDialog( null
                                                      , "Sei sicuro di voler rendere " + movie.getTitolo() + " programmabile?");
             if(reply == JOptionPane.YES_OPTION) {
-                movies.get(movies.indexOf(movie)).setStatus(MovieStatusTYPE.AVAILABLE);
-                MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
+                movie.setStatus(MovieStatusTYPE.AVAILABLE);
+                mo.updateMovieButNotPoster(movie);
                 managerHomeController.triggerToHomeNewMovieEvent();
                 refreshUI();
             }
@@ -135,8 +138,7 @@ public class MovieListPanelController implements IPane {
                                                  , "Sei sicuro di voler eliminare " + movie.getTitolo() +" e le sue relative programmazioni?");
             if(reply == JOptionPane.YES_OPTION) {
                 removeAssociatedSchedules(movie);
-                movies.remove(movie);
-                MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
+                mo.deleteMovie(movie);
                 managerHomeController.triggerToHomeNewMovieEvent();
                 refreshUI();
             }
@@ -172,18 +174,11 @@ public class MovieListPanelController implements IPane {
     }
 
     private void removeAssociatedSchedules(Movie movie) {
-        List<MovieSchedule> movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH);
-        List<MovieSchedule> toRemove = new ArrayList<>();
+        List<MovieSchedule> movieSchedules = so.retrieveMovieSchedules();
         for(MovieSchedule ms : movieSchedules) {
             if(movie.getCodice().equalsIgnoreCase(ms.getMovieCode())) {
-                toRemove.add(ms);
+                so.deleteMovieSchedule(ms);
             }
-        }
-        if(toRemove.size()!=0) {
-            for(MovieSchedule ms : toRemove) {
-                movieSchedules.remove(ms);
-            }
-            MovieScheduleToCSV.createCSVFromMovieScheduleList(movieSchedules, DataReferences.MOVIESCHEDULEFILEPATH, false);
         }
     }
 
@@ -207,21 +202,16 @@ public class MovieListPanelController implements IPane {
         }
     }
 
-    void triggerOverwriteMovieEvent(Movie movie) {
-        Movie toRemove = null;
-        for(Movie m : movies) {
-            if(m.getCodice().trim().equalsIgnoreCase(movie.getCodice().trim())) {
-                toRemove = m;
-                break;
-            }
-        }
-        if(toRemove!=null) {
-            movies.remove(toRemove);
-            movies.add(movie);
-            MovieToCSV.createCSVFromMovieList(movies, DataReferences.MOVIEFILEPATH, false);
-            managerHomeController.triggerToHomeNewMovieEvent();
-            refreshUI();
-        }
+    void triggerOverwriteMovieButNotPosterEvent(Movie movie) {
+        mo.updateMovieButNotPoster(movie);
+        refreshUI();
+        managerHomeController.triggerToHomeNewMovieEvent();
+    }
+
+    void triggerOverwriteMovieEvent(Movie movie, FileInputStream posterStream) {
+        mo.updateMovie(movie, posterStream);
+        refreshUI();
+        managerHomeController.triggerToHomeNewMovieEvent();
     }
 
     @Override

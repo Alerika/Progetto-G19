@@ -1,16 +1,12 @@
 package it.unipv.gui.login;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
-import it.unipv.conversion.CSVToUserList;
-import it.unipv.conversion.UserToCSV;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.UserOperations;
 import it.unipv.gui.common.GUIUtils;
-import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -18,27 +14,23 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class ForgotPasswordController implements Initializable {
+public class ForgotPasswordController {
 
     @FXML private TextField usernameTextField, userCodeTextfield;
     @FXML private PasswordField passwordTextfield, retryPasswordTextfield;
     @FXML private Label cancelButton, infoButton;
     private List<User> users = new ArrayList<>();
     private LoginController loginController;
+    private UserOperations userOperations;
 
-    @Override public void initialize(URL url, ResourceBundle rb) {
-        initUserList();
-    }
-
-    public void init(LoginController loginController) {
+    public void init(LoginController loginController, DBConnection dbConnection) {
         this.loginController = loginController;
+        this.userOperations = new UserOperations(dbConnection);
         initUserList();
         GUIUtils.setScaleTransitionOnControl(infoButton);
     }
 
-    private void initUserList() {
-        users = CSVToUserList.getUserListFromCSV(DataReferences.USERFILEPATH);
-    }
+    private void initUserList() { users = userOperations.retrieveUserList(); }
 
     @FXML public void doCancel() { close(); }
 
@@ -63,10 +55,10 @@ public class ForgotPasswordController implements Initializable {
             if(checkIfExistAnUserLikeThat()) {
                 if(checkIfPasswordContentAreEquals()) {
                     User user = getUserFromTextfield();
-                    if(user!=null) {
-                        users.get(users.indexOf(user)).setPassword(passwordTextfield.getText());
-                    }
-                    UserToCSV.createCSVFromUserList(users, DataReferences.USERFILEPATH, false);
+                    user.setPassword(passwordTextfield.getText());
+
+                    userOperations.updateUser(user);
+
                     GUIUtils.showAlert( Alert.AlertType.INFORMATION
                                        , "Informazione"
                                        , "Operazione riuscita: "

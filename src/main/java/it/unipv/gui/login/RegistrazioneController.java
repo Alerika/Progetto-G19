@@ -1,30 +1,31 @@
 package it.unipv.gui.login;
 
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-import it.unipv.conversion.CSVToUserList;
-import it.unipv.conversion.UserToCSV;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.UserOperations;
 import it.unipv.gui.common.GUIUtils;
-import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.RandomStringUtils;
 
-public class RegistrazioneController implements Initializable {
+public class RegistrazioneController {
 
     @FXML Label cancelLabel;
     @FXML TextField usernameTextfield, emailTextfield;
     @FXML PasswordField passwordTextfield, retryPasswordTextfield;
     private List<User> users;
+    private UserOperations userOperations;
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        users = CSVToUserList.getUserListFromCSV(DataReferences.USERFILEPATH);
+    public void init(DBConnection dbConnection) {
+        userOperations = new UserOperations(dbConnection);
+        initUserList();
+    }
+
+    private void initUserList() {
+        users = userOperations.retrieveUserList();
     }
 
     @FXML
@@ -40,13 +41,10 @@ public class RegistrazioneController implements Initializable {
                     if(isEmailValid()) {
                         if(passwordTextfield.getText().equals(retryPasswordTextfield.getText())) {
                             String codice = getUserCode();
-                            UserToCSV.appendUserToCSV(
-                                    new User( usernameTextfield.getText()
-                                            , passwordTextfield.getText()
-                                            , emailTextfield.getText()
-                                            , codice)
-                                    , DataReferences.USERFILEPATH
-                                    , true );
+                            userOperations.insertNewUser(new User( usernameTextfield.getText()
+                                                                 , passwordTextfield.getText()
+                                                                 , emailTextfield.getText()
+                                                                 , codice));
                             GUIUtils.showAlert( Alert.AlertType.INFORMATION
                                               , "Info"
                                               , "Informazione:"

@@ -1,18 +1,15 @@
 package it.unipv.gui.manager;
 
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.HallOperations;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.IPane;
 import it.unipv.utils.ApplicationException;
-import it.unipv.utils.ApplicationUtils;
-import it.unipv.utils.CloseableUtils;
-import it.unipv.utils.DataReferences;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -26,7 +23,6 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
-
 import javax.swing.*;
 
 public class HallPanelController implements IPane {
@@ -38,28 +34,43 @@ public class HallPanelController implements IPane {
     private static int columnCount = 0;
     private int columnMax = 3;
     private List<String> hallNames = new ArrayList<>();
-    private File[] listOfPreviews;
+    private List<Image> previews = new ArrayList<>();
+    private int hallNamesSize = 0;
     private ManagerHomeController managerHomeController;
     private HallEditor hallEditor;
+    private HallOperations ho;
+    private DBConnection dbConnection;
 
-    public void init(ManagerHomeController managerHomeController, double initialWidth) {
+    public void init(ManagerHomeController managerHomeController, double initialWidth, DBConnection dbConnection) {
         this.managerHomeController = managerHomeController;
-        initListOfPreviews();
+        this.dbConnection = dbConnection;
+        ho = new HallOperations(dbConnection);
+        initHallNameList();
+        initPreview();
         columnMax = getColumnMaxFromPageWidth(initialWidth);
-        createHallGrid();
+        Platform.runLater(this::createHallGrid);
+
         checkPageDimension();
     }
 
-    private void initListOfPreviews() {
-        listOfPreviews = new File(DataReferences.PIANTINEPREVIEWSFOLDERPATH).listFiles();
+    private void initHallNameList() {
+        hallNames = ho.retrieveHallNames();
+        Collections.sort(hallNames);
+        hallNamesSize = hallNames.size();
+    }
+
+    private void initPreview() {
+        previews.clear();
+        for(int i = 0; i<hallNamesSize; i++) {
+            previews.add(ho.retrieveHallPreviewAsImage(hallNames.get(i), 150, 0, true, true));
+        }
     }
 
     private void createHallGrid() {
-        hallNames.clear();
         grigliaSale.getChildren().clear();
 
-        for (File file : Objects.requireNonNull(listOfPreviews)) {
-            createViewFromPreviews(file);
+        for(int i = 0; i<hallNamesSize; i++) {
+            createViewFromPreviews(hallNames.get(i), previews.get(i));
         }
 
         GUIUtils.setScaleTransitionOnControl(nuovaSalaButton);
@@ -68,101 +79,87 @@ public class HallPanelController implements IPane {
         columnCount = 0;
     }
 
-    private void createViewFromPreviews(File file) {
-        try{
-            Label nomeSalaLabel = new Label(FilenameUtils.removeExtension(file.getName()));
-            nomeSalaLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
-            hallNames.add(nomeSalaLabel.getText());
-            nomeSalaLabel.setTextFill(Color.WHITE);
+    private void createViewFromPreviews(String hallName, Image preview) {
+        Label nomeSalaLabel = new Label(FilenameUtils.removeExtension(hallName));
+        nomeSalaLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
+        hallNames.add(nomeSalaLabel.getText());
+        nomeSalaLabel.setTextFill(Color.WHITE);
 
-            grigliaSale.setHgap(80);
-            grigliaSale.setVgap(80);
+        grigliaSale.setHgap(80);
+        grigliaSale.setVgap(80);
 
-            FileInputStream fis = new FileInputStream(file);
-            ImageView snapHallView = new ImageView(new Image(fis, 150, 0, true, true));
-            snapHallView.setFitWidth(150);
-            CloseableUtils.close(fis);
+        ImageView snapHallView = new ImageView(preview);
+        snapHallView.setFitWidth(150);
 
-            Label deleteIcon = new Label();
-            deleteIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            deleteIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png")));
-            deleteIcon.setTooltip(new Tooltip("Elimina " + nomeSalaLabel.getText().trim()));
-            GUIUtils.setFadeInOutOnControl(deleteIcon);
+        Label deleteIcon = new Label();
+        deleteIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        deleteIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png")));
+        deleteIcon.setTooltip(new Tooltip("Elimina " + nomeSalaLabel.getText().trim()));
+        GUIUtils.setFadeInOutOnControl(deleteIcon);
 
-            Label renameIcon = new Label();
-            renameIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            renameIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Edit.png")));
-            renameIcon.setTooltip(new Tooltip("Rinomina " + nomeSalaLabel.getText().trim()));
-            GUIUtils.setFadeInOutOnControl(renameIcon);
+        Label renameIcon = new Label();
+        renameIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        renameIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Edit.png")));
+        renameIcon.setTooltip(new Tooltip("Rinomina " + nomeSalaLabel.getText().trim()));
+        GUIUtils.setFadeInOutOnControl(renameIcon);
 
-            AnchorPane pane = new AnchorPane();
-            if(columnCount==columnMax) {
-                columnCount=0;
-                rowCount++;
-            }
-            grigliaSale.add(pane, columnCount, rowCount);
-            columnCount++;
-
-            hallPanel.setContent(grigliaSale);
-            GridPane.setMargin(pane, new Insets(15,0,0,15));
-
-            nomeSalaLabel.setLayoutY(snapHallView.getLayoutY() + 100);
-
-            deleteIcon.setLayoutY(nomeSalaLabel.getLayoutY()-2);
-            deleteIcon.setLayoutX(nomeSalaLabel.getLayoutX()+126);
-
-            renameIcon.setLayoutY(nomeSalaLabel.getLayoutY()-2);
-            renameIcon.setLayoutX(nomeSalaLabel.getLayoutX()+93);
-
-            pane.getChildren().addAll(snapHallView, nomeSalaLabel, deleteIcon, renameIcon);
-
-            snapHallView.setOnMouseClicked(event -> {
-                hallEditor = new HallEditor(nomeSalaLabel.getText(), this, true);
-                hallEditor.setAlwaysOnTop(true);
-            });
-
-            GUIUtils.setScaleTransitionOnControl(snapHallView);
-            renameIcon.setOnMouseClicked(event -> renameHall(nomeSalaLabel.getText(), nomeSalaLabel, renameIcon, deleteIcon));
-            deleteIcon.setOnMouseClicked(event -> removeHall(nomeSalaLabel.getText()));
-
-
-        } catch(FileNotFoundException ex) {
-            throw new ApplicationException(ex);
+        AnchorPane pane = new AnchorPane();
+        if (columnCount == columnMax) {
+            columnCount = 0;
+            rowCount++;
         }
+        grigliaSale.add(pane, columnCount, rowCount);
+        columnCount++;
+
+        hallPanel.setContent(grigliaSale);
+        GridPane.setMargin(pane, new Insets(15, 0, 0, 15));
+
+        nomeSalaLabel.setLayoutY(snapHallView.getLayoutY() + 100);
+
+        deleteIcon.setLayoutY(nomeSalaLabel.getLayoutY() - 2);
+        deleteIcon.setLayoutX(nomeSalaLabel.getLayoutX() + 126);
+
+        renameIcon.setLayoutY(nomeSalaLabel.getLayoutY() - 2);
+        renameIcon.setLayoutX(nomeSalaLabel.getLayoutX() + 93);
+
+        pane.getChildren().addAll(snapHallView, nomeSalaLabel, deleteIcon, renameIcon);
+
+        snapHallView.setOnMouseClicked(event -> {
+            hallEditor = new HallEditor(nomeSalaLabel.getText(), this, true, dbConnection);
+            hallEditor.setAlwaysOnTop(true);
+        });
+
+        GUIUtils.setScaleTransitionOnControl(snapHallView);
+        renameIcon.setOnMouseClicked(event -> renameHall(nomeSalaLabel.getText(), nomeSalaLabel, renameIcon, deleteIcon));
+        deleteIcon.setOnMouseClicked(event -> removeHall(nomeSalaLabel.getText()));
     }
 
     private void removeHall(String hallName) {
         int reply = JOptionPane.showConfirmDialog(null, "Vuoi davvero eliminare la piantina " + hallName + "?");
         if(reply == JOptionPane.YES_OPTION) {
-            ApplicationUtils.removeFileFromPath(DataReferences.PIANTINEFOLDERPATH + hallName + ".csv");
-            ApplicationUtils.removeFileFromPath(DataReferences.PIANTINEPREVIEWSFOLDERPATH + hallName + ".jpg");
-            hallNames.remove(hallName);
+            ho.removeHallAndPreview(hallName);
+            initHallNameList();
+            initPreview();
             managerHomeController.triggerToHomeNewHallEvent();
             refreshUIandHallList();
         }
     }
 
     private void renameHall(String hallName, Label labelToModify, Label renameIcon, Label deleteIcon) {
-        String newFileName = JOptionPane.showInputDialog(null, "Inserisci il nuovo nome della sala:");
-        if(newFileName!=null) {
-            if(!newFileName.trim().equalsIgnoreCase("")) {
-                if(checkIfItIsFree(newFileName)) {
-                    if( ApplicationUtils.renameFile( DataReferences.PIANTINEFOLDERPATH + hallName+".csv"
-                                                   , DataReferences.PIANTINEFOLDERPATH + newFileName+".csv")
-                     && ApplicationUtils.renameFile( DataReferences.PIANTINEPREVIEWSFOLDERPATH + hallName + ".jpg"
-                                                   , DataReferences.PIANTINEPREVIEWSFOLDERPATH + newFileName + ".jpg" ) ) {
-                        labelToModify.setText(newFileName);
-                        renameIcon.setTooltip(new Tooltip("Rinomina " + newFileName));
-                        deleteIcon.setTooltip(new Tooltip("Elimina " + newFileName));
+        String newHallName = JOptionPane.showInputDialog(null, "Inserisci il nuovo nome della sala:");
+        if(newHallName!=null) {
+            if(!newHallName.trim().equalsIgnoreCase("")) {
+                if(checkIfItIsFree(newHallName)) {
+                        labelToModify.setText(newHallName);
+                        renameIcon.setTooltip(new Tooltip("Rinomina " + newHallName));
+                        deleteIcon.setTooltip(new Tooltip("Elimina " + newHallName));
 
-                        hallNames.add(newFileName);
-                        hallNames.remove(hallName);
+                        ho.renameHallAndPreview(hallName, newHallName);
+                        initHallNameList();
+                        initPreview();
 
                         managerHomeController.triggerToHomeNewHallEvent();
                         GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "Sala rinominata con successo!");
-                    } else {
-                        GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Si è verificato un errore durante la procedura!");
-                    }
                 } else {
                     GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Esiste già una sala con questo nome!");
                 }
@@ -196,13 +193,13 @@ public class HallPanelController implements IPane {
                 if(checkIfItIsFree(nomeSala)) {
                     int reply = JOptionPane.showConfirmDialog(null, "Vuoi creare una griglia preimpostata?","Scegli una opzione", JOptionPane.YES_NO_OPTION);
                     if(reply == JOptionPane.NO_OPTION) {
-                        hallEditor = new HallEditor(nomeSala, this, false);
+                        hallEditor = new HallEditor(nomeSala, this, false, dbConnection);
                         hallEditor.setAlwaysOnTop(true);
                     } else {
                         configureGridJOptionPaneMenu();
                         if(!canceled) {
                             if(rows<27) {
-                                hallEditor = new HallEditor(nomeSala, this, rows, columns);
+                                hallEditor = new HallEditor(nomeSala, this, rows, columns, dbConnection);
                                 hallEditor.setAlwaysOnTop(true);
                             } else {
                                 GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Numero massimo di righe 26!");
@@ -245,13 +242,12 @@ public class HallPanelController implements IPane {
     }
 
     private void refreshUIandHallList() {
-        grigliaSale.getChildren().clear();
-        initListOfPreviews();
+        initHallNameList();
+        initPreview();
         createHallGrid();
     }
 
     private void refreshUI() {
-        grigliaSale.getChildren().clear();
         createHallGrid();
     }
 

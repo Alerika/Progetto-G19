@@ -1,19 +1,22 @@
 package it.unipv.gui.manager;
 
-import it.unipv.conversion.CSVToDraggableSeats;
-import it.unipv.conversion.DraggableSeatsToCSV;
-import it.unipv.gui.common.GUIUtils;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.HallOperations;
 import it.unipv.gui.common.Seat;
 import it.unipv.gui.common.SeatTYPE;
-import it.unipv.utils.ApplicationUtils;
+import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +27,17 @@ class HallEditor extends JFrame {
     private String nomeSala;
     private HallPanelController hallPanelController;
     private HallEditor hallEditor = this;
-
+    private boolean wasItAlreadyCreated;
+    private HallOperations ho;
 
     HallEditor( String nomeSala
               , HallPanelController hallPanelController
-              , boolean wasItAlreadyCreated) {
+              , boolean wasItAlreadyCreated
+              , DBConnection dbConnection) {
         this.nomeSala = nomeSala;
         this.hallPanelController = hallPanelController;
+        this.wasItAlreadyCreated = wasItAlreadyCreated;
+        ho = new HallOperations(dbConnection);
 
         initMenuBar();
         initDraggableSeatsPanel(wasItAlreadyCreated);
@@ -40,9 +47,11 @@ class HallEditor extends JFrame {
     HallEditor( String nomeSala
               , HallPanelController hallPanelController
               , int rows
-              , int columns) {
+              , int columns
+              , DBConnection dbConnection) {
         this.nomeSala = nomeSala;
         this.hallPanelController = hallPanelController;
+        ho = new HallOperations(dbConnection);
         initMenuBar();
         initDraggableSeatsPanel(rows, columns);
         initFrame();
@@ -234,7 +243,7 @@ class HallEditor extends JFrame {
         }
 
         private void initDraggableSeatsList() {
-            draggableSeatsList = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINEFOLDERPATH +nomeSala+".csv");
+            draggableSeatsList = ho.retrieveSeats(nomeSala);
             for(Seat mds : draggableSeatsList) {
                 configureMDS(mds, mds.getText(), true);
             }
@@ -452,13 +461,40 @@ class HallEditor extends JFrame {
         }
 
         private void doSave() {
-            DraggableSeatsToCSV.createCSVFromDraggableSeatsList( draggableSeatsList
-                    , DataReferences.PIANTINEFOLDERPATH + nomeSala +".csv"
-                    , false);
-            JOptionPane.showMessageDialog(hallEditor, "Piantina salvata con successo!");
-            ApplicationUtils.saveSnapshot(DataReferences.PIANTINEPREVIEWSFOLDERPATH + nomeSala + ".jpg", this, "jpg");
+            if(wasItAlreadyCreated) {
+                ho.updateHallSeats(nomeSala, draggableSeatsList);
+                ho.updateHallPreview(nomeSala, saveSnapshot(this, "jpg"));
+                JOptionPane.showMessageDialog(hallEditor, "Piantina sovrascritta con successo!");
+            } else {
+                ho.insertNewHall(nomeSala, draggableSeatsList);
+                ho.insertNewHallpreview(nomeSala, saveSnapshot(this, "jpg"));
+                JOptionPane.showMessageDialog(hallEditor, "Piantina creata con successo!");
+                wasItAlreadyCreated = true;
+            }
             Platform.runLater(() -> hallPanelController.triggerModificationToHallList());
             isSomethingChanged = false;
+        }
+
+        private ByteArrayInputStream saveSnapshot(Component c, String format) {
+            try {
+                BufferedImage img = new BufferedImage(c.getWidth(), c.getHeight(), BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphs = img.createGraphics();
+                graphs.setBackground(Color.WHITE);
+                graphs.clearRect(0, 0, c.getWidth(), c.getHeight());
+                c.paint(graphs);
+
+                final ByteArrayOutputStream output = new ByteArrayOutputStream() {
+                    @Override
+                    public synchronized byte[] toByteArray() {
+                        return this.buf;
+                    }
+                };
+
+                ImageIO.write(img, format, output);
+                return new ByteArrayInputStream(output.toByteArray(), 0, output.size());
+            } catch (IOException e) {
+                throw new ApplicationException("Errore durante il salvataggio dello snapshot", e);
+            }
         }
 
         private boolean areAllSeatsBeenNamed() {

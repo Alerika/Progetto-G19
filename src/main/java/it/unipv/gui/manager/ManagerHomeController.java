@@ -1,5 +1,6 @@
 package it.unipv.gui.manager;
 
+import it.unipv.DB.DBConnection;
 import it.unipv.gui.common.IPane;
 import it.unipv.gui.user.HomeController;
 import it.unipv.utils.ApplicationException;
@@ -24,9 +25,11 @@ public class ManagerHomeController {
     private List<Label> labels = new ArrayList<>();
     private HomeController homeController;
     private List<IPane> iPanes = new ArrayList<>();
+    private DBConnection dbConnection;
 
-    public void init(HomeController homeController) {
+    public void init(HomeController homeController, DBConnection dbConnection) {
         this.homeController = homeController;
+        this.dbConnection = dbConnection;
         addLabelsToList();
         setOnMouseEnteredToLabels();
         setOnMouseExitedToLabels();
@@ -80,7 +83,7 @@ public class ManagerHomeController {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/HallPanel.fxml"));
                         AnchorPane hallPanel = loader.load();
                         HallPanelController hpc = loader.getController();
-                        hpc.init(this, mainPanel.getWidth());
+                        hpc.init(this, mainPanel.getWidth(), dbConnection);
                         mainPanel.setCenter(hallPanel);
                         openedPane = "MODIFICA SALE";
                         if(!iPanes.contains(hpc)) { iPanes.add(hpc); }
@@ -100,7 +103,7 @@ public class ManagerHomeController {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/ProgrammationPanel.fxml"));
                         AnchorPane programmationPanel = loader.load();
                         ProgrammationPanelController ppc = loader.getController();
-                        ppc.init(this, mainPanel.getWidth());
+                        ppc.init(this, mainPanel.getWidth(), dbConnection);
                         mainPanel.setCenter(programmationPanel);
                         openedPane = "PROGRAMMAZIONE";
                         if(!iPanes.contains(ppc)) { iPanes.add(ppc); }
@@ -119,7 +122,7 @@ public class ManagerHomeController {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/MovieListPanel.fxml"));
                         AnchorPane movieListPanel = loader.load();
                         MovieListPanelController mlpc = loader.getController();
-                        mlpc.init(this);
+                        mlpc.init(this, dbConnection);
                         mainPanel.setCenter(movieListPanel);
                         openedPane = "LISTA FILM";
                         if(!iPanes.contains(mlpc)) { iPanes.add(mlpc); }
@@ -138,7 +141,7 @@ public class ManagerHomeController {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/UserListPanel.fxml"));
                         AnchorPane userListPanel = loader.load();
                         UserListPanelController ulpc = loader.getController();
-                        ulpc.init();
+                        ulpc.init(dbConnection);
                         mainPanel.setCenter(userListPanel);
                         openedPane = "LISTA UTENTI";
                     }
@@ -156,9 +159,10 @@ public class ManagerHomeController {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/PricesPanel.fxml"));
                         AnchorPane modifyPricesPanel = loader.load();
                         PricesPanelController ppc = loader.getController();
-                        ppc.init();
+                        ppc.init(dbConnection);
                         mainPanel.setCenter(modifyPricesPanel);
                         openedPane = "MODIFICA PREZZI";
+                        if(!iPanes.contains(ppc)) { iPanes.add(ppc); }
                     }
                 } catch (IOException e) {
                     throw new ApplicationException(e);

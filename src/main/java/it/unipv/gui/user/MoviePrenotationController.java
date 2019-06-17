@@ -1,20 +1,12 @@
 package it.unipv.gui.user;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
-import it.unipv.conversion.CSVToMovieScheduleList;
-import it.unipv.conversion.CSVToPrenotationList;
-import it.unipv.conversion.CSVToPrices;
-import it.unipv.conversion.PrenotationsToCSV;
+import it.unipv.DB.*;
 import it.unipv.gui.common.*;
 import it.unipv.gui.login.User;
 import it.unipv.utils.ApplicationException;
-import it.unipv.utils.CloseableUtils;
-import it.unipv.utils.DataReferences;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,7 +27,6 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class MoviePrenotationController implements IPane {
@@ -43,7 +34,7 @@ public class MoviePrenotationController implements IPane {
     private List<MovieSchedule> schedules;
     private List<Prenotation> prenotations;
     private List<Seat> selectedMDS = new ArrayList<>();
-    private File[] listOfPreviews;
+    private List<String> completeHallNameList = new ArrayList<>();
     private GridPane grigliaSale = new GridPane();
     private static int rowCount = 0;
     private static int columnCount = 0;
@@ -57,32 +48,42 @@ public class MoviePrenotationController implements IPane {
     private boolean opened = false;
     private HomeController homeController;
     private HallViewer hallViewer;
+    private PricesOperations pricesOperations;
+    private HallOperations hallOperations;
+    private ScheduleOperations scheduleOperations;
+    private PrenotationOperations prenotationOperations;
+    private DBConnection dbConnection;
     @FXML private Label closeButton, confirmButton;
     @FXML private AnchorPane orariPanel, salaHeader, summaryPanel;
     @FXML private ScrollPane salaPanel;
 
-    public void init(HomeController homeController, String date, Movie m, User user) {
+    public void init(HomeController homeController, String date, Movie m, User user, DBConnection dbConnection) {
         this.homeController = homeController;
         this.movie = m;
         this.scheduleDate = date;
         this.user = user;
+        this.dbConnection = dbConnection;
+        this.pricesOperations = new PricesOperations(dbConnection);
+        this.hallOperations = new HallOperations(dbConnection);
+        this.scheduleOperations = new ScheduleOperations(dbConnection);
+        this.prenotationOperations = new PrenotationOperations(dbConnection);
         schedules = initializeHoursList(date, m);
-        initListOfPreviews();
+        initListOfHallNames();
         initComponents();
         initPrices();
         initPrenotationList();
     }
 
-    private void initListOfPreviews() {
-        listOfPreviews = new File(DataReferences.PIANTINEPREVIEWSFOLDERPATH).listFiles();
+    private void initListOfHallNames() {
+        completeHallNameList = hallOperations.retrieveHallNames();
     }
 
     private void initPrices() {
-        prices = CSVToPrices.getPricesFromCSV(DataReferences.PRICESFILEPATH);
+        prices = pricesOperations.retrievePrices();
     }
 
     private void initPrenotationList() {
-        prenotations = CSVToPrenotationList.getPrenotationListFromCSV(DataReferences.PRENOTATIONSFILEPATH);
+        prenotations = prenotationOperations.retrievePrenotationList();
     }
 
     private void initComponents() {
@@ -103,8 +104,8 @@ public class MoviePrenotationController implements IPane {
 
         GUIUtils.setScaleTransitionOnControl(confirmButton);
         confirmButton.setOnMouseClicked(event -> {
-            if(finalPrenotation!=null) {
-                PrenotationsToCSV.appendInfoMovieToCSV(finalPrenotation, DataReferences.PRENOTATIONSFILEPATH, true);
+            if (finalPrenotation != null) {
+                prenotationOperations.insertNewPrenotation(finalPrenotation);
                 openAvvisoPrenotazioneController();
                 doClose();
             } else {
@@ -137,11 +138,12 @@ public class MoviePrenotationController implements IPane {
     }
 
     private List<Label> listOfHourLabels = new ArrayList<>();
+
     private void createHourLabels(Font font, double initalX) {
         double x = initalX + 230;
         double y = 50;
         int count = 0;
-        for(MovieSchedule ms : schedules) {
+        for (MovieSchedule ms : schedules) {
             Label hourLabel = new Label("  " + ms.getTime() + "  ");
             hourLabel.setTextFill(Color.WHITE);
             hourLabel.setFont(font);
@@ -154,7 +156,7 @@ public class MoviePrenotationController implements IPane {
 
             hourLabel.setOnMouseExited(event -> {
                 hourLabel.setCursor(Cursor.DEFAULT);
-                if(!hourLabel.getText().trim().equalsIgnoreCase(clickedHour)) {
+                if (!hourLabel.getText().trim().equalsIgnoreCase(clickedHour)) {
                     hourLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
                 }
 
@@ -175,9 +177,9 @@ public class MoviePrenotationController implements IPane {
                 hallListLabel.setLayoutX(50);
                 salaHeader.getChildren().add(hallListLabel);
                 List<String> hallNames = getHallsInvolvedInThatHour(hourLabel.getText().trim());
-                for (File file : Objects.requireNonNull(listOfPreviews)) {
-                    if(hallNames.contains(FilenameUtils.removeExtension(file.getName()))) {
-                        createHallViews(file);
+                for (String s : completeHallNameList) {
+                    if (hallNames.contains(s)) {
+                        createHallViews(s, hallOperations.retrieveHallPreviewAsImage(s, 150, 0, true, true));
                     }
                 }
                 rowCount = 0;
@@ -185,14 +187,14 @@ public class MoviePrenotationController implements IPane {
                 clickedHour = hourLabel.getText().trim();
             });
 
-            if(count>=5) {
-                y+=50;
+            if (count >= 5) {
+                y += 50;
                 x = initalX + 230;
                 count = 0;
             }
             hourLabel.setLayoutX(x);
             hourLabel.setLayoutY(y);
-            x+=100;
+            x += 100;
             count++;
             listOfHourLabels.add(hourLabel);
             orariPanel.getChildren().add(hourLabel);
@@ -200,69 +202,63 @@ public class MoviePrenotationController implements IPane {
     }
 
     private void setToWhiteBorderOtherLabels(String nameToExclude) {
-        for(Label l : listOfHourLabels) {
-            if(!l.getText().trim().toLowerCase().equalsIgnoreCase(nameToExclude.trim().toLowerCase())) {
+        for (Label l : listOfHourLabels) {
+            if (!l.getText().trim().toLowerCase().equalsIgnoreCase(nameToExclude.trim().toLowerCase())) {
                 l.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
             }
         }
     }
 
-    private void createHallViews(File file) {
-        try{
-            Label nomeSalaLabel = new Label(FilenameUtils.removeExtension(file.getName()));
-            nomeSalaLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
-            nomeSalaLabel.setTextFill(Color.WHITE);
+    private void createHallViews(String nomeSala, Image image) {
+        Label nomeSalaLabel = new Label(nomeSala);
+        nomeSalaLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
+        nomeSalaLabel.setTextFill(Color.WHITE);
 
-            grigliaSale.setHgap(5);
-            grigliaSale.setVgap(50);
+        grigliaSale.setHgap(5);
+        grigliaSale.setVgap(50);
 
-            FileInputStream fis = new FileInputStream(file);
-            ImageView snapHallView = new ImageView(new Image(fis, 150, 0, true, true));
-            snapHallView.setFitWidth(150);
-            CloseableUtils.close(fis);
+        ImageView snapHallView = new ImageView(image);
+        snapHallView.setFitWidth(150);
 
-            AnchorPane pane = new AnchorPane();
-            if(columnCount==3) {
-                columnCount=0;
-                rowCount++;
-            }
-            grigliaSale.add(pane, columnCount, rowCount);
-            columnCount++;
-
-            salaPanel.setContent(grigliaSale);
-            GridPane.setMargin(pane, new Insets(15,0,0,15));
-
-            snapHallView.setLayoutX(80);
-            nomeSalaLabel.setLayoutY(snapHallView.getLayoutY() + 100);
-            nomeSalaLabel.setLayoutX(snapHallView.getLayoutX()+50);
-
-            snapHallView.setOnMouseClicked(event -> {
-                if(!opened) {
-                    clickedHall = nomeSalaLabel.getText().trim();
-                    if(selectedMDS.size()>0) {
-                        hallViewer = new HallViewer(this, nomeSalaLabel.getText().trim(), selectedMDS, getOccupiedSeatNames());
-                        hallViewer.setAlwaysOnTop(true);
-                    } else {
-                        hallViewer = new HallViewer(this, nomeSalaLabel.getText().trim(), getOccupiedSeatNames());
-                        hallViewer.setAlwaysOnTop(true);
-                    }
-                    opened = true;
-                }
-            });
-
-            pane.getChildren().addAll(snapHallView);
-            pane.getChildren().addAll(nomeSalaLabel);
-
-            GUIUtils.setScaleTransitionOnControl(snapHallView);
-        } catch(FileNotFoundException ex) {
-            throw new ApplicationException(ex);
+        AnchorPane pane = new AnchorPane();
+        if (columnCount == 3) {
+            columnCount = 0;
+            rowCount++;
         }
+        grigliaSale.add(pane, columnCount, rowCount);
+        columnCount++;
+
+        salaPanel.setContent(grigliaSale);
+        GridPane.setMargin(pane, new Insets(15, 0, 0, 15));
+
+        snapHallView.setLayoutX(80);
+        nomeSalaLabel.setLayoutY(snapHallView.getLayoutY() + 100);
+        nomeSalaLabel.setLayoutX(snapHallView.getLayoutX() + 50);
+
+        snapHallView.setOnMouseClicked(event -> {
+            if (!opened) {
+                clickedHall = nomeSalaLabel.getText().trim();
+                if (selectedMDS.size() > 0) {
+                    hallViewer = new HallViewer(this, nomeSalaLabel.getText().trim(), selectedMDS, getOccupiedSeatNames(), dbConnection);
+                    hallViewer.setAlwaysOnTop(true);
+                } else {
+                    hallViewer = new HallViewer(this, nomeSalaLabel.getText().trim(), getOccupiedSeatNames(), dbConnection);
+                    hallViewer.setAlwaysOnTop(true);
+                }
+                opened = true;
+            }
+        });
+
+        pane.getChildren().addAll(snapHallView);
+        pane.getChildren().addAll(nomeSalaLabel);
+
+        GUIUtils.setScaleTransitionOnControl(snapHallView);
     }
 
     private List<String> getOccupiedSeatNames() {
         List<String> occupiedSeat = new ArrayList<>();
-        for(Prenotation p : prenotations) {
-            if( p.getGiornoFilm().equalsIgnoreCase(scheduleDate.trim())
+        for (Prenotation p : prenotations) {
+            if (p.getGiornoFilm().equalsIgnoreCase(scheduleDate.trim())
                     && p.getOraFilm().equalsIgnoreCase(clickedHour.trim())
                     && p.getNomeFilm().equalsIgnoreCase(movie.getTitolo())
                     && p.getCodiceFilm().equalsIgnoreCase(movie.getCodice())
@@ -275,7 +271,7 @@ public class MoviePrenotationController implements IPane {
 
     private List<String> getActualOccupiedSeatsList(List<String> listaPostiOccupati) {
         List<String> res = new ArrayList<>();
-        for(String s : listaPostiOccupati) {
+        for (String s : listaPostiOccupati) {
             String[] supp = s.split("-");
             res.addAll(Arrays.asList(supp));
         }
@@ -284,8 +280,8 @@ public class MoviePrenotationController implements IPane {
 
     private List<String> getHallsInvolvedInThatHour(String orario) {
         List<String> res = new ArrayList<>();
-        for(MovieSchedule ms : schedules) {
-            if(ms.getTime().equals(orario)) {
+        for (MovieSchedule ms : schedules) {
+            if (ms.getTime().equals(orario)) {
                 res.add(ms.getHallName());
             }
         }
@@ -293,13 +289,13 @@ public class MoviePrenotationController implements IPane {
     }
 
     private List<MovieSchedule> initializeHoursList(String date, Movie movie) {
-        List<MovieSchedule> movieSchedules = CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH);
+        List<MovieSchedule> movieSchedules = scheduleOperations.retrieveMovieSchedules();
         Collections.sort(movieSchedules);
         String ora = "";
-        List<MovieSchedule> res =  new ArrayList<>();
-        for(MovieSchedule ms : movieSchedules) {
-            if(ms.getDate().equals(date) && ms.getMovieCode().equals(movie.getCodice())) {
-                if(!ora.equals(ms.getTime())) {
+        List<MovieSchedule> res = new ArrayList<>();
+        for (MovieSchedule ms : movieSchedules) {
+            if (ms.getDate().equals(date) && ms.getMovieCode().equals(movie.getCodice())) {
+                if (!ora.equals(ms.getTime())) {
                     res.add(ms);
                     ora = ms.getTime();
                 }
@@ -316,7 +312,7 @@ public class MoviePrenotationController implements IPane {
     private void createSummaryPanel() {
         Platform.runLater(() -> {
             summaryPanel.getChildren().clear();
-            if(selectedMDS.size()>0) {
+            if (selectedMDS.size() > 0) {
                 Label summaryLabel = new Label("RIEPILOGO: ");
                 summaryLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
                 summaryLabel.setTextFill(Color.valueOf("db8f00"));
@@ -327,36 +323,36 @@ public class MoviePrenotationController implements IPane {
                 actualSummaryLabel.setTextFill(Color.valueOf("20b510"));
                 actualSummaryLabel.setLayoutX(summaryLabel.getLayoutX() + 100);
                 String text = movie.getTitolo() + "    "
-                            + scheduleDate + "    "
-                            + clickedHour + "    "
-                            + clickedHall + ": ";
+                        + scheduleDate + "    "
+                        + clickedHour + "    "
+                        + clickedHall + ": ";
 
                 StringBuilder selectedMDSName = new StringBuilder(selectedMDS.get(0).getText());
-                for(int i=1; i<selectedMDS.size(); i++) {
+                for (int i = 1; i < selectedMDS.size(); i++) {
                     selectedMDSName.append("-").append(selectedMDS.get(i).getText());
                 }
                 text = text + selectedMDSName + "    Prezzo totale: " + calculateTotalPrices() + "€";
-                actualSummaryLabel.setText(StringUtils.abbreviate(text,94));
-                if(text.length()>94) {
+                actualSummaryLabel.setText(StringUtils.abbreviate(text, 94));
+                if (text.length() > 94) {
                     actualSummaryLabel.setTooltip(new Tooltip(text));
                 }
                 System.out.println(text);
                 summaryPanel.getChildren().addAll(summaryLabel, actualSummaryLabel);
-                finalPrenotation = new Prenotation( user.getName()
-                                                  , movie.getTitolo()
-                                                  , movie.getCodice()
-                                                  , scheduleDate
-                                                  , clickedHour
-                                                  , clickedHall
-                                                  , selectedMDSName.toString()
-                                                  , calculateTotalPrices()+"€");
+                finalPrenotation = new Prenotation(user.getName()
+                        , movie.getTitolo()
+                        , movie.getCodice()
+                        , scheduleDate
+                        , clickedHour
+                        , clickedHall
+                        , selectedMDSName.toString()
+                        , calculateTotalPrices() + "€");
             }
         });
     }
 
     private String calculateTotalPrices() {
         double res = 0;
-        for(Seat mds : selectedMDS) {
+        for (Seat mds : selectedMDS) {
             switch (mds.getType()) {
                 case NORMALE:
                     res += prices.getBase();
@@ -371,12 +367,12 @@ public class MoviePrenotationController implements IPane {
                     break;
             }
 
-            if(movie.getTipo().equals(MovieTYPE.THREED)) {
+            if (movie.getTipo().equals(MovieTYPE.THREED)) {
                 res += prices.getThreed();
             }
         }
 
-        return res%1==0 ? String.valueOf((int)res) : ""+res+"0";
+        return res % 1 == 0 ? String.valueOf((int) res) : "" + res + "0";
     }
 
     void triggerClosingHallViewer() {
@@ -385,7 +381,7 @@ public class MoviePrenotationController implements IPane {
 
     @Override
     public void closeAllSubWindows() {
-        if(hallViewer!=null) {
+        if (hallViewer != null) {
             hallViewer.dispose();
             hallViewer.dispatchEvent(new java.awt.event.WindowEvent(hallViewer, java.awt.event.WindowEvent.WINDOW_CLOSING));
         }

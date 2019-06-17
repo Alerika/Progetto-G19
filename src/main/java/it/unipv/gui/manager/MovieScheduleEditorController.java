@@ -4,10 +4,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import it.unipv.conversion.CSVToMovieList;
-import it.unipv.conversion.CSVToMovieScheduleList;
-import it.unipv.conversion.FileToHallList;
-import it.unipv.conversion.MovieScheduleToCSV;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.HallOperations;
+import it.unipv.DB.MovieOperations;
+import it.unipv.DB.ScheduleOperations;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieSchedule;
@@ -28,8 +28,14 @@ public class MovieScheduleEditorController {
     private CustomTimeSpinner timeSpinner;
     private Movie movie;
     private MovieSchedulerController moviePanelController;
+    private MovieOperations mo;
+    private HallOperations ho;
+    private ScheduleOperations so;
 
-    void init(MovieSchedulerController movieSchedulerController, Movie movie) {
+    void init(MovieSchedulerController movieSchedulerController, Movie movie, DBConnection dbConnection) {
+        this.mo = new MovieOperations(dbConnection);
+        this.ho = new HallOperations(dbConnection);
+        this.so = new ScheduleOperations(dbConnection);
         this.moviePanelController = movieSchedulerController;
         this.movie = movie;
         GUIUtils.setScaleTransitionOnControl(salvaProgrammazioneButton);
@@ -39,7 +45,9 @@ public class MovieScheduleEditorController {
 
     private void initHallSelector() {
         hallComboBox.getItems().clear();
-        hallComboBox.setItems(FXCollections.observableList(FileToHallList.getHallList()));
+        List<String> hallNames = ho.retrieveHallNames();
+        Collections.sort(hallNames);
+        hallComboBox.setItems(FXCollections.observableList(hallNames));
     }
 
     private void initTimePicker() {
@@ -69,7 +77,7 @@ public class MovieScheduleEditorController {
             movieSchedule.setDate(date);
             movieSchedule.setTime(time);
             movieSchedule.setHallName(hall);
-            MovieScheduleToCSV.createCSVFromMovieSchedule(movieSchedule, DataReferences.MOVIESCHEDULEFILEPATH, true);
+            so.insertNewMovieSchedule(movieSchedule);
             moviePanelController.triggerNewScheduleEvent();
             GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Successo", "Operazione riuscita: ", "Salvataggio riuscito correttamente!");
         }
@@ -102,11 +110,13 @@ public class MovieScheduleEditorController {
     }
 
     private boolean checkIfSomethingIsAlreadyScheduledInThatTemporalGap(String hall, String incomingScheduleDate, int incomingMovieDuration) {
-        for(MovieSchedule ms : CSVToMovieScheduleList.getMovieScheduleListFromCSV(DataReferences.MOVIESCHEDULEFILEPATH)) {
+        List<MovieSchedule> schedules = so.retrieveMovieSchedules();
+        for(MovieSchedule ms : schedules) {
             if( (ms.getDate().trim().equalsIgnoreCase(incomingScheduleDate) && ms.getHallName().trim().equalsIgnoreCase(hall))
              || (ms.getHallName().trim().equalsIgnoreCase(hall)) ) {
                 int existingMovieDuration = 0;
-                for(Movie m : CSVToMovieList.getMovieListFromCSV(DataReferences.MOVIEFILEPATH)) {
+                List<Movie> movies = mo.retrieveMovieListWithoutPoster();
+                for(Movie m : movies) {
                     if(ms.getMovieCode().equalsIgnoreCase(m.getCodice())) {
                         existingMovieDuration = Integer.parseInt(m.getDurata());
                         break;

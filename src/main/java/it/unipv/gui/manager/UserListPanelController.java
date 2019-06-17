@@ -2,14 +2,12 @@ package it.unipv.gui.manager;
 
 import java.util.*;
 
-import it.unipv.conversion.CSVToPrenotationList;
-import it.unipv.conversion.CSVToUserList;
-import it.unipv.conversion.PrenotationsToCSV;
-import it.unipv.conversion.UserToCSV;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.PrenotationOperations;
+import it.unipv.DB.UserOperations;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.login.User;
 import it.unipv.gui.user.Prenotation;
-import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -28,17 +26,21 @@ public class UserListPanelController {
     @FXML ScrollPane userListPanel;
     @FXML TextField searchBarTextfield;
     @FXML Label searchButton;
-
-    public void init() { createUserListGrid(); }
-
     private GridPane grigliaUser = new GridPane();
     private static int rowCount = 0;
     private static int columnCount = 0;
     private List<User> users = new ArrayList<>();
+    private PrenotationOperations prenotationOperations;
+    private UserOperations userOperations;
 
-    private void initMoviesList() {
-        users.clear();
-        users = CSVToUserList.getUserListFromCSV(DataReferences.USERFILEPATH);
+    public void init(DBConnection dbConnection) {
+        this.prenotationOperations = new PrenotationOperations(dbConnection);
+        this.userOperations = new UserOperations(dbConnection);
+        createUserListGrid();
+    }
+
+    private void initUserList() {
+        users = userOperations.retrieveUserList();
         Collections.sort(users);
     }
 
@@ -46,7 +48,7 @@ public class UserListPanelController {
         grigliaUser.getChildren().clear();
         GUIUtils.setScaleTransitionOnControl(searchButton);
 
-        initMoviesList();
+        initUserList();
 
         for (User user : users) {
             if(!user.getName().equalsIgnoreCase("Admin")) {
@@ -94,8 +96,8 @@ public class UserListPanelController {
             String password = JOptionPane.showInputDialog("Inserisci la nuova password per l'utente " + user.getName());
             if(password!=null) {
                 if(!Objects.requireNonNull(password).trim().equalsIgnoreCase("") || !(password.trim().length() ==0)) {
-                    users.get(users.indexOf(user)).setPassword(password);
-                    UserToCSV.createCSVFromUserList(users, DataReferences.USERFILEPATH, false);
+                    user.setPassword(password);
+                    userOperations.updateUser(user);
                     refreshUI();
                     GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "La password dell'utente " + user.getName() + " è stata correttamente cambiata in: " + password);
                 } else {
@@ -110,8 +112,7 @@ public class UserListPanelController {
             int reply = JOptionPane.showConfirmDialog(null, "Sei sicuro di voler eliminare questo utente e le sue relative prenotazioni?");
             if(reply == JOptionPane.YES_OPTION) {
                 removeConcerningPrenotations(user);
-                users.remove(user);
-                UserToCSV.createCSVFromUserList(users, DataReferences.USERFILEPATH, false);
+                userOperations.deleteUser(user);
                 refreshUI();
             }
         });
@@ -120,15 +121,12 @@ public class UserListPanelController {
     }
 
     private void removeConcerningPrenotations(User user) {
-        List<Prenotation> prenotations = CSVToPrenotationList.getPrenotationListFromCSV(DataReferences.PRENOTATIONSFILEPATH);
-        List<Prenotation> temp = new ArrayList<>();
+        List<Prenotation> prenotations = prenotationOperations.retrievePrenotationList();
         for(Prenotation p : prenotations) {
             if(p.getNomeUtente().equalsIgnoreCase(user.getName())) {
-                temp.add(p);
+                prenotationOperations.deletePrenotation(p);
             }
         }
-        prenotations.removeAll(temp);
-        PrenotationsToCSV.createCSVFromPrenotationList(prenotations, DataReferences.PRENOTATIONSFILEPATH, false);
     }
 
     private void refreshUI() {

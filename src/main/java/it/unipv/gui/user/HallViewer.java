@@ -1,9 +1,9 @@
 package it.unipv.gui.user;
 
-import it.unipv.conversion.CSVToDraggableSeats;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.HallOperations;
 import it.unipv.gui.common.Seat;
 import it.unipv.gui.common.SeatTYPE;
-import it.unipv.utils.DataReferences;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -19,10 +19,12 @@ class HallViewer extends JFrame {
     private List<Seat> selectedMDS = new ArrayList<>();
     private MoviePrenotationController moviePrenotationController;
     private boolean isSomethingChanged = false;
+    private HallOperations ho;
 
-    HallViewer(MoviePrenotationController moviePrenotationController, String nomeSala, List<String> occupiedSeatNames) {
+    HallViewer(MoviePrenotationController moviePrenotationController, String nomeSala, List<String> occupiedSeatNames, DBConnection dbConnection) {
         this.moviePrenotationController = moviePrenotationController;
         this.nomeSala = nomeSala;
+        ho = new HallOperations(dbConnection);
         initDraggableSeatsList();
         initUndraggableSeatsPanel();
         setUnselectableSeat(occupiedSeatNames);
@@ -30,10 +32,11 @@ class HallViewer extends JFrame {
         initFrame();
     }
 
-    HallViewer(MoviePrenotationController moviePrenotationController, String nomeSala, List<Seat> selectedMDS, List<String> occupiedSeatNames) {
+    HallViewer(MoviePrenotationController moviePrenotationController, String nomeSala, List<Seat> selectedMDS, List<String> occupiedSeatNames, DBConnection dbConnection) {
         this.moviePrenotationController = moviePrenotationController;
         this.nomeSala = nomeSala;
         this.selectedMDS = selectedMDS;
+        ho = new HallOperations(dbConnection);
         initDraggableSeatsList();
         initUndraggableSeatsPanel();
         setSelectedMDS();
@@ -86,7 +89,7 @@ class HallViewer extends JFrame {
     }
 
     private void initDraggableSeatsList() {
-        undraggableSeats = CSVToDraggableSeats.getMyDraggableSeatListFromCSV(DataReferences.PIANTINEFOLDERPATH+nomeSala+".csv");
+        undraggableSeats = ho.retrieveSeats(nomeSala);
     }
 
     private void initUndraggableSeatsPanel() {

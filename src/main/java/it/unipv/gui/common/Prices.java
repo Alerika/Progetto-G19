@@ -6,8 +6,6 @@ public class Prices {
     private double threed;
     private double reduced;
 
-    public Prices() {}
-
     public Prices(double base, double vip, double threed, double reduced) {
         this.base = base;
         this.vip = vip;

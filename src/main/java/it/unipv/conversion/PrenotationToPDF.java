@@ -30,7 +30,7 @@ public class PrenotationToPDF {
         context.setVariable("prenotation", prenotation);
 
         ITextRenderer renderer = new ITextRenderer();
-        renderer.getFontResolver().addFont("css/BebasNeueRegular.ttf", "UTF-8", BaseFont.EMBEDDED);
+        renderer.getFontResolver().addFont("font/BebasNeueRegular.ttf", "UTF-8", BaseFont.EMBEDDED);
 
         String baseUrl = FileSystems
                 .getDefault()

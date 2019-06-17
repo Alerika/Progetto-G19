@@ -3,14 +3,14 @@ package it.unipv.gui.user.areariservata;
 import java.io.File;
 import java.util.*;
 
-import it.unipv.conversion.CSVToPrenotationList;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.PrenotationOperations;
 import it.unipv.conversion.PrenotationToPDF;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.login.User;
 import it.unipv.gui.user.Prenotation;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
-import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -23,6 +23,8 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.swing.*;
+
 public class CurrentPrenotationPanelController {
 
     private User user;
@@ -30,18 +32,21 @@ public class CurrentPrenotationPanelController {
     private static int rowCount = 0;
     private static int columnCount = 0;
     private GridPane grigliaPrenotazioni = new GridPane();
+    private PrenotationOperations prenotationOperations;
     @FXML private ScrollPane prenotationsPanel;
     @FXML private TextField searchBarTextfield;
     @FXML private Label searchButton;
 
-    public void init(User user) {
+    public void init(User user, DBConnection dbConnection) {
         this.user = user;
+        this.prenotationOperations = new PrenotationOperations(dbConnection);
         GUIUtils.setScaleTransitionOnControl(searchButton);
         createPrenotationListGrid();
     }
 
     private void initPrenotationList() {
-        List<Prenotation> x = CSVToPrenotationList.getPrenotationListFromCSV(DataReferences.PRENOTATIONSFILEPATH);
+        prenotations.clear();
+        List<Prenotation> x = prenotationOperations.retrievePrenotationList();
         for(Prenotation p : x) {
             if(p.getNomeUtente().equalsIgnoreCase(user.getName())) {
                 prenotations.add(p);
@@ -66,8 +71,8 @@ public class CurrentPrenotationPanelController {
     }
 
     private void createGridCellFromPrenotation(Prenotation p) {
-        Label movieNameLabel = new Label(StringUtils.abbreviate(p.getNomeFilm(), 25));
-        if(p.getNomeFilm().length()>25) {
+        Label movieNameLabel = new Label(StringUtils.abbreviate(p.getNomeFilm(), 23));
+        if(p.getNomeFilm().length()>23) {
             movieNameLabel.setTooltip(new Tooltip(p.getNomeFilm()));
         }
         movieNameLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 20));
@@ -80,11 +85,17 @@ public class CurrentPrenotationPanelController {
         grigliaPrenotazioni.setHgap(15);
         grigliaPrenotazioni.setVgap(15);
 
-        Label invoceIcon = new Label();
-        invoceIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-        invoceIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/PDFIcon.png")));
-        invoceIcon.setTooltip(new Tooltip("Scarica fattura del " + p.getGiornoFilm()));
-        GUIUtils.setFadeInOutOnControl(invoceIcon);
+        Label invoiceIcon = new Label();
+        invoiceIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        invoiceIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/PDFIcon.png")));
+        invoiceIcon.setTooltip(new Tooltip("Scarica fattura del " + p.getGiornoFilm()));
+        GUIUtils.setFadeInOutOnControl(invoiceIcon);
+
+        Label deleteIcon = new Label();
+        deleteIcon.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        deleteIcon.setGraphic(GUIUtils.getIconView(getClass().getResourceAsStream("/images/Bin.png")));
+        deleteIcon.setTooltip(new Tooltip("Annulla la prenotazione del " + p.getGiornoFilm()));
+        GUIUtils.setFadeInOutOnControl(deleteIcon);
 
         AnchorPane pane = new AnchorPane();
         if(columnCount==1) {
@@ -100,33 +111,48 @@ public class CurrentPrenotationPanelController {
         dayLabel.setLayoutY(movieNameLabel.getLayoutY());
         dayLabel.setLayoutX(movieNameLabel.getLayoutX()+250);
 
-        invoceIcon.setLayoutY(dayLabel.getLayoutY());
-        invoceIcon.setLayoutX(dayLabel.getLayoutX()+140);
-        invoceIcon.setOnMouseClicked(event -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documenti PDF", "*.pdf"));
-            fileChooser.setInitialFileName( "Prenotazione "
-                                          + p.getNomeFilm().replaceAll("[-+.^:,]","")
-                                          + " - " + (p.getGiornoFilm()+p.getOraFilm()).replaceAll("[-+/.^:,]","")
-                                          + " - " + p.getNomeUtente()
-                                          + ".pdf");
-            File f = fileChooser.showSaveDialog(null);
+        invoiceIcon.setLayoutY(dayLabel.getLayoutY());
+        invoiceIcon.setLayoutX(dayLabel.getLayoutX()+140);
+        invoiceIcon.setOnMouseClicked(event -> doSaveInvoicePDF(p));
 
-            try{
-                if(f!=null) {
-                    PrenotationToPDF.generatePDF(f.getPath(), "UTF-8", p);
-                    GUIUtils.showAlert(Alert.AlertType.CONFIRMATION, "Conferma", "Operazione riuscita:", "Prenotazione correttamente salvata!\nPer pagare presentarsi con la fattura alla reception!");
-                }
-            } catch (Exception ex) {
-                GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore durante la creazione del PDF: ", ex.getMessage());
-                throw new ApplicationException(ex);
+        deleteIcon.setLayoutY(dayLabel.getLayoutY());
+        deleteIcon.setLayoutX(invoiceIcon.getLayoutX()+40);
+        deleteIcon.setOnMouseClicked(event -> doDeletePrenotation(p));
+
+
+
+        pane.getChildren().addAll(movieNameLabel, dayLabel, invoiceIcon, deleteIcon);
+    }
+
+    private void doDeletePrenotation(Prenotation toDelete) {
+        int reply = JOptionPane.showConfirmDialog(null
+                                                 , "Sei sicuro di voler annullare la prenotazione de " + toDelete.getNomeFilm() + " del giorno " + toDelete.getGiornoFilm() + "?");
+        if(reply == JOptionPane.YES_OPTION) {
+            prenotationOperations.deletePrenotation(toDelete);
+            refreshUI();
+        }
+    }
+
+    private void doSaveInvoicePDF(Prenotation p) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documenti PDF", "*.pdf"));
+        fileChooser.setInitialFileName( "Prenotazione "
+                                      + p.getNomeFilm().replaceAll("[-+.^:,]","")
+                                      + " - " + (p.getGiornoFilm()+p.getOraFilm()).replaceAll("[-+/.^:,]","")
+                                      + " - " + p.getNomeUtente()
+                                      + ".pdf");
+        File f = fileChooser.showSaveDialog(null);
+
+        try{
+            if(f!=null) {
+                PrenotationToPDF.generatePDF(f.getPath(), "UTF-8", p);
+                GUIUtils.showAlert(Alert.AlertType.CONFIRMATION, "Conferma", "Operazione riuscita:", "Prenotazione correttamente salvata!\nPer pagare presentarsi con la fattura alla reception!");
             }
-
-        });
-
-
-        pane.getChildren().addAll(movieNameLabel, dayLabel, invoceIcon);
+        } catch (Exception ex) {
+            GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore durante la creazione del PDF: ", ex.getMessage());
+            throw new ApplicationException(ex);
+        }
     }
 
     private void initRowAndColumnCount() {

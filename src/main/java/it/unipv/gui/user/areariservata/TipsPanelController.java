@@ -1,22 +1,19 @@
 package it.unipv.gui.user.areariservata;
 
-import it.unipv.conversion.CSVToMovieList;
-import it.unipv.conversion.CSVToPrenotationList;
+import it.unipv.DB.DBConnection;
+import it.unipv.DB.MovieOperations;
+import it.unipv.DB.PrenotationOperations;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieStatusTYPE;
 import it.unipv.gui.login.User;
 import it.unipv.gui.user.Prenotation;
-import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
-import it.unipv.utils.CloseableUtils;
-import it.unipv.utils.DataReferences;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -27,8 +24,6 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.*;
 public class TipsPanelController {
 
@@ -36,20 +31,28 @@ public class TipsPanelController {
     private static int rowCount = 0;
     private static int columnCount = 0;
     private static int columnMax = 2;
-    private List<Movie> fullMovieList = CSVToMovieList.getMovieListFromCSV(DataReferences.MOVIEFILEPATH);
+    private List<Movie> fullMovieList = new ArrayList<>();
     private List<Movie> seenMovies = new ArrayList<>();
     private List<Movie> movies = new ArrayList<>();
     private GridPane grigliaFilm = new GridPane();
+    private MovieOperations movieOperations;
+    private PrenotationOperations prenotationOperations;
     @FXML private ScrollPane tipsPanel;
     @FXML private Label welcomeLabel;
 
-    public void init(User loggedUser, double initialWidth) {
+    public void init(User loggedUser, double initialWidth, DBConnection dbConnection) {
+        this.movieOperations = new MovieOperations(dbConnection);
+        this.prenotationOperations = new PrenotationOperations(dbConnection);
         this.loggedUser = loggedUser;
+        initFullMovieList();
         initMovieList();
         columnMax = getColumnMaxFromPageWidth(initialWidth);
         createMovieGrid();
         checkPageDimension();
+    }
 
+    private void initFullMovieList() {
+        fullMovieList = movieOperations.retrieveCompleteMovieList(130,0,true,true);
     }
 
     private void createMovieGrid() {
@@ -72,41 +75,35 @@ public class TipsPanelController {
     }
 
     private void createViewFromMoviesList(Movie movie) {
-        try{
-            Label nomeFilmLabel = new Label(StringUtils.abbreviate(movie.getTitolo(), 17));
-            if(movie.getTitolo().length()>17) {
-                nomeFilmLabel.setTooltip(new Tooltip(movie.getTitolo()));
-            }
-            nomeFilmLabel.setFont(Font.font("system", FontWeight.BOLD, FontPosture.REGULAR, 20));
-            nomeFilmLabel.setTextFill(Color.WHITE);
-
-            grigliaFilm.setHgap(80);
-            grigliaFilm.setVgap(80);
-
-            FileInputStream fis = new FileInputStream(movie.getLocandinaPath());
-            ImageView posterPreview = new ImageView(new Image(fis, 130, 0, true, true));
-            posterPreview.setFitWidth(130);
-            CloseableUtils.close(fis);
-
-            AnchorPane pane = new AnchorPane();
-            if(columnCount==columnMax) {
-                columnCount=0;
-                rowCount++;
-            }
-            grigliaFilm.add(pane, columnCount, rowCount);
-            columnCount++;
-
-            tipsPanel.setContent(grigliaFilm);
-            GridPane.setMargin(pane, new Insets(15,0,5,15));
-
-            posterPreview.setLayoutX(30);
-
-            nomeFilmLabel.setLayoutX(posterPreview.getLayoutX());
-            nomeFilmLabel.setLayoutY(posterPreview.getLayoutY()+200);
-            pane.getChildren().addAll(posterPreview, nomeFilmLabel);
-        } catch(FileNotFoundException ex) {
-            throw new ApplicationException(ex);
+        Label nomeFilmLabel = new Label(StringUtils.abbreviate(movie.getTitolo(), 17));
+        if(movie.getTitolo().length()>17) {
+            nomeFilmLabel.setTooltip(new Tooltip(movie.getTitolo()));
         }
+        nomeFilmLabel.setFont(Font.font("system", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        nomeFilmLabel.setTextFill(Color.WHITE);
+
+        grigliaFilm.setHgap(80);
+        grigliaFilm.setVgap(80);
+
+        ImageView posterPreview = new ImageView(movie.getLocandina());
+        posterPreview.setFitWidth(130);
+
+        AnchorPane pane = new AnchorPane();
+        if(columnCount==columnMax) {
+            columnCount=0;
+            rowCount++;
+        }
+        grigliaFilm.add(pane, columnCount, rowCount);
+        columnCount++;
+
+        tipsPanel.setContent(grigliaFilm);
+        GridPane.setMargin(pane, new Insets(15,0,5,15));
+
+        posterPreview.setLayoutX(30);
+
+        nomeFilmLabel.setLayoutX(posterPreview.getLayoutX());
+        nomeFilmLabel.setLayoutY(posterPreview.getLayoutY()+200);
+        pane.getChildren().addAll(posterPreview, nomeFilmLabel);
     }
 
 
@@ -175,7 +172,7 @@ public class TipsPanelController {
     }
 
     private List<Prenotation> initPrenotationList() {
-        List<Prenotation> x = CSVToPrenotationList.getPrenotationListFromCSV(DataReferences.PRENOTATIONSFILEPATH);
+        List<Prenotation> x = prenotationOperations.retrievePrenotationList();
         List<Prenotation> prenotations = new ArrayList<>();
         for(Prenotation p : x) {
             if(p.getNomeUtente().equalsIgnoreCase(loggedUser.getName())) {

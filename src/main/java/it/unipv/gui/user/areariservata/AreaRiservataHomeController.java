@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.unipv.DB.DBConnection;
 import it.unipv.gui.common.IPane;
 import it.unipv.gui.login.User;
 import it.unipv.utils.ApplicationException;
@@ -25,8 +26,10 @@ public class AreaRiservataHomeController {
     private User loggedUser;
     private boolean summonedByHome;
     private List<IPane> iPanes = new ArrayList<>();
+    private DBConnection dbConnection;
 
-    public void init(User loggedUser, boolean summonedByHome) {
+    public void init(User loggedUser, boolean summonedByHome, DBConnection dbConnection) {
+        this.dbConnection = dbConnection;
         this.loggedUser = loggedUser;
         this.summonedByHome = summonedByHome;
         addLabelsToList();
@@ -87,7 +90,7 @@ public class AreaRiservataHomeController {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/CurrentPrenotationPanel.fxml"));
                         AnchorPane prenotationPanel = loader.load();
                         CurrentPrenotationPanelController cppc = loader.getController();
-                        cppc.init(loggedUser);
+                        cppc.init(loggedUser, dbConnection);
                         mainPanel.setCenter(prenotationPanel);
                         openedPane = "PRENOTAZIONI";
                     }
@@ -105,7 +108,7 @@ public class AreaRiservataHomeController {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/HistoryPanel.fxml"));
                         AnchorPane historyPanel = loader.load();
                         HistoryPanelController hpc = loader.getController();
-                        hpc.init(loggedUser, mainPanel.getWidth());
+                        hpc.init(loggedUser, mainPanel.getWidth(), dbConnection);
                         mainPanel.setCenter(historyPanel);
                         openedPane = "FILM VISTI";
                         if(!iPanes.contains(hpc)) {
@@ -126,7 +129,7 @@ public class AreaRiservataHomeController {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/TipsPanel.fxml"));
                         AnchorPane tipsPanel = loader.load();
                         TipsPanelController tpc = loader.getController();
-                        tpc.init(loggedUser, mainPanel.getWidth());
+                        tpc.init(loggedUser, mainPanel.getWidth(), dbConnection);
                         mainPanel.setCenter(tipsPanel);
                         openedPane = "SUGGERIMENTI";
                     }

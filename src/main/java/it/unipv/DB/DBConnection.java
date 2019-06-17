@@ -9,6 +9,9 @@ public class DBConnection {
     private Connection connection = null;
     private Statement statement = null;
     private ResultSet resultSet = null;
+
+    public DBConnection() { connect(); }
+
     private void connect(){
         try {
             connection = DriverManager.getConnection("jdbc:mysql://remotemysql.com?" + "user=" + DataReferences.DBNAME + "&password=" + DataReferences.DBPASS);
@@ -29,7 +32,6 @@ public class DBConnection {
     }
 
     public ResultSet getResultFromQuery(String query) {
-        connect();
         try {
             return statement.executeQuery(query);
         } catch (SQLException e) {
@@ -38,7 +40,6 @@ public class DBConnection {
     }
 
     public PreparedStatement getPreparedStatementFromQuery(String query) {
-        connect();
         try{
             return connection.prepareStatement(query);
         } catch (SQLException e) {
