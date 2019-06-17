@@ -98,7 +98,6 @@ public class MovieEditorController {
     }
 
     private void setComponents() {
-        //imgTextField.setText(movie.getLocandinaPath());
         titleTextField.setText(movie.getTitolo());
         genreTextField.setText(movie.getGenere());
         directionTextField.setText(movie.getRegia());

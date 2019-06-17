@@ -1,13 +1,9 @@
-import it.unipv.DB.PricesOperations;
-import it.unipv.gui.common.Prices;
 import it.unipv.DB.DBConnection;
-import it.unipv.utils.ApplicationException;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -26,49 +22,7 @@ public class TestDB extends TestCase {
         }
     }
 
-    @Test
-    public void provaInserimento() {
-        Prices p = new Prices(7,5,3,1);
-        DBConnection dbConnection = new DBConnection();
-        try {
-            String query = "INSERT INTO z6xOH9WKhI.PRICES(BASE, VIP, THREED, REDUCED) values (?,?,?,?)";
-            PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query);
-            ps.setDouble(1, p.getBase());
-            ps.setDouble(2, p.getVip());
-            ps.setDouble(3, p.getThreed());
-            ps.setDouble(4, p.getReduced());
-            ps.execute();
-        } catch (SQLException e) {
-            throw new ApplicationException(e);
-        } finally {
-            dbConnection.close();
-        }
-    }
-
-    @Test
-    public void provaTruncate() {
-        DBConnection dbConnection = new DBConnection();
-        try {
-            String query = "TRUNCATE z6xOH9WKhI.PRICES";
-            dbConnection.getPreparedStatementFromQuery(query).execute();
-        } catch (SQLException e) {
-            throw new ApplicationException(e);
-        } finally {
-            dbConnection.close();
-        }
-    }
-
-    @Test
-    public void testPricesOperations() {
-        DBConnection dbConnection = new DBConnection();
-        PricesOperations po = new PricesOperations(dbConnection);
-        Prices p = po.retrievePrices();
-        System.out.println(p.toString());
-        dbConnection.close();
-    }
-
-
-    private void writeResultSet(ResultSet resultSet) throws SQLException {
+       private void writeResultSet(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             System.out.println("Nome Sala: " + resultSet.getString("NOME_SALA"));
             System.out.println("Nome Posto: " + resultSet.getString("NOME_POSTO"));

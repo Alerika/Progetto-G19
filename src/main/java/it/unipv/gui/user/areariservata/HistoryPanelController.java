@@ -202,7 +202,7 @@ public class HistoryPanelController implements IPane {
     @FXML
     public void searchButtonListener() {
         String searchedString = searchBarTextfield.getText();
-        if(searchedString!=null || searchedString.trim().equalsIgnoreCase("")) {
+        if(searchedString!=null) {
             grigliaFilm.getChildren().clear();
             for(Movie m : movies) {
                 if( m.getTitolo().trim().toLowerCase().contains(searchedString.toLowerCase())){

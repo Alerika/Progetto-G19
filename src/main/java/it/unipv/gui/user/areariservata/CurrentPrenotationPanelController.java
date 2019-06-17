@@ -48,7 +48,8 @@ public class CurrentPrenotationPanelController {
         prenotations.clear();
         List<Prenotation> x = prenotationOperations.retrievePrenotationList();
         for(Prenotation p : x) {
-            if(p.getNomeUtente().equalsIgnoreCase(user.getName())) {
+            if( p.getNomeUtente().equalsIgnoreCase(user.getName())
+             && !ApplicationUtils.checkIfDateIsPassed(p.getGiornoFilm())) {
                 prenotations.add(p);
             }
         }
@@ -62,9 +63,7 @@ public class CurrentPrenotationPanelController {
         initPrenotationList();
 
         for (Prenotation p : prenotations) {
-            if(!ApplicationUtils.checkIfDateIsPassed(p.getGiornoFilm())) {
-                createGridCellFromPrenotation(p);
-            }
+            createGridCellFromPrenotation(p);
         }
 
         initRowAndColumnCount();
@@ -160,19 +159,15 @@ public class CurrentPrenotationPanelController {
         columnCount=0;
     }
 
-    private void refreshUI() {
-        grigliaPrenotazioni.getChildren().clear();
-        createPrenotationListGrid();
-    }
+    private void refreshUI() { createPrenotationListGrid(); }
 
     @FXML
     public void searchButtonListener() {
         String searchedString = searchBarTextfield.getText();
-        if(searchedString!=null || searchedString.trim().equalsIgnoreCase("")) {
+        if(searchedString!=null) {
             grigliaPrenotazioni.getChildren().clear();
             for(Prenotation p : prenotations) {
-                if( p.getNomeFilm().trim().toLowerCase().contains(searchedString.toLowerCase())
-                 || p.getGiornoFilm().trim().toLowerCase().contains(searchedString.toLowerCase())){
+                if(p.getNomeFilm().trim().toLowerCase().contains(searchedString.toLowerCase())){
                     createGridCellFromPrenotation(p);
                 }
             }

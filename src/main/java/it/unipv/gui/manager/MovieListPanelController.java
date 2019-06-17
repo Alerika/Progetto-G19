@@ -189,7 +189,7 @@ public class MovieListPanelController implements IPane {
 
     @FXML public void searchButtonListener() {
         String searchedMovieTitle = searchBarTextfield.getText();
-        if(searchedMovieTitle!=null || searchedMovieTitle.trim().equalsIgnoreCase("")) {
+        if(searchedMovieTitle!=null) {
             grigliaFilm.getChildren().clear();
             for(Movie m : movies) {
                 if(m.getTitolo().toLowerCase().trim().contains(searchedMovieTitle.toLowerCase())){

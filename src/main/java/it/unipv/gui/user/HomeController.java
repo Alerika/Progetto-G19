@@ -347,7 +347,7 @@ public class HomeController {
 
         movieCast.setText(StringUtils.abbreviate(movie.getCast(),170));
         if(movie.getCast().length()>170) {
-            movieCast.setTooltip(new Tooltip(getFormattedTooltipText(movie, ',')));
+            movieCast.setTooltip(new Tooltip(getFormattedTooltipText(movie)));
         }
 
         movieCast.setEditable(false);
@@ -485,7 +485,7 @@ public class HomeController {
         singleFilmPane.setVisible(true);
     }
 
-    private String getFormattedTooltipText(Movie movie, char escape) {
+    private String getFormattedTooltipText(Movie movie) {
         StringBuilder res = new StringBuilder();
         char[] temp = movie.getCast().toCharArray();
         int cont = 0;
@@ -496,7 +496,7 @@ public class HomeController {
             } else {
                 res.append(temp[i]);
             }
-            if(temp[i] == escape) {
+            if(temp[i] == ',') {
                 cont++;
             }
         }

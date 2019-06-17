@@ -10,7 +10,6 @@ import javafx.scene.image.Image;
  */
 public class Movie implements Comparable<Movie> {
     private String codice;
-    private String locandinaPath;
     private Image locandina;
     private String titolo;
     private String genere;

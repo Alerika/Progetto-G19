@@ -39,7 +39,7 @@ public class DBConnection {
         }
     }
 
-    public PreparedStatement getPreparedStatementFromQuery(String query) {
+    PreparedStatement getPreparedStatementFromQuery(String query) {
         try{
             return connection.prepareStatement(query);
         } catch (SQLException e) {

@@ -463,11 +463,11 @@ class HallEditor extends JFrame {
         private void doSave() {
             if(wasItAlreadyCreated) {
                 ho.updateHallSeats(nomeSala, draggableSeatsList);
-                ho.updateHallPreview(nomeSala, saveSnapshot(this, "jpg"));
+                ho.updateHallPreview(nomeSala, saveSnapshot(this));
                 JOptionPane.showMessageDialog(hallEditor, "Piantina sovrascritta con successo!");
             } else {
                 ho.insertNewHall(nomeSala, draggableSeatsList);
-                ho.insertNewHallpreview(nomeSala, saveSnapshot(this, "jpg"));
+                ho.insertNewHallpreview(nomeSala, saveSnapshot(this));
                 JOptionPane.showMessageDialog(hallEditor, "Piantina creata con successo!");
                 wasItAlreadyCreated = true;
             }
@@ -475,7 +475,7 @@ class HallEditor extends JFrame {
             isSomethingChanged = false;
         }
 
-        private ByteArrayInputStream saveSnapshot(Component c, String format) {
+        private ByteArrayInputStream saveSnapshot(Component c) {
             try {
                 BufferedImage img = new BufferedImage(c.getWidth(), c.getHeight(), BufferedImage.TYPE_INT_RGB);
                 Graphics2D graphs = img.createGraphics();
@@ -490,7 +490,7 @@ class HallEditor extends JFrame {
                     }
                 };
 
-                ImageIO.write(img, format, output);
+                ImageIO.write(img, "jpg", output);
                 return new ByteArrayInputStream(output.toByteArray(), 0, output.size());
             } catch (IOException e) {
                 throw new ApplicationException("Errore durante il salvataggio dello snapshot", e);

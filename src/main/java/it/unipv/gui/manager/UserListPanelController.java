@@ -136,7 +136,7 @@ public class UserListPanelController {
 
     @FXML public void searchButtonListener() {
         String searchedUserName = searchBarTextfield.getText();
-        if(searchedUserName!=null || searchedUserName.equalsIgnoreCase("")) {
+        if(searchedUserName!=null) {
             grigliaUser.getChildren().clear();
             for(User u : users) {
                 if(u.getName().toLowerCase().trim().contains(searchedUserName.toLowerCase())){
