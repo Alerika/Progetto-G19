@@ -491,6 +491,7 @@ public class HomeController implements Initializable {
                                            , synopsis, movieSynopsis);
 
         GUIUtils.setScaleTransitionOnControl(goBackToHomeButton);
+        goBackToHomeButton.getStylesheets().add("css/BebasNeue.css");
         goBackToHomeButton.setOnMouseClicked(event -> {
             singleFilmPane.setVisible(false);
             homePane.setVisible(true);
