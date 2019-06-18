@@ -1,6 +1,8 @@
 import com.itextpdf.text.pdf.BaseFont;
-import it.unipv.gui.user.Prenotation;
+import it.unipv.gui.prenotation.Prenotation;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -10,6 +12,7 @@ import java.io.*;
 import java.nio.file.FileSystems;
 import static org.thymeleaf.templatemode.TemplateMode.HTML;
 
+@RunWith(JUnit4.class)
 public class PDFTester {
 
     private static final String OUTPUT_FILE = "test.pdf";
