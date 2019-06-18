@@ -1,4 +1,4 @@
-package it.unipv.gui.user.areariservata;
+package it.unipv.gui.user;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,10 +9,10 @@ import it.unipv.DB.DBConnection;
 import it.unipv.DB.MovieOperations;
 import it.unipv.DB.PrenotationOperations;
 import it.unipv.gui.common.GUIUtils;
-import it.unipv.gui.common.IPane;
+import it.unipv.gui.common.ICloseablePane;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.login.User;
-import it.unipv.gui.user.Prenotation;
+import it.unipv.gui.prenotation.Prenotation;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
 import javafx.application.Platform;
@@ -33,7 +33,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 
-public class HistoryPanelController implements IPane {
+public class HistoryPanelController implements ICloseablePane {
 
     private User loggedUser;
     private static int rowCount = 0;
@@ -182,7 +182,7 @@ public class HistoryPanelController implements IPane {
                 }
             }
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/OldestPrenotation.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/OldestPrenotation.fxml"));
                 Parent p = loader.load();
                 OldestPrenotationController opc = loader.getController();
                 opc.init(toInject);

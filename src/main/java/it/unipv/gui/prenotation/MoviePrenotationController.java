@@ -1,10 +1,11 @@
-package it.unipv.gui.user;
+package it.unipv.gui.prenotation;
 
 import java.io.IOException;
 import java.util.*;
 
 import it.unipv.DB.*;
 import it.unipv.gui.common.*;
+import it.unipv.gui.home.HomeController;
 import it.unipv.gui.login.User;
 import it.unipv.utils.ApplicationException;
 import javafx.application.Platform;
@@ -29,7 +30,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.commons.lang3.StringUtils;
 
-public class MoviePrenotationController implements IPane {
+public class MoviePrenotationController implements ICloseablePane {
 
     private List<MovieSchedule> schedules;
     private List<Prenotation> prenotations;
@@ -57,7 +58,7 @@ public class MoviePrenotationController implements IPane {
     @FXML private AnchorPane orariPanel, salaHeader, summaryPanel;
     @FXML private ScrollPane salaPanel;
 
-    public void init(HomeController homeController, String date, Movie m, User user, DBConnection dbConnection) {
+    public void init(it.unipv.gui.home.HomeController homeController, String date, Movie m, User user, DBConnection dbConnection) {
         this.homeController = homeController;
         this.movie = m;
         this.scheduleDate = date;
@@ -122,7 +123,7 @@ public class MoviePrenotationController implements IPane {
 
     private void openAvvisoPrenotazioneController() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/AvvisoPrenotazione.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/prenotation/AvvisoPrenotazione.fxml"));
             Parent p = loader.load();
             AvvisoPrenotazioneController apc = loader.getController();
             apc.init(homeController);
@@ -377,13 +378,13 @@ public class MoviePrenotationController implements IPane {
 
     void triggerClosingHallViewer() {
         opened = false;
+        hallViewer.dispose();
     }
 
     @Override
     public void closeAllSubWindows() {
         if (hallViewer != null) {
             hallViewer.dispose();
-            hallViewer.dispatchEvent(new java.awt.event.WindowEvent(hallViewer, java.awt.event.WindowEvent.WINDOW_CLOSING));
         }
     }
 }

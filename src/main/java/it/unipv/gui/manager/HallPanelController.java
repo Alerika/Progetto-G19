@@ -8,7 +8,7 @@ import java.util.List;
 import it.unipv.DB.DBConnection;
 import it.unipv.DB.HallOperations;
 import it.unipv.gui.common.GUIUtils;
-import it.unipv.gui.common.IPane;
+import it.unipv.gui.common.ICloseablePane;
 import it.unipv.utils.ApplicationException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -25,7 +25,7 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 import javax.swing.*;
 
-public class HallPanelController implements IPane {
+public class HallPanelController implements ICloseablePane {
 
     @FXML ScrollPane hallPanel;
     @FXML Label nuovaSalaButton;

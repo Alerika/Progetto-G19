@@ -1,7 +1,6 @@
 package it.unipv.main;
 
 import it.unipv.DB.DBConnection;
-import it.unipv.gui.user.HomeController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -15,14 +14,19 @@ public class Home extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        openHome2(stage);
+    }
+
+    private void openHome2(Stage stage) throws java.io.IOException {
         this.dbConnection = new DBConnection();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/Home.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/home/home.fxml"));
         stage.setScene(new Scene(loader.load()));
-        HomeController hc = loader.getController();
+        it.unipv.gui.home.HomeController hc = loader.getController();
         hc.init(dbConnection);
         stage.setTitle("Golden Movie Studio");
-        stage.setResizable(false);
-        stage.setMaximized(true);
+        stage.setResizable(true);
+        stage.setMinHeight(768);
+        stage.setMinWidth(1360);
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
         stage.show();
         stage.setOnHidden(e -> {

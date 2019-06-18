@@ -1,4 +1,4 @@
-package it.unipv.gui.user.areariservata;
+package it.unipv.gui.user;
 
 import it.unipv.gui.login.User;
 import javafx.fxml.FXML;

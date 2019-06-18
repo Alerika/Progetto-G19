@@ -30,7 +30,7 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 
-public class ProgrammationPanelController implements IPane {
+public class ProgrammationPanelController implements ICloseablePane {
 
     @FXML Label nuovoFilmButton;
     @FXML ScrollPane moviePanel;

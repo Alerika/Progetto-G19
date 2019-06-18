@@ -8,7 +8,7 @@ import java.util.List;
 import it.unipv.DB.DBConnection;
 import it.unipv.DB.ScheduleOperations;
 import it.unipv.gui.common.GUIUtils;
-import it.unipv.gui.common.IPane;
+import it.unipv.gui.common.ICloseablePane;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieSchedule;
 import it.unipv.utils.ApplicationException;
@@ -32,7 +32,7 @@ import javafx.stage.Stage;
 
 import javax.swing.*;
 
-public class MovieSchedulerController implements IPane {
+public class MovieSchedulerController implements ICloseablePane {
 
     @FXML Label nuovaProgrammazioneButton;
     @FXML ScrollPane schedulerPanel;

@@ -1,4 +1,4 @@
-package it.unipv.gui.user.areariservata;
+package it.unipv.gui.user;
 
 import it.unipv.DB.DBConnection;
 import it.unipv.DB.MovieOperations;
@@ -6,7 +6,7 @@ import it.unipv.DB.PrenotationOperations;
 import it.unipv.gui.common.Movie;
 import it.unipv.gui.common.MovieStatusTYPE;
 import it.unipv.gui.login.User;
-import it.unipv.gui.user.Prenotation;
+import it.unipv.gui.prenotation.Prenotation;
 import it.unipv.utils.ApplicationUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;

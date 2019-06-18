@@ -1,6 +1,6 @@
 package it.unipv.DB;
 
-import it.unipv.gui.user.Prenotation;
+import it.unipv.gui.prenotation.Prenotation;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 

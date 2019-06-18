@@ -12,24 +12,24 @@
          <center>
             <AnchorPane prefHeight="214.0" prefWidth="353.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="tariffaBaseLabel" layoutX="31.0" layoutY="36.0" prefHeight="21.0" prefWidth="95.0" stylesheets="@../../css/BebasNeue.css" text="Tariffa base" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="381.0">
+                  <Label fx:id="tariffaBaseLabel" layoutX="31.0" layoutY="36.0" prefHeight="26.0" prefWidth="87.0" stylesheets="@../../css/BebasNeue.css" text="Tariffa base" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="373.0">
                      <font>
-                        <Font size="15.0" />
+                        <Font name="Bebas Neue Regular" size="20.0" />
                      </font>
                   </Label>
                   <Label fx:id="sovrapprezzoVIPLabel" layoutX="31.0" layoutY="75.0" prefHeight="21.0" prefWidth="124.0" stylesheets="@../../css/BebasNeue.css" text="Sovrapprezzo VIP" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="336.0">
                      <font>
-                        <Font size="15.0" />
+                        <Font name="Bebas Neue Regular" size="20.0" />
                      </font>
                   </Label>
                   <Label fx:id="sovrapprezzoTreDLabel" layoutX="31.0" layoutY="115.0" prefHeight="21.0" prefWidth="127.0" stylesheets="@../../css/BebasNeue.css" text="Sovrapprezzo 3D" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="333.0">
                      <font>
-                        <Font size="15.0" />
+                        <Font name="Bebas Neue Regular" size="20.0" />
                      </font>
                   </Label>
                   <Label fx:id="riduzioneLabel" layoutX="31.0" layoutY="151.0" prefHeight="21.0" prefWidth="79.0" stylesheets="@../../css/BebasNeue.css" text="Riduzione" textFill="WHITE" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="381.0">
                      <font>
-                        <Font size="15.0" />
+                        <Font name="Bebas Neue Regular" size="20.0" />
                      </font>
                   </Label>
                   <TextField fx:id="baseTextField" layoutX="168.0" layoutY="34.0" prefHeight="25.0" prefWidth="205.0" AnchorPane.rightAnchor="36.0" />

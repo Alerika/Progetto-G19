@@ -10,7 +10,7 @@ import it.unipv.DB.DBConnection;
 import it.unipv.DB.UserOperations;
 import it.unipv.conversion.UserInfo;
 import it.unipv.gui.common.GUIUtils;
-import it.unipv.gui.user.HomeController;
+import it.unipv.gui.home.HomeController;
 import it.unipv.utils.ApplicationException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

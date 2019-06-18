@@ -1,4 +1,4 @@
-package it.unipv.gui.user;
+package it.unipv.gui.prenotation;
 
 import it.unipv.utils.ApplicationException;
 import java.text.ParseException;

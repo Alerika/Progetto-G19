@@ -1,11 +1,11 @@
-package it.unipv.gui.user.areariservata;
+package it.unipv.gui.user;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import it.unipv.DB.DBConnection;
-import it.unipv.gui.common.IPane;
+import it.unipv.gui.common.ICloseablePane;
 import it.unipv.gui.login.User;
 import it.unipv.utils.ApplicationException;
 import javafx.fxml.FXML;
@@ -25,7 +25,7 @@ public class AreaRiservataHomeController {
     private List<Label> labels = new ArrayList<>();
     private User loggedUser;
     private boolean summonedByHome;
-    private List<IPane> iPanes = new ArrayList<>();
+    private List<ICloseablePane> iCloseablePanes = new ArrayList<>();
     private DBConnection dbConnection;
 
     public void init(User loggedUser, boolean summonedByHome, DBConnection dbConnection) {
@@ -87,7 +87,7 @@ public class AreaRiservataHomeController {
                         prenotationsLabel.setStyle("-fx-background-color:#db8f00");
                         setTransparentOtherLabels("PRENOTAZIONI");
                         mainPanel.getChildren().clear();
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/CurrentPrenotationPanel.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/CurrentPrenotationPanel.fxml"));
                         AnchorPane prenotationPanel = loader.load();
                         CurrentPrenotationPanelController cppc = loader.getController();
                         cppc.init(loggedUser, dbConnection);
@@ -105,14 +105,14 @@ public class AreaRiservataHomeController {
                         seenMoviesLabel.setStyle("-fx-background-color:#db8f00");
                         setTransparentOtherLabels("FILM VISTI");
                         mainPanel.getChildren().clear();
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/HistoryPanel.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/HistoryPanel.fxml"));
                         AnchorPane historyPanel = loader.load();
                         HistoryPanelController hpc = loader.getController();
                         hpc.init(loggedUser, mainPanel.getWidth(), dbConnection);
                         mainPanel.setCenter(historyPanel);
                         openedPane = "FILM VISTI";
-                        if(!iPanes.contains(hpc)) {
-                            iPanes.add(hpc);
+                        if(!iCloseablePanes.contains(hpc)) {
+                            iCloseablePanes.add(hpc);
                         }
                     }
                 } catch (IOException e) {
@@ -126,7 +126,7 @@ public class AreaRiservataHomeController {
                         tipsLabel.setStyle("-fx-background-color:#db8f00");
                         setTransparentOtherLabels("SUGGERIMENTI");
                         mainPanel.getChildren().clear();
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/TipsPanel.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/TipsPanel.fxml"));
                         AnchorPane tipsPanel = loader.load();
                         TipsPanelController tpc = loader.getController();
                         tpc.init(loggedUser, mainPanel.getWidth(), dbConnection);
@@ -158,7 +158,7 @@ public class AreaRiservataHomeController {
                 homeLabel.setStyle("-fx-background-color:#db8f00");
                 setTransparentOtherLabels("HOME");
                 mainPanel.getChildren().clear();
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/areariservata/HomePanel.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/HomePanel.fxml"));
                 AnchorPane homePanel = loader.load();
                 HomePanelController hpc = loader.getController();
                 hpc.init(loggedUser);
@@ -179,7 +179,7 @@ public class AreaRiservataHomeController {
     }
 
     public void closeAllSubWindows() {
-        for(IPane i : iPanes) {
+        for(ICloseablePane i : iCloseablePanes) {
             i.closeAllSubWindows();
         }
     }

@@ -1,8 +1,8 @@
 package it.unipv.gui.manager;
 
 import it.unipv.DB.DBConnection;
-import it.unipv.gui.common.IPane;
-import it.unipv.gui.user.HomeController;
+import it.unipv.gui.common.ICloseablePane;
+import it.unipv.gui.home.HomeController;
 import it.unipv.utils.ApplicationException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class ManagerHomeController {
     @FXML Label hallModifierLabel, schedulerLabel, movieListLabel, userListLabel, pricesModifierLabel, exitLabel;
     private List<Label> labels = new ArrayList<>();
     private HomeController homeController;
-    private List<IPane> iPanes = new ArrayList<>();
+    private List<ICloseablePane> iCloseablePanes = new ArrayList<>();
     private DBConnection dbConnection;
 
     public void init(HomeController homeController, DBConnection dbConnection) {
@@ -86,7 +86,7 @@ public class ManagerHomeController {
                         hpc.init(this, mainPanel.getWidth(), dbConnection);
                         mainPanel.setCenter(hallPanel);
                         openedPane = "MODIFICA SALE";
-                        if(!iPanes.contains(hpc)) { iPanes.add(hpc); }
+                        if(!iCloseablePanes.contains(hpc)) { iCloseablePanes.add(hpc); }
                     }
                 } catch (IOException ex) {
                     throw new ApplicationException(ex);
@@ -106,7 +106,7 @@ public class ManagerHomeController {
                         ppc.init(this, mainPanel.getWidth(), dbConnection);
                         mainPanel.setCenter(programmationPanel);
                         openedPane = "PROGRAMMAZIONE";
-                        if(!iPanes.contains(ppc)) { iPanes.add(ppc); }
+                        if(!iCloseablePanes.contains(ppc)) { iCloseablePanes.add(ppc); }
                     }
                 } catch (IOException e) {
                     throw new ApplicationException(e);
@@ -125,7 +125,7 @@ public class ManagerHomeController {
                         mlpc.init(this, dbConnection);
                         mainPanel.setCenter(movieListPanel);
                         openedPane = "LISTA FILM";
-                        if(!iPanes.contains(mlpc)) { iPanes.add(mlpc); }
+                        if(!iCloseablePanes.contains(mlpc)) { iCloseablePanes.add(mlpc); }
                     }
                 } catch (IOException e) {
                     throw new ApplicationException(e);
@@ -162,7 +162,7 @@ public class ManagerHomeController {
                         ppc.init(dbConnection);
                         mainPanel.setCenter(modifyPricesPanel);
                         openedPane = "MODIFICA PREZZI";
-                        if(!iPanes.contains(ppc)) { iPanes.add(ppc); }
+                        if(!iCloseablePanes.contains(ppc)) { iCloseablePanes.add(ppc); }
                     }
                 } catch (IOException e) {
                     throw new ApplicationException(e);
@@ -182,7 +182,7 @@ public class ManagerHomeController {
     }
 
     public void closeAllSubWindows() {
-        for(IPane i : iPanes) {
+        for(ICloseablePane i : iCloseablePanes) {
             i.closeAllSubWindows();
         }
     }

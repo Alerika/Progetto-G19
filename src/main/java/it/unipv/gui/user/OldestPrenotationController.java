@@ -1,4 +1,4 @@
-package it.unipv.gui.user.areariservata;
+package it.unipv.gui.user;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.List;
 
 import it.unipv.conversion.PrenotationToPDF;
 import it.unipv.gui.common.GUIUtils;
-import it.unipv.gui.user.Prenotation;
+import it.unipv.gui.prenotation.Prenotation;
 import it.unipv.utils.ApplicationException;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;

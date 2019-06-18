@@ -27,30 +27,30 @@
                <children>
                   <Label fx:id="hallModifierLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="MODIFICA SALE">
                      <font>
-                        <Font size="18.0" />
+                        <Font name="Bebas Neue Regular" size="24.0" />
                      </font>
                   </Label>
                   <Label fx:id="schedulerLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="PROGRAMMAZIONE">
                      <font>
-                        <Font size="18.0" />
+                        <Font name="Bebas Neue Regular" size="24.0" />
                      </font>
                   </Label>
                   <Label fx:id="movieListLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="LISTA FILM">
                      <font>
-                        <Font size="18.0" />
+                        <Font name="Bebas Neue Regular" size="24.0" />
                      </font>
                   </Label>
                   <Label fx:id="userListLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="LISTA UTENTI">
                      <font>
-                        <Font size="18.0" />
+                        <Font name="Bebas Neue Regular" size="24.0" />
                      </font></Label>
                   <Label fx:id="pricesModifierLabel" alignment="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="MODIFICA PREZZI">
                      <font>
-                        <Font size="18.0" />
+                        <Font name="Bebas Neue Regular" size="24.0" />
                      </font></Label>
                   <Label fx:id="exitLabel" alignment="CENTER" contentDisplay="CENTER" onMouseClicked="#filterByOptions" prefHeight="80.0" prefWidth="203.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="ESCI">
                      <font>
-                        <Font size="18.0" />
+                        <Font name="Bebas Neue Regular" size="24.0" />
                      </font></Label>
                </children>
             </VBox>

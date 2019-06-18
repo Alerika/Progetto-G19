@@ -1,7 +1,7 @@
 package it.unipv.conversion;
 
 import com.itextpdf.text.pdf.BaseFont;
-import it.unipv.gui.user.Prenotation;
+import it.unipv.gui.prenotation.Prenotation;
 import it.unipv.utils.ApplicationException;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;

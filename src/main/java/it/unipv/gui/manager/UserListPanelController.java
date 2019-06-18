@@ -7,7 +7,7 @@ import it.unipv.DB.PrenotationOperations;
 import it.unipv.DB.UserOperations;
 import it.unipv.gui.common.GUIUtils;
 import it.unipv.gui.login.User;
-import it.unipv.gui.user.Prenotation;
+import it.unipv.gui.prenotation.Prenotation;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;

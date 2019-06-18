@@ -1,5 +1,5 @@
 package it.unipv.gui.common;
 
-public interface IPane {
+public interface ICloseablePane {
     void closeAllSubWindows();
 }

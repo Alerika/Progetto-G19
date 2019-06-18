@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 
-public class MovieListPanelController implements IPane {
+public class MovieListPanelController implements ICloseablePane {
 
     @FXML TextField searchBarTextfield;
     @FXML Label searchButton;

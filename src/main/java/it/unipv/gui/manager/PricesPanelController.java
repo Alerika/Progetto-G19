@@ -3,14 +3,14 @@ package it.unipv.gui.manager;
 import it.unipv.DB.DBConnection;
 import it.unipv.DB.PricesOperations;
 import it.unipv.gui.common.GUIUtils;
-import it.unipv.gui.common.IPane;
+import it.unipv.gui.common.ICloseablePane;
 import it.unipv.gui.common.Prices;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class PricesPanelController implements IPane {
+public class PricesPanelController implements ICloseablePane {
 
     private Prices prices = null;
     private PricesOperations po;
