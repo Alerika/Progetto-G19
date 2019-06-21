@@ -7,8 +7,8 @@ import it.unipv.gui.common.Movie;
 import it.unipv.gui.login.LoginController;
 import it.unipv.gui.login.RegistrazioneController;
 import it.unipv.gui.login.User;
-import it.unipv.gui.manager.ManagerHomeController;
-import it.unipv.gui.user.AreaRiservataHomeController;
+import it.unipv.gui.managerarea.ManagerHomeController;
+import it.unipv.gui.userarea.AreaRiservataHomeController;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 import javafx.animation.FadeTransition;
@@ -297,7 +297,7 @@ public class HomeController {
     private void doOpenManagerArea() {
         if(!isManagerAreaOpened) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manager/ManagerHome.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/managerarea/ManagerHome.fxml"));
                 Parent root = loader.load();
                 mhc = loader.getController();
                 mhc.init(this, dbConnection);
@@ -324,7 +324,7 @@ public class HomeController {
     public void doOpenReservedArea() {
         if(!isReservedAreaOpened) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/user/AreaRiservataHome.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/userarea/AreaRiservataHome.fxml"));
                 Parent p = loader.load();
                 arhc = loader.getController();
                 arhc.init(loggedUser, true, dbConnection);

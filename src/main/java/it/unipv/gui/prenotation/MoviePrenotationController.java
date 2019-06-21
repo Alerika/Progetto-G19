@@ -337,7 +337,6 @@ public class MoviePrenotationController implements ICloseablePane {
                 if (text.length() > 94) {
                     actualSummaryLabel.setTooltip(new Tooltip(text));
                 }
-                System.out.println(text);
                 summaryPanel.getChildren().addAll(summaryLabel, actualSummaryLabel);
                 finalPrenotation = new Prenotation(user.getName()
                         , movie.getTitolo()
