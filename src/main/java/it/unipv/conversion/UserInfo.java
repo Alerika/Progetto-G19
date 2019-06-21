@@ -21,8 +21,6 @@ public class UserInfo {
 
     /**
      * Metodo che salva all'interno di un file .txt le informazioni di un utente di cui si è deciso di ricordarsi i dati
-     *    Per ora lo salviamo all'interno della cartella utenti/ del progetto, ma sarebbe meglio spostarlo
-     *    all'interno di una cartella di roaming come %APPDATA%, che ancora devo capire quale sia su linux
      * @param username -> nickname dell'utente
      * @param password -> password dell'utente
      */
