@@ -110,7 +110,7 @@ public class HomeController {
             welcomePanel.prefWidthProperty().bind(homePanel.widthProperty());
             welcomePanel.prefHeightProperty().bind(homePanel.heightProperty());
             WelcomePanelController wpc = loader.getController();
-            wpc.init(user, dbConnection);
+            wpc.init(user, dbConnection, stageRegistrazione);
             homePanel.setCenter(welcomePanel);
         } catch (IOException e) {
             throw new ApplicationException(e);
@@ -275,12 +275,11 @@ public class HomeController {
             Parent p = loader.load();
             LoginController lc = loader.getController();
             lc.init(this, dbConnection);
-            Stage stage = new Stage();
-            stage.setScene(new Scene(p));
-            stage.setTitle("Login");
-            stage.setResizable(false);
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-            stage.show();
+            stageLogin.setScene(new Scene(p));
+            stageLogin.setTitle("Login");
+            stageLogin.setResizable(false);
+            stageLogin.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+            stageLogin.show();
         } catch (IOException ex) {
             throw new ApplicationException(ex);
         }

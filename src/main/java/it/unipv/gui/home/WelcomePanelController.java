@@ -20,8 +20,10 @@ public class WelcomePanelController {
 
     @FXML AnchorPane welcomeFooter;
     @FXML Label welcomeLabel, registerLabel;
+    private Stage stageRegistrazione;
 
-    public void init(User loggedUser, DBConnection dbConnection) {
+    public void init(User loggedUser, DBConnection dbConnection, Stage stageRegistrazione) {
+        this.stageRegistrazione = stageRegistrazione;
         if(loggedUser==null) {
             registerLabel.setOnMouseExited(event -> registerLabel.setTextFill(Color.WHITE));
             registerLabel.setOnMouseEntered(event -> registerLabel.setTextFill(Color.valueOf("db8f00")));
@@ -33,12 +35,17 @@ public class WelcomePanelController {
     }
 
     private void openRegisterPage(DBConnection dbConnection) {
+        if(!stageRegistrazione.isShowing()) {
+            doOpenRegisterPage(dbConnection);
+        }
+    }
+
+    private void doOpenRegisterPage(DBConnection dbConnection) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Registrazione.fxml"));
             Parent p = loader.load();
             RegistrazioneController rc = loader.getController();
             rc.init(dbConnection);
-            Stage stageRegistrazione = new Stage();
             stageRegistrazione.setScene(new Scene(p));
             stageRegistrazione.setResizable(false);
             stageRegistrazione.setTitle("Registrazione");
