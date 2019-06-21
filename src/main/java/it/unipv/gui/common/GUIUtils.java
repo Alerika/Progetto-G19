@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.InputStream;
@@ -75,6 +76,8 @@ public class GUIUtils {
 
     public static void showAlert(Alert.AlertType type, String title, String headerText, String message) {
         Alert alert = new Alert(type);
+        Stage s = (Stage) alert.getDialogPane().getScene().getWindow();
+        s.getIcons().add(new Image(GUIUtils.class.getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
         alert.setTitle(title);
         alert.setHeaderText(headerText);
         alert.setContentText(message);
