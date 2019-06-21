@@ -6,6 +6,8 @@ import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,10 @@ public class UserInfo {
     public static void createUserInfoFileInUserDir(String username, String password, String email, String codice) {
         PrintWriter writer = null;
         try {
+            File dir = new File(DataReferences.INFOUSERDIR);
+            if(!dir.exists()) {
+                Files.createDirectories(Paths.get(DataReferences.INFOUSERDIR));
+            }
             writer = new PrintWriter(DataReferences.INFOUSERFILE, "UTF-8");
             writer.println(username);
             writer.println(password);
@@ -34,7 +40,7 @@ public class UserInfo {
             writer.println(codice);
         } catch (FileNotFoundException e) {
             throw new ApplicationException("File " + DataReferences.INFOUSERFILE + " non trovato!", e);
-        } catch (UnsupportedEncodingException e) {
+        } catch (IOException e) {
             throw new ApplicationException(e);
         } finally {
             CloseableUtils.close(writer);

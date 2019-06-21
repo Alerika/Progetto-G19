@@ -4,6 +4,7 @@ import java.io.File;
 
 public class DataReferences {
 
+    public final static String INFOUSERDIR = "data" + File.separator + "utenti";
     public final static String INFOUSERFILE = "data" + File.separator + "utenti" + File.separator + "info.txt";
     public final static int PAUSEAFTERMOVIE = 30; //min
 
