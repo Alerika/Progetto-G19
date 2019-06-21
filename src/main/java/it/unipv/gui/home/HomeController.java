@@ -375,10 +375,16 @@ public class HomeController {
         setupLoggedUser();
     }
 
-    public void triggerNewMovieEvent() { mlpc.triggerNewMovieEvent(); }
+    public void triggerNewMovieEvent() {
+        if(mlpc!=null) {
+            mlpc.triggerNewMovieEvent();
+        }
+    }
 
     public void triggerNewHallEvent() {
-        hlpc.triggerNewHallEvent();
+        if(hlpc!=null) {
+            hlpc.triggerNewHallEvent();
+        }
     }
 
     void triggerMovieClicked(Movie movie) {

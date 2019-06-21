@@ -1,9 +1,9 @@
 package it.unipv.gui.manager;
 
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import it.unipv.DB.DBConnection;
 import it.unipv.DB.HallOperations;
@@ -22,8 +22,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.apache.commons.io.FilenameUtils;
-import javax.swing.*;
 
 public class HallPanelController implements ICloseablePane {
 
@@ -135,8 +135,11 @@ public class HallPanelController implements ICloseablePane {
     }
 
     private void removeHall(String hallName) {
-        int reply = JOptionPane.showConfirmDialog(null, "Vuoi davvero eliminare la piantina " + hallName + "?");
-        if(reply == JOptionPane.YES_OPTION) {
+        Optional<ButtonType> option =
+                GUIUtils.showConfirmationAlert( "Attenzione"
+                                              , "Richiesta conferma:"
+                                              , "Vuoi davvero eliminare la piantina " + hallName + "?");
+        if(option.orElse(null)==ButtonType.YES) {
             ho.removeHallAndPreview(hallName);
             initHallNameList();
             initPreview();
@@ -146,7 +149,7 @@ public class HallPanelController implements ICloseablePane {
     }
 
     private void renameHall(String hallName, Label labelToModify, Label renameIcon, Label deleteIcon) {
-        String newHallName = JOptionPane.showInputDialog(null, "Inserisci il nuovo nome della sala:");
+        String newHallName = GUIUtils.showInputAlert("Rinomina Sala", "Rinomina " + hallName, "Inserisci il nuovo nome della sala").orElse(null);
         if(newHallName!=null) {
             if(!newHallName.trim().equalsIgnoreCase("")) {
                 if(checkIfItIsFree(newHallName)) {
@@ -180,31 +183,33 @@ public class HallPanelController implements ICloseablePane {
         return status;
     }
 
-    private int rows;
-    private int columns;
-    private boolean canceled;
-
     @FXML public void newHallListener() {
-        String nomeSala = JOptionPane.showInputDialog(null, "Inserisci il nome della sala");
+        String nomeSala = GUIUtils.showInputAlert("Nuova Sala", "Stai creando una nuova sala:", "Inserisci il nome della sala").orElse(null);
         if(nomeSala!=null) {
             if(nomeSala.equalsIgnoreCase("") || nomeSala.trim().length()==0) {
                 GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi inserire un nome!");
             } else if(!nomeSala.equalsIgnoreCase("")) {
                 if(checkIfItIsFree(nomeSala)) {
-                    int reply = JOptionPane.showConfirmDialog(null, "Vuoi creare una griglia preimpostata?","Scegli una opzione", JOptionPane.YES_NO_OPTION);
-                    if(reply == JOptionPane.NO_OPTION) {
+                    Optional<ButtonType> option =
+                            GUIUtils.showConfirmationAlert( "Attenzione"
+                                                          , "Richiesta conferma:"
+                                                          , "Vuoi creare una griglia preimpostata?");
+                    if(option.orElse(null)==ButtonType.NO) {
                         hallEditor = new HallEditor(nomeSala, this, false, dbConnection);
                         hallEditor.setAlwaysOnTop(true);
                     } else {
-                        configureGridJOptionPaneMenu();
-                        if(!canceled) {
+                        Optional<Pair<String, String>> dialogMenu = configureRowAndColumnDialogRequest();
+                        dialogMenu.ifPresent(rowsAndcolumns -> {
+                            int rows =  Integer.parseInt(rowsAndcolumns.getKey());
+                            int columns = Integer.parseInt(rowsAndcolumns.getValue());
+
                             if(rows<27) {
                                 hallEditor = new HallEditor(nomeSala, this, rows, columns, dbConnection);
                                 hallEditor.setAlwaysOnTop(true);
                             } else {
                                 GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Numero massimo di righe 26!");
                             }
-                        }
+                        });
                     }
                 } else {
                     GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Esiste già una sala con questo nome!");
@@ -213,27 +218,48 @@ public class HallPanelController implements ICloseablePane {
         }
     }
 
-    private void configureGridJOptionPaneMenu() {
-        JTextField rows = new JTextField();
-        JTextField columns = new JTextField();
-        Object[] message = {
-                "Righe:", rows,
-                "Colonne:", columns
-        };
+    private Optional<Pair<String, String>> configureRowAndColumnDialogRequest() {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Nuova sala");
+        dialog.setHeaderText("Inserisci numero di righe e colonne");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        int option = JOptionPane.showConfirmDialog(null, message, "Inserisci numero di righe e colonne", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            if(rows.getText().trim().equalsIgnoreCase("") || columns.getText().trim().equalsIgnoreCase("")) {
-                GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi inserire entrambi i dati!");
-                canceled = true;
-            } else {
-                this.rows = Integer.parseInt(rows.getText());
-                this.columns = Integer.parseInt(columns.getText());
-                canceled = false;
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField rows = new TextField();
+        makeTextFieldFillableByOnlyDigits(rows);
+        rows.setPromptText("0");
+        TextField columns = new PasswordField();
+        makeTextFieldFillableByOnlyDigits(columns);
+        columns.setPromptText("0");
+
+        grid.add(new Label("Righe:"), 0, 0);
+        grid.add(rows, 1, 0);
+        grid.add(new Label("Colonne:"), 0, 1);
+        grid.add(columns, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+        Platform.runLater(rows::requestFocus);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == ButtonType.OK) {
+                return new Pair<>(rows.getText(), columns.getText());
             }
-        } else {
-            canceled = true;
-        }
+            return null;
+        });
+
+        return dialog.showAndWait();
+    }
+
+    private void makeTextFieldFillableByOnlyDigits(TextField textField) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                textField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
     }
 
     void triggerModificationToHallList() {
@@ -286,7 +312,6 @@ public class HallPanelController implements ICloseablePane {
     public void closeAllSubWindows() {
         if(hallEditor!=null) {
             hallEditor.dispose();
-            hallEditor.dispatchEvent(new WindowEvent(hallEditor, WindowEvent.WINDOW_CLOSING));
         }
     }
 }

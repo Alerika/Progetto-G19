@@ -14,10 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -159,9 +156,11 @@ public class ProgrammationPanelController implements ICloseablePane {
         hideMovieIcon.setLayoutY(nomeFilmLabel.getLayoutY()+167);
         hideMovieIcon.setLayoutX(nomeFilmLabel.getLayoutX());
         hideMovieIcon.setOnMouseClicked(event -> {
-            int reply = JOptionPane.showConfirmDialog( null
-                                                     , "Sei sicuro di voler nascondere " + movie.getTitolo() + " dai film programmabili?");
-            if(reply == JOptionPane.YES_OPTION) {
+            Optional<ButtonType> option =
+                    GUIUtils.showConfirmationAlert( "Attenzione"
+                                                  , "Richiesta conferma:"
+                                                  , "Sei sicuro di voler nascondere " + movie.getTitolo() + " dai film programmabili?");
+            if(option.orElse(null)==ButtonType.YES) {
                 movie.setStatus(MovieStatusTYPE.NOT_AVAILABLE);
                 mo.updateMovieButNotPoster(movie);
                 managerHomeController.triggerToHomeNewMovieEvent();
@@ -176,10 +175,11 @@ public class ProgrammationPanelController implements ICloseablePane {
         deleteIcon.setLayoutY(nomeFilmLabel.getLayoutY()+167);
         deleteIcon.setLayoutX(nomeFilmLabel.getLayoutX()+80);
         deleteIcon.setOnMouseClicked(e -> {
-            int reply =
-                    JOptionPane.showConfirmDialog( null
-                            , "Sei sicuro di voler eliminare il film " + movie.getTitolo() +"?");
-            if(reply == JOptionPane.YES_OPTION) {
+            Optional<ButtonType> option =
+                    GUIUtils.showConfirmationAlert( "Attenzione"
+                                                  , "Richiesta conferma:"
+                                                  , "Sei sicuro di voler eliminare il film " + movie.getTitolo() +"?");
+            if(option.orElse(null)==ButtonType.YES) {
                 removeAssociatedSchedules(movie);
                 mo.deleteMovie(movie);
                 managerHomeController.triggerToHomeNewMovieEvent();

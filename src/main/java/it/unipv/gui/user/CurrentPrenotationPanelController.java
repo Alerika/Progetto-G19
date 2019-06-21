@@ -124,9 +124,11 @@ public class CurrentPrenotationPanelController {
     }
 
     private void doDeletePrenotation(Prenotation toDelete) {
-        int reply = JOptionPane.showConfirmDialog(null
-                                                 , "Sei sicuro di voler annullare la prenotazione de " + toDelete.getNomeFilm() + " del giorno " + toDelete.getGiornoFilm() + "?");
-        if(reply == JOptionPane.YES_OPTION) {
+        Optional<ButtonType> option =
+                GUIUtils.showConfirmationAlert( "Attenzione"
+                                              , "Richiesta conferma:"
+                                              , "Sei sicuro di voler annullare la prenotazione de " + toDelete.getNomeFilm() + " del giorno " + toDelete.getGiornoFilm() + "?");
+        if(option.orElse(null)==ButtonType.YES) {
             prenotationOperations.deletePrenotation(toDelete);
             refreshUI();
         }

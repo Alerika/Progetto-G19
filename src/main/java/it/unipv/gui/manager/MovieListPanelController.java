@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import it.unipv.DB.DBConnection;
 import it.unipv.DB.MovieOperations;
@@ -116,9 +117,11 @@ public class MovieListPanelController implements ICloseablePane {
         setVisibleIcon.setLayoutY(movieTitleLabel.getLayoutY());
         setVisibleIcon.setLayoutX(movieTitleLabel.getLayoutX()+270);
         setVisibleIcon.setOnMouseClicked(event -> {
-            int reply = JOptionPane.showConfirmDialog( null
-                                                     , "Sei sicuro di voler rendere " + movie.getTitolo() + " programmabile?");
-            if(reply == JOptionPane.YES_OPTION) {
+            Optional<ButtonType> option =
+                    GUIUtils.showConfirmationAlert( "Attenzione"
+                                                  , "Richiesta conferma"
+                                                  , "Sei sicuro di voler rendere " + movie.getTitolo() + " programmabile?");
+            if(option.orElse(null)==ButtonType.YES) {
                 movie.setStatus(MovieStatusTYPE.AVAILABLE);
                 mo.updateMovieButNotPoster(movie);
                 managerHomeController.triggerToHomeNewMovieEvent();
@@ -133,16 +136,16 @@ public class MovieListPanelController implements ICloseablePane {
         deleteIcon.setLayoutY(movieTitleLabel.getLayoutY());
         deleteIcon.setLayoutX(movieTitleLabel.getLayoutX()+340);
         deleteIcon.setOnMouseClicked(e -> {
-            int reply =
-                    JOptionPane.showConfirmDialog( null
-                                                 , "Sei sicuro di voler eliminare " + movie.getTitolo() +" e le sue relative programmazioni?");
-            if(reply == JOptionPane.YES_OPTION) {
+            Optional<ButtonType> option =
+                    GUIUtils.showConfirmationAlert( "Attenzione"
+                                                  , "Richiesta conferma:"
+                                                  , "Sei sicuro di voler eliminare " + movie.getTitolo() + " e le sue relative programmazioni?");
+            if(option.orElse(null)==ButtonType.YES) {
                 removeAssociatedSchedules(movie);
                 mo.deleteMovie(movie);
                 managerHomeController.triggerToHomeNewMovieEvent();
                 refreshUI();
             }
-
         });
 
         pane.getChildren().add(movieTitleLabel);
@@ -183,7 +186,6 @@ public class MovieListPanelController implements ICloseablePane {
     }
 
     private void refreshUI() {
-        grigliaFilm.getChildren().clear();
         createMovieListGrid();
     }
 

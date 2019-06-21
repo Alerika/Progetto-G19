@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import it.unipv.DB.DBConnection;
 import it.unipv.DB.ScheduleOperations;
@@ -17,10 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -117,8 +115,11 @@ public class MovieSchedulerController implements ICloseablePane {
         deleteIcon.setLayoutY(scheduleLabel.getLayoutY());
         deleteIcon.setLayoutX(scheduleLabel.getLayoutX()+200);
         deleteIcon.setOnMouseClicked(e -> {
-            int reply = JOptionPane.showConfirmDialog(null, "Sei sicuro di voler eliminare dalla lista questa programmazione?");
-            if(reply == JOptionPane.YES_OPTION) {
+            Optional<ButtonType> option =
+                    GUIUtils.showConfirmationAlert( "Attenzione"
+                                                  , "Richiesta conferma:"
+                                                  , "Sei sicuro di voler eliminare dalla lista questa programmazione?");
+            if(option.orElse(null)==ButtonType.YES) {
                 so.deleteMovieSchedule(schedule);
                 refreshUI();
             }

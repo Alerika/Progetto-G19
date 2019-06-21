@@ -2,7 +2,6 @@ package it.unipv.gui.prenotation;
 
 import it.unipv.DB.DBConnection;
 import it.unipv.DB.HallOperations;
-import it.unipv.gui.prenotation.MoviePrenotationController;
 import it.unipv.gui.common.Seat;
 import it.unipv.gui.common.SeatTYPE;
 

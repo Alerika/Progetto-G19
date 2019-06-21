@@ -9,12 +9,15 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.InputStream;
+import java.util.Optional;
 
 public class GUIUtils {
 
@@ -82,5 +85,25 @@ public class GUIUtils {
         alert.setHeaderText(headerText);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public static Optional<ButtonType> showConfirmationAlert(String title, String headerText, String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, message, ButtonType.NO, ButtonType.YES);
+        Stage s = (Stage) alert.getDialogPane().getScene().getWindow();
+        s.getIcons().add(new Image(GUIUtils.class.getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(message);
+        return alert.showAndWait();
+    }
+
+    public static Optional<String> showInputAlert(String title, String header, String message) {
+        TextInputDialog inputDialog = new TextInputDialog();
+        Stage s = (Stage) inputDialog.getDialogPane().getScene().getWindow();
+        s.getIcons().add(new Image(GUIUtils.class.getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+        inputDialog.setTitle(title);
+        inputDialog.setHeaderText(header);
+        inputDialog.setContentText(message);
+        return inputDialog.showAndWait();
     }
 }

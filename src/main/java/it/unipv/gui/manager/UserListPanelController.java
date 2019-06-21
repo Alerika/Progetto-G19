@@ -93,7 +93,7 @@ public class UserListPanelController {
         editIcon.setLayoutY(userLabel.getLayoutY());
         editIcon.setLayoutX(userLabel.getLayoutX()+270);
         editIcon.setOnMouseClicked( event -> {
-            String password = JOptionPane.showInputDialog("Inserisci la nuova password per l'utente " + user.getName());
+            String password = GUIUtils.showInputAlert("Modifica password", "Stai modificando la password di " + user.getName(), "Inserisci la nuova password").orElse(null);
             if(password!=null) {
                 if(!Objects.requireNonNull(password).trim().equalsIgnoreCase("") || !(password.trim().length() ==0)) {
                     user.setPassword(password);
@@ -109,8 +109,11 @@ public class UserListPanelController {
         deleteIcon.setLayoutY(userLabel.getLayoutY());
         deleteIcon.setLayoutX(userLabel.getLayoutX()+305);
         deleteIcon.setOnMouseClicked(e -> {
-            int reply = JOptionPane.showConfirmDialog(null, "Sei sicuro di voler eliminare questo utente e le sue relative prenotazioni?");
-            if(reply == JOptionPane.YES_OPTION) {
+            Optional<ButtonType> option =
+                    GUIUtils.showConfirmationAlert( "Attenzione"
+                                                  , "Richiesta conferma:"
+                                                  , "Sei sicuro di voler eliminare questo utente e le sue relative prenotazioni?");
+            if(option.orElse(null)==ButtonType.YES) {
                 removeConcerningPrenotations(user);
                 userOperations.deleteUser(user);
                 refreshUI();
