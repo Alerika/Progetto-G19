@@ -49,6 +49,7 @@ public class PrenotationToPDF {
     private static String convertToXhtml(String html, String encoding) {
         try {
             Tidy tidy = new Tidy();
+            tidy.setQuiet(true);
             tidy.setInputEncoding(encoding);
             tidy.setOutputEncoding(encoding);
             tidy.setXHTML(true);
