@@ -1,6 +1,6 @@
 package it.unipv.conversion;
 
-import it.unipv.gui.login.User;
+import it.unipv.model.User;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 import it.unipv.utils.DataReferences;
@@ -90,7 +90,7 @@ public class UserInfo {
             if(infoFromFile.size()!=4) {
                 throw new ApplicationException("Impossibile, formato file inatteso!");
             } else {
-                res.setName(infoFromFile.get(0));
+                res.setNome(infoFromFile.get(0));
                 res.setPassword(infoFromFile.get(1));
                 res.setEmail(infoFromFile.get(2));
                 res.setCodice(infoFromFile.get(3));

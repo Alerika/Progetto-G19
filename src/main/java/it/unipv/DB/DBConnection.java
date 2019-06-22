@@ -1,4 +1,4 @@
-package it.unipv.DB;
+package it.unipv.db;
 
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
@@ -53,7 +53,7 @@ public class DBConnection {
         }
     }
 
-    PreparedStatement getPreparedStatementFromQuery(String query) {
+    public PreparedStatement getPreparedStatementFromQuery(String query) {
         try{
             return connection.prepareStatement(query);
         } catch (SQLException e) {

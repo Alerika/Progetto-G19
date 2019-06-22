@@ -7,7 +7,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="691.0" prefWidth="450.0" style="-fx-background-color: black;" stylesheets="@../../css/BebasNeue.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipv.gui.login.RegistrazioneController">
+<AnchorPane id="AnchorPane" prefHeight="691.0" prefWidth="450.0" style="-fx-background-color: black;" stylesheets="@../../css/BebasNeue.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipv.controller.login.RegistrazioneController">
    <children>
       <AnchorPane prefHeight="112.0" prefWidth="460.0" style="-fx-background-color: #db8f00;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>

@@ -1,5 +1,5 @@
 import com.itextpdf.text.pdf.BaseFont;
-import it.unipv.gui.prenotation.Prenotation;
+import it.unipv.model.Prenotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;

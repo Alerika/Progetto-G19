@@ -2,7 +2,7 @@ package it.unipv.conversion;
 
 import com.itextpdf.text.pdf.BaseFont;
 import com.lowagie.text.DocumentException;
-import it.unipv.gui.prenotation.Prenotation;
+import it.unipv.model.Prenotation;
 import it.unipv.utils.ApplicationException;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;

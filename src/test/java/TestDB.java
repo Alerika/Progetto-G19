@@ -1,4 +1,4 @@
-import it.unipv.DB.DBConnection;
+import it.unipv.db.DBConnection;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;

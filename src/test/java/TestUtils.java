@@ -1,4 +1,4 @@
-import it.unipv.gui.common.MovieSchedule;
+import it.unipv.model.MovieSchedule;
 import it.unipv.utils.ApplicationException;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
