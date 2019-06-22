@@ -223,6 +223,8 @@ public class HallPanelController implements ICloseablePane {
         dialog.setTitle("Nuova sala");
         dialog.setHeaderText("Inserisci numero di righe e colonne");
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        Stage s = (Stage) dialog.getDialogPane().getScene().getWindow();
+        s.getIcons().add(new Image(GUIUtils.class.getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
