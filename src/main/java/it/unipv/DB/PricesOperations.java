@@ -8,6 +8,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Questa classe fa riferimento alla tabella PRICES
+ * Si occupa di recuperare/aggiornare i dati riguardanti i prezzi del cinema.
+ */
 public class PricesOperations {
     private DBConnection dbConnection;
 

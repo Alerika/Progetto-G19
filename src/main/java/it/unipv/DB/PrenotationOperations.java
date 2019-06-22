@@ -10,6 +10,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Questa classe fa riferimento alla tabella PRENOTAZIONI
+ * Si occupa di inserire/recuperare/eliminare i dati riguardanti le prenotazioni.
+ */
 public class PrenotationOperations {
     private DBConnection dbConnection;
 

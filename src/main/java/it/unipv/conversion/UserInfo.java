@@ -20,9 +20,11 @@ import java.util.List;
 public class UserInfo {
 
     /**
-     * Metodo che salva all'interno di un file .txt le informazioni di un utente di cui si è deciso di ricordarsi i dati
+     * Metodo che si occupa di salvare all'interno di data/utenti il file di info; se le cartelle non esistono, vengono create.
      * @param username -> nickname dell'utente
      * @param password -> password dell'utente
+     * @param email -> email dell'utente
+     * @param codice -> codice dell'utente
      */
     public static void createUserInfoFileInUserDir(String username, String password, String email, String codice) {
         PrintWriter writer = null;
@@ -46,7 +48,8 @@ public class UserInfo {
     }
 
     /**
-     * Metodo utilizzato per rimuovere il file di informazioni salvate, se esiste
+     * Metodo utilizzato per rimuovere il file di informazioni salvate, se esiste.
+     * È utilizzato quando si fa il logout: a questo punto non serve più ricordarsi dell'utente.
      */
     public static void deleteUserInfoFileInUserDir() {
         File info = new File(DataReferences.INFOUSERFILE);
@@ -60,17 +63,13 @@ public class UserInfo {
     }
 
     /**
-     * Metodo utilizzato per verificare l'esistenza del file di info
+     * Metodo utilizzato per verificare l'esistenza del file di info e, quindi, l'esistenza di un utente da ricordarsi.
      * @return -> true se esiste, false altrimenti
      */
     public static boolean checkIfUserInfoFileExists() {
         return new File(DataReferences.INFOUSERFILE).exists();
     }
 
-    /**
-     * Metodo che instanzia un utente con le informazioni salvate all'interno del file di infomazioni .txt
-     * @return -> utente instanziato con le informazioni presenti nel .txt
-     */
     private static User getUserInfoFromFile() {
         BufferedReader br = null;
         InputStreamReader isr = null;
@@ -106,14 +105,14 @@ public class UserInfo {
     }
 
     /**
-     * Metodo che ritorna l'utente se il file .txt di info esiste
+     * Il metodo ritorna un utente istanziato con le informazioni salvate nel file delle info, se esistente.
      * @return -> ritorna l'utente instanziato se il file .txt di info esiste
      */
     public static User getUserInfo() {
         if(checkIfUserInfoFileExists()) {
             return getUserInfoFromFile();
         } else {
-            throw new ApplicationException("Impossibile trovare info user perché non esiste neanche il file delle info!");
+            throw new ApplicationException("Impossibile trovare info user perché non esiste il file delle info!");
         }
     }
 }

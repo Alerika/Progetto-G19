@@ -19,23 +19,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Questa classe fa riferimento alla tabella FILM
+ * Si occupa di inserire/recuperare/aggiornare/eliminare i dati riguardanti i film e le locandine.
+ */
 public class MovieOperations {
     private DBConnection dbConnection;
 
     public MovieOperations(DBConnection dbConnection) { this.dbConnection = dbConnection; }
 
-    public List<Movie> retrieveCompleteMovieList(double requestedWidth, double requestedHeight, boolean preserveRation, boolean smooth) {
+    /**
+     * Questo metodo viene utilizzato per recuperare la lista dei film completa, quindi comprendendo anche la locandina
+     * @param requestedWidth -> la larghezza dell'Image che rappresenta la locandina
+     * @param requestedHeight -> l'altezza dell'Image che rappresenta la locandina
+     * @param preserveRatio -> decidere se mantenere l'aspect ratio o meno
+     * @param smooth -> indica in generale se applicare un algoritmo di miglioramento dell'Image finale;
+     * @return -> ritorna la lista completa dei film, comprensiva di locandina
+     */
+    public List<Movie> retrieveCompleteMovieList(double requestedWidth, double requestedHeight, boolean preserveRatio, boolean smooth) {
         try {
             return retrieveCompleteMoviesFromResultSet( dbConnection.getResultFromQuery("SELECT * FROM " + DataReferences.DBNAME + ".FILM")
                                                       , requestedWidth
                                                       , requestedHeight
-                                                      , preserveRation
+                                                      , preserveRatio
                                                       , smooth);
         } catch (SQLException e) {
             throw new ApplicationException(e);
         }
     }
 
+    /**
+     * Questo metodo ritorna la lista dei film senza però la locandina. Questo perché può capitare di dover
+     * utilizzare le informazioni dei film senza però andare a dover recuperare per forza di cose la loro locandina.
+     * Principalmente il motivo risiede nel fatto che il database è lento, essendo gratuito e, quindi, tutta la logica
+     * è fatta in locale anziché via database.
+     * @return -> ritorna la lista completa dei film senza però la locandina
+     */
     public List<Movie> retrieveMovieListWithoutPoster() {
         try {
             return retrieveMoviesWithoutPosterFromResultSet(dbConnection.getResultFromQuery("SELECT * FROM " + DataReferences.DBNAME + ".FILM"));
@@ -52,10 +71,20 @@ public class MovieOperations {
         }
     }
 
+    /**
+     * Il metodo va ad aggiornare tutto ciò che riguarda il film tranne la sua locandina:
+     * questo viene fatto per risparmiare il tempo che sarebbe altrimenti impiegato nell'upload (magari inutile) della locandina.
+     * @param toUpdate -> il film da aggiornare che non comprende la sua locandina (o potrebbe, ma non viene considerata);
+     */
     public void updateMovieButNotPoster(Movie toUpdate) {
         doUpdateMovieButNotPoster(toUpdate);
     }
 
+    /**
+     * Il metodo va ad aggiornare tutto ciò che riguarda il film, includendo la sua locandina:
+     * è preferibile utilizzare il suddetto metodo solo se si ha necessario bisogno di aggiornare anche la locandina del film.
+     * @param toUpdate -> il film da aggiornare comprendente la sua locandina.
+     */
     public void updateMovie(Movie toUpdate, FileInputStream posterStream) {
         try {
             doUpdateMovie(toUpdate, posterStream);
@@ -165,11 +194,11 @@ public class MovieOperations {
         }
     }
 
-    private List<Movie> retrieveCompleteMoviesFromResultSet(ResultSet resultSet, double requestedWidth, double requestedHeight, boolean preserveRation, boolean smooth) throws SQLException {
+    private List<Movie> retrieveCompleteMoviesFromResultSet(ResultSet resultSet, double requestedWidth, double requestedHeight, boolean preserveRatio, boolean smooth) throws SQLException {
         List<Movie> res = new ArrayList<>();
         try {
             while(resultSet.next()) {
-                res.add(getMovie(resultSet, requestedWidth, requestedHeight, preserveRation, smooth));
+                res.add(getMovie(resultSet, requestedWidth, requestedHeight, preserveRatio, smooth));
             }
             return res;
         } finally {
@@ -177,16 +206,16 @@ public class MovieOperations {
         }
     }
 
-    private Movie getMovie(ResultSet resultSet, double requestedWidth, double requestedHeight, boolean preserveRation, boolean smooth) throws SQLException {
+    private Movie getMovie(ResultSet resultSet, double requestedWidth, double requestedHeight, boolean preserveRatio, boolean smooth) throws SQLException {
         Movie toAdd = getMovieWithoutPoster(resultSet);
-        toAdd.setLocandina(getImageFromBlob(resultSet, requestedWidth, requestedHeight, preserveRation, smooth));
+        toAdd.setLocandina(getImageFromBlob(resultSet, requestedWidth, requestedHeight, preserveRatio, smooth));
         return toAdd;
     }
 
-    private Image getImageFromBlob(ResultSet resultSet, double requestedWidth, double requestedHeight, boolean preserveRation, boolean smooth) throws SQLException {
+    private Image getImageFromBlob(ResultSet resultSet, double requestedWidth, double requestedHeight, boolean preserveRatio, boolean smooth) throws SQLException {
         Blob blob = resultSet.getBlob("LOCANDINA");
         InputStream in = blob.getBinaryStream(1, Objects.requireNonNull(blob).length());
-        Image res = new Image(in, requestedWidth, requestedHeight, preserveRation, smooth);
+        Image res = new Image(in, requestedWidth, requestedHeight, preserveRatio, smooth);
         CloseableUtils.close(in);
         return res;
     }

@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Questa classe fa riferimento alle tabelle PIANTINE e PIANTINEPREVIEW
+ * Si occupa di inserire/recuperare/aggiornare/eliminare i dati riguardanti le sale, come i posti a sedere (Seat) e le immagini di anteprima.
+ */
 public class HallOperations {
 
     private DBConnection dbConnection;
@@ -41,6 +45,15 @@ public class HallOperations {
         }
     }
 
+    /**
+     * Questo metodo viene utilizzato per recuperare la preview delle sale come Image con dimensioni impostate come parametri;
+     * @param hallName -> la sala di cui si vuole recuperare l'anteprima;
+     * @param requestedWidth -> la larghezza che vogliamo dare alla nostra Image;
+     * @param requestedHeight -> l'altezza che voglia dare alla nostra Image;
+     * @param preserveRatio -> decidere se mantenere l'aspect ratio o meno
+     * @param smooth -> indica in generale se applicare un algoritmo di miglioramento dell'Image finale;
+     * @return -> ritorna la preview della sala come Image con i parametri da noi specificati
+     */
     public Image retrieveHallPreviewAsImage(String hallName, double requestedWidth, double requestedHeight, boolean preserveRatio, boolean smooth) {
         try {
             return getHallPreviewFromResultSetAsImage( dbConnection.getResultFromQuery("select PREVIEW from " + DataReferences.DBNAME + ".PIANTINEPREVIEW where NOME_SALA = '" + hallName + "';")
@@ -53,6 +66,12 @@ public class HallOperations {
         }
     }
 
+    /**
+     * Questo metodo viene principalmente utilizzato dalla Home, quando si vuole visualizzare la piantina di una sala:
+     * mi faccio restituire uno stream perché così ho l'immagine vera e propria, e non un oggetto Image.
+     * @param hallName -> è la sala di cui si vuole recuperare l'anteprima come stream
+     * @return -> ritorna l'anteprima come InputStream.
+     */
     public InputStream retrieveHallPreviewAsStream(String hallName) {
         try {
             return retrieveHallPreviewFromResultSetAsStream(dbConnection.getResultFromQuery("select PREVIEW from " + DataReferences.DBNAME + ".PIANTINEPREVIEW where NOME_SALA = '" + hallName + "';"));
@@ -73,8 +92,14 @@ public class HallOperations {
         }
     }
 
+    /**
+     * Cancello tutta la sala e la ricreo perché non è un vero e proprio update:
+     * possono capitare volte in cui modifico posti già esistenti, ma anche volte in cui inserisco nuovi posti
+     * @param hallName -> sala da aggiornare
+     * @param toUpdate -> lista posti aggiornati da inserire nuovamente
+     */
     public void updateHallSeats(String hallName, List<Seat> toUpdate) {
-        try{
+        try {
             doRemoveSeats(hallName);
             doInsertSeats(hallName, toUpdate);
         } catch (SQLException e) {

@@ -10,6 +10,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Questa classe fa riferimento alla tabella UTENTI
+ * Si occupa di inserire/recuperare/aggiornare/eliminare i dati riguardanti gli utenti.
+ */
 public class UserOperations {
     private DBConnection dbConnection;
 
@@ -23,6 +27,10 @@ public class UserOperations {
 
     public void updateUser(User toUpdate) { doUpdateUser(toUpdate); }
 
+    /**
+     * L'update, in questo caso, prevede solo l'aggiornamento della password.
+     * @param toUpdate -> l'utente da aggiornare con la nuova password.
+     */
     private void doUpdateUser(User toUpdate) {
         String query = "UPDATE " + DataReferences.DBNAME + ".UTENTI SET PASSWORD = ? WHERE CODICE = ?";
         try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {

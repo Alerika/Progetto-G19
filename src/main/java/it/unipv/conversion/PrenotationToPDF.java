@@ -1,6 +1,7 @@
 package it.unipv.conversion;
 
 import com.itextpdf.text.pdf.BaseFont;
+import com.lowagie.text.DocumentException;
 import it.unipv.gui.prenotation.Prenotation;
 import it.unipv.utils.ApplicationException;
 import org.thymeleaf.TemplateEngine;
@@ -8,15 +9,27 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.w3c.tidy.Tidy;
 import org.xhtmlrenderer.pdf.ITextRenderer;
-
 import java.io.*;
 import java.nio.file.FileSystems;
-
 import static org.thymeleaf.templatemode.TemplateMode.HTML;
 
+/**
+ * Il PDF viene generato automaticamente a partire da una Prenotation. Le librerie utilizzate sono:
+ *    itextpdf -> creazione del PDF effettiva
+ *    tidy -> trasformazione da html a xhtml
+ *    thymeleaf -> template builder con cui si crea il template del pdf, in HTML.
+ */
 public class PrenotationToPDF {
 
-    public static void generatePDF(String outputfilePath, String encoding, Prenotation prenotation) throws Exception {
+    /**
+     * Metodo che si occupa della creazione del PDF a partire da:
+     * @param outputfilePath -> percorso di destinazione del file PDF generato
+     * @param encoding -> tipologia di encoding che si preferisce utilizzare (Es.: UTF-8)
+     * @param prenotation -> dati che verranno inseriti nel PDF
+     * @throws IOException -> lanciata se si hanno problemi relativi al file (Es.: se cerchiamo di sovrascrivere un file aperto)
+     * @throws DocumentException -> lanciata se si verificano problemi a livello di template e di creazione PDF
+     */
+    public static void generatePDF(String outputfilePath, String encoding, Prenotation prenotation) throws IOException, DocumentException {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("/");
         templateResolver.setSuffix(".html");
@@ -38,7 +51,7 @@ public class PrenotationToPDF {
                 .toUri()
                 .toURL()
                 .toString();
-        renderer.setDocumentFromString(convertToXhtml(templateEngine.process("template/template", context), encoding), baseUrl);
+        renderer.setDocumentFromString(convertHTMLToXHTML(templateEngine.process("template/template", context), encoding), baseUrl);
         renderer.layout();
 
         OutputStream outputStream = new FileOutputStream(outputfilePath);
@@ -46,7 +59,8 @@ public class PrenotationToPDF {
         outputStream.close();
     }
 
-    private static String convertToXhtml(String html, String encoding) {
+    //Questo metodo viene utilizzato perché itextpdf si aspetta in input un xhtml e non un html
+    private static String convertHTMLToXHTML(String html, String encoding) {
         try {
             Tidy tidy = new Tidy();
             tidy.setQuiet(true);

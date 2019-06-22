@@ -10,6 +10,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Questa classe fa riferimento alla tabella PROGRAMMAZIONIFILM
+ * Si occupa di inserire/recuperare/eliminare i dati riguardanti le programmazioni dei film.
+ */
 public class ScheduleOperations {
     private DBConnection dbConnection;
 
