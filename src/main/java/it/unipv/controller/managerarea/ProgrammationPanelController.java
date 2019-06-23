@@ -10,7 +10,7 @@ import it.unipv.dao.MovieDaoImpl;
 import it.unipv.dao.ScheduleDaoImpl;
 import it.unipv.controller.common.*;
 import it.unipv.model.Movie;
-import it.unipv.model.MovieSchedule;
+import it.unipv.model.Schedule;
 import it.unipv.model.MovieStatusTYPE;
 import it.unipv.utils.ApplicationException;
 import javafx.application.Platform;
@@ -256,8 +256,8 @@ public class ProgrammationPanelController implements ICloseablePane {
     }
 
     private void removeAssociatedSchedules(Movie movie) {
-        List<MovieSchedule> movieSchedules = scheduleDao.retrieveMovieSchedules();
-        for(MovieSchedule ms : movieSchedules) {
+        List<Schedule> schedules = scheduleDao.retrieveMovieSchedules();
+        for(Schedule ms : schedules) {
             if(movie.getCodice().equalsIgnoreCase(ms.getMovieCode())) {
                 scheduleDao.deleteMovieSchedule(ms);
             }

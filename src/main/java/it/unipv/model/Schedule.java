@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class MovieSchedule implements Comparable<MovieSchedule> {
+public class Schedule implements Comparable<Schedule> {
     private String movieCode;
     private String date;
     private String time;
@@ -29,7 +29,7 @@ public class MovieSchedule implements Comparable<MovieSchedule> {
     public void setHallName(String hall) { this.hall = hall; }
 
     @Override
-    public int compareTo(MovieSchedule o) {
+    public int compareTo(Schedule o) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Calendar cal1 = Calendar.getInstance();
         Calendar cal2 = Calendar.getInstance();

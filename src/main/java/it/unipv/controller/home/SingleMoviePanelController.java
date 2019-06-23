@@ -7,7 +7,7 @@ import it.unipv.controller.prenotation.MoviePrenotationController;
 import it.unipv.controller.common.GUIUtils;
 import it.unipv.controller.common.ICloseablePane;
 import it.unipv.model.Movie;
-import it.unipv.model.MovieSchedule;
+import it.unipv.model.Schedule;
 import it.unipv.model.User;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
@@ -228,8 +228,8 @@ public class SingleMoviePanelController implements ICloseablePane {
         int i = 0;
 
         //Metto massimo 10 date perché se no si sovrappongono con la trama.. tanto ogni giorno toglie una data vecchia e ne aggiunge una nuova
-        List<MovieSchedule> schedules = getProgrammationListFromMovie(movie);
-        for(MovieSchedule ms : schedules) {
+        List<Schedule> schedules = getProgrammationListFromMovie(movie);
+        for(Schedule ms : schedules) {
             if(i<10) {
                 if(!ApplicationUtils.checkIfDateIsPassed(ms.getDate())) {
                     Label scheduleLabel = new Label();
@@ -316,12 +316,12 @@ public class SingleMoviePanelController implements ICloseablePane {
         }
     }
 
-    private List<MovieSchedule> getProgrammationListFromMovie(Movie m) {
+    private List<Schedule> getProgrammationListFromMovie(Movie m) {
         String date = "";
-        List<MovieSchedule> allSchedules = scheduleDao.retrieveMovieSchedules();
+        List<Schedule> allSchedules = scheduleDao.retrieveMovieSchedules();
         Collections.sort(allSchedules);
-        List<MovieSchedule> res = new ArrayList<>();
-        for(MovieSchedule ms : allSchedules) {
+        List<Schedule> res = new ArrayList<>();
+        for(Schedule ms : allSchedules) {
             if(ms.getMovieCode().equals(m.getCodice())) {
                 if(!date.equals(ms.getDate())) {
                     res.add(ms);

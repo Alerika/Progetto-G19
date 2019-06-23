@@ -1,4 +1,4 @@
-import it.unipv.model.MovieSchedule;
+import it.unipv.model.Schedule;
 import it.unipv.utils.ApplicationException;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -20,8 +20,8 @@ public class TestUtils extends TestCase {
 
     @Test
     public void testMovieScheduleDateAndTimeComparator() {
-        MovieSchedule m1 = new MovieSchedule();
-        MovieSchedule m2 = new MovieSchedule();
+        Schedule m1 = new Schedule();
+        Schedule m2 = new Schedule();
         m1.setDate("03/04/2019");
         m1.setTime("22:00");
         m2.setDate("03/04/2019");
@@ -29,7 +29,7 @@ public class TestUtils extends TestCase {
         assertEquals(1, movieScheduleDateAndTimeComparator(m1,m2));
     }
 
-    private int movieScheduleDateAndTimeComparator(MovieSchedule m1, MovieSchedule m2){
+    private int movieScheduleDateAndTimeComparator(Schedule m1, Schedule m2){
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Calendar cal1 = Calendar.getInstance();
         Calendar cal2 = Calendar.getInstance();

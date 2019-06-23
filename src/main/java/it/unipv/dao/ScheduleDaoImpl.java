@@ -1,7 +1,7 @@
 package it.unipv.dao;
 
 import it.unipv.db.DBConnection;
-import it.unipv.model.MovieSchedule;
+import it.unipv.model.Schedule;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Questa classe fa riferimento alla tabella PROGRAMMAZIONIFILM
+ * Questa classe fa riferimento alla tabella SCHEDULE
  * Si occupa di inserire/recuperare/eliminare i dati riguardanti le programmazioni dei film.
  */
 public class ScheduleDaoImpl implements ScheduleDao {
@@ -20,20 +20,20 @@ public class ScheduleDaoImpl implements ScheduleDao {
 
     public ScheduleDaoImpl(DBConnection dbConnection) { this.dbConnection = dbConnection; }
 
-    @Override public List<MovieSchedule> retrieveMovieSchedules() {
+    @Override public List<Schedule> retrieveMovieSchedules() {
         return doRetrieveMovieSchedules();
     }
 
-    @Override public void insertNewMovieSchedule(MovieSchedule toInsert) {
+    @Override public void insertNewMovieSchedule(Schedule toInsert) {
         doInsertNewMovieSchedule(toInsert);
     }
 
-    @Override public void deleteMovieSchedule(MovieSchedule toDelete) {
+    @Override public void deleteMovieSchedule(Schedule toDelete) {
         doDeleteMovieSchedule(toDelete);
     }
 
-    private void doDeleteMovieSchedule(MovieSchedule toDelete) {
-        String query = "DELETE FROM "+ DataReferences.DBNAME + ".PROGRAMMAZIONIFILM where CODICE_FILM = ? AND DATA = ? AND ORA = ? AND SALA = ?";
+    private void doDeleteMovieSchedule(Schedule toDelete) {
+        String query = "DELETE FROM "+ DataReferences.DBNAME + ".SCHEDULE where CODICE_FILM = ? AND DATA = ? AND ORA = ? AND SALA = ?";
         try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {
             ps.setString(1, toDelete.getMovieCode());
             ps.setString(2, toDelete.getDate());
@@ -45,8 +45,8 @@ public class ScheduleDaoImpl implements ScheduleDao {
         }
     }
 
-    private void doInsertNewMovieSchedule(MovieSchedule toInsert) {
-        String query = "INSERT INTO " + DataReferences.DBNAME + ".PROGRAMMAZIONIFILM (CODICE_FILM, DATA, ORA, SALA) values (?,?,?,?)";
+    private void doInsertNewMovieSchedule(Schedule toInsert) {
+        String query = "INSERT INTO " + DataReferences.DBNAME + ".SCHEDULE (CODICE_FILM, DATA, ORA, SALA) values (?,?,?,?)";
         try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {
             ps.setString(1, toInsert.getMovieCode());
             ps.setString(2, toInsert.getDate());
@@ -58,19 +58,19 @@ public class ScheduleDaoImpl implements ScheduleDao {
         }
     }
 
-    private List<MovieSchedule> doRetrieveMovieSchedules() {
+    private List<Schedule> doRetrieveMovieSchedules() {
         try {
-            return getMovieSchedulesFromResultSet(dbConnection.getResultFromQuery("SELECT * FROM " + DataReferences.DBNAME + ".PROGRAMMAZIONIFILM"));
+            return getMovieSchedulesFromResultSet(dbConnection.getResultFromQuery("SELECT * FROM " + DataReferences.DBNAME + ".SCHEDULE"));
         } catch (SQLException e) {
             throw new ApplicationException(e);
         }
     }
 
-    private List<MovieSchedule> getMovieSchedulesFromResultSet(ResultSet resultSet) throws SQLException {
+    private List<Schedule> getMovieSchedulesFromResultSet(ResultSet resultSet) throws SQLException {
         try {
-            List<MovieSchedule> res = new ArrayList<>();
+            List<Schedule> res = new ArrayList<>();
             while(resultSet.next()) {
-                MovieSchedule toAdd = new MovieSchedule();
+                Schedule toAdd = new Schedule();
                 toAdd.setMovieCode(resultSet.getString("CODICE_FILM"));
                 toAdd.setDate(resultSet.getString("DATA"));
                 toAdd.setTime(resultSet.getString("ORA"));

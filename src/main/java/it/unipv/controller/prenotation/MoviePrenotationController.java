@@ -40,7 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class MoviePrenotationController implements ICloseablePane {
 
-    private List<MovieSchedule> schedules;
+    private List<Schedule> schedules;
     private List<Prenotation> prenotations;
     private List<Seat> selectedMDS = new ArrayList<>();
     private List<String> completeHallNameList = new ArrayList<>();
@@ -152,7 +152,7 @@ public class MoviePrenotationController implements ICloseablePane {
         double x = initalX + 230;
         double y = 50;
         int count = 0;
-        for (MovieSchedule ms : schedules) {
+        for (Schedule ms : schedules) {
             Label hourLabel = new Label("  " + ms.getTime() + "  ");
             hourLabel.setTextFill(Color.WHITE);
             hourLabel.setFont(font);
@@ -289,7 +289,7 @@ public class MoviePrenotationController implements ICloseablePane {
 
     private List<String> getHallsInvolvedInThatHour(String orario) {
         List<String> res = new ArrayList<>();
-        for (MovieSchedule ms : schedules) {
+        for (Schedule ms : schedules) {
             if (ms.getTime().equals(orario)) {
                 res.add(ms.getHallName());
             }
@@ -297,12 +297,12 @@ public class MoviePrenotationController implements ICloseablePane {
         return res;
     }
 
-    private List<MovieSchedule> initializeHoursList(String date, Movie movie) {
-        List<MovieSchedule> movieSchedules = scheduleDao.retrieveMovieSchedules();
-        Collections.sort(movieSchedules);
+    private List<Schedule> initializeHoursList(String date, Movie movie) {
+        List<Schedule> schedules = scheduleDao.retrieveMovieSchedules();
+        Collections.sort(schedules);
         String ora = "";
-        List<MovieSchedule> res = new ArrayList<>();
-        for (MovieSchedule ms : movieSchedules) {
+        List<Schedule> res = new ArrayList<>();
+        for (Schedule ms : schedules) {
             if (ms.getDate().equals(date) && ms.getMovieCode().equals(movie.getCodice())) {
                 if (!ora.equals(ms.getTime())) {
                     res.add(ms);

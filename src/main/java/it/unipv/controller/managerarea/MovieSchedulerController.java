@@ -12,7 +12,7 @@ import it.unipv.dao.ScheduleDaoImpl;
 import it.unipv.controller.common.GUIUtils;
 import it.unipv.controller.common.ICloseablePane;
 import it.unipv.model.Movie;
-import it.unipv.model.MovieSchedule;
+import it.unipv.model.Schedule;
 import it.unipv.utils.ApplicationException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,8 +37,8 @@ public class MovieSchedulerController implements ICloseablePane {
     private GridPane grigliaProgrammazione = new GridPane();
     private static int rowCount = 0;
     private static int columnCount = 0;
-    private List<MovieSchedule> movieSchedules = new ArrayList<>();
-    private List<MovieSchedule> actualMovieSchedules = new ArrayList<>();
+    private List<Schedule> schedules = new ArrayList<>();
+    private List<Schedule> actualSchedules = new ArrayList<>();
     private Movie movie;
     private DBConnection dbConnection;
     private ScheduleDao scheduleDao;
@@ -55,7 +55,7 @@ public class MovieSchedulerController implements ICloseablePane {
         this.movie = movie;
         initMovieSchedulesList();
 
-        for (MovieSchedule schedule : actualMovieSchedules) {
+        for (Schedule schedule : actualSchedules) {
             createViewFromMovieSchedulesList(schedule);
         }
 
@@ -86,7 +86,7 @@ public class MovieSchedulerController implements ICloseablePane {
         }
     }
 
-    private void createViewFromMovieSchedulesList(MovieSchedule schedule) {
+    private void createViewFromMovieSchedulesList(Schedule schedule) {
         Label scheduleLabel = new Label(schedule.getDate() + "   " +  schedule.getTime() + "   " + schedule.getHallName());
         scheduleLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
         scheduleLabel.setTextFill(Color.WHITE);
@@ -128,13 +128,13 @@ public class MovieSchedulerController implements ICloseablePane {
     }
 
     private void initMovieSchedulesList() {
-        movieSchedules.clear();
-        actualMovieSchedules.clear();
-        movieSchedules = scheduleDao.retrieveMovieSchedules();
-        Collections.sort(movieSchedules);
-        for(MovieSchedule ms : movieSchedules) {
+        schedules.clear();
+        actualSchedules.clear();
+        schedules = scheduleDao.retrieveMovieSchedules();
+        Collections.sort(schedules);
+        for(Schedule ms : schedules) {
             if(ms.getMovieCode().equalsIgnoreCase(movie.getCodice())) {
-                actualMovieSchedules.add(ms);
+                actualSchedules.add(ms);
             }
         }
     }

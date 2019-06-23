@@ -1,11 +1,11 @@
 package it.unipv.dao;
 
-import it.unipv.model.MovieSchedule;
+import it.unipv.model.Schedule;
 
 import java.util.List;
 
 public interface ScheduleDao {
-    List<MovieSchedule> retrieveMovieSchedules();
-    void insertNewMovieSchedule(MovieSchedule toInsert);
-    void deleteMovieSchedule(MovieSchedule toDelete);
+    List<Schedule> retrieveMovieSchedules();
+    void insertNewMovieSchedule(Schedule toInsert);
+    void deleteMovieSchedule(Schedule toDelete);
 }

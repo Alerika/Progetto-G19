@@ -13,7 +13,7 @@ import it.unipv.dao.MovieDaoImpl;
 import it.unipv.dao.ScheduleDaoImpl;
 import it.unipv.controller.common.GUIUtils;
 import it.unipv.model.Movie;
-import it.unipv.model.MovieSchedule;
+import it.unipv.model.Schedule;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
 import it.unipv.utils.DataReferences;
@@ -75,12 +75,12 @@ public class MovieScheduleEditorController {
         } else if(checkIfSomethingIsAlreadyScheduledInThatTemporalGap(hall, date + " " + time, Integer.parseInt(movie.getDurata())) ) {
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "C'è già una programmazione in questo periodo!");
         } else {
-            MovieSchedule movieSchedule = new MovieSchedule();
-            movieSchedule.setMovieCode(movie.getCodice());
-            movieSchedule.setDate(date);
-            movieSchedule.setTime(time);
-            movieSchedule.setHallName(hall);
-            scheduleDao.insertNewMovieSchedule(movieSchedule);
+            Schedule schedule = new Schedule();
+            schedule.setMovieCode(movie.getCodice());
+            schedule.setDate(date);
+            schedule.setTime(time);
+            schedule.setHallName(hall);
+            scheduleDao.insertNewMovieSchedule(schedule);
             moviePanelController.triggerNewScheduleEvent();
             GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Successo", "Operazione riuscita: ", "Salvataggio riuscito correttamente!");
         }
@@ -113,8 +113,8 @@ public class MovieScheduleEditorController {
     }
 
     private boolean checkIfSomethingIsAlreadyScheduledInThatTemporalGap(String hall, String incomingScheduleDate, int incomingMovieDuration) {
-        List<MovieSchedule> schedules = scheduleDao.retrieveMovieSchedules();
-        for(MovieSchedule ms : schedules) {
+        List<Schedule> schedules = scheduleDao.retrieveMovieSchedules();
+        for(Schedule ms : schedules) {
             if( (ms.getDate().trim().equalsIgnoreCase(incomingScheduleDate) && ms.getHallName().trim().equalsIgnoreCase(hall))
              || (ms.getHallName().trim().equalsIgnoreCase(hall)) ) {
                 int existingMovieDuration = 0;
