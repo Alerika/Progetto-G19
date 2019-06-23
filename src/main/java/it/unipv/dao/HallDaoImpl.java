@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Questa classe fa riferimento alle tabelle PIANTINE e PIANTINEPREVIEW
+ * Questa classe fa riferimento alle tabelle MAPS e MAPPREVIEWS
  * Si occupa di inserire/recuperare/aggiornare/eliminare i dati riguardanti le sale, come i posti a sedere (Seat) e le immagini di anteprima.
  */
 public class HallDaoImpl implements HallDao {
@@ -33,7 +33,7 @@ public class HallDaoImpl implements HallDao {
     @Override
     public List<Seat> retrieveSeats(String hallName) {
         try {
-            return retrieveSeatsFromResultSet(dbConnection.getResultFromQuery("select * from " + DataReferences.DBNAME + ".PIANTINE where NOME_SALA = '" + hallName + "';"));
+            return retrieveSeatsFromResultSet(dbConnection.getResultFromQuery("select * from " + DataReferences.DBNAME + ".MAPS where NOME_SALA = '" + hallName + "';"));
         } catch (SQLException e) {
             throw new ApplicationException(e);
         }
@@ -42,7 +42,7 @@ public class HallDaoImpl implements HallDao {
     @Override
     public List<String> retrieveHallNames() {
         try {
-            return retrieveHallNamesFromResultSet(dbConnection.getResultFromQuery("select distinct NOME_SALA from " + DataReferences.DBNAME + ".PIANTINE"));
+            return retrieveHallNamesFromResultSet(dbConnection.getResultFromQuery("select distinct NOME_SALA from " + DataReferences.DBNAME + ".MAPS"));
         } catch (SQLException e) {
             throw new ApplicationException(e);
         }
@@ -60,7 +60,7 @@ public class HallDaoImpl implements HallDao {
     @Override
     public Image retrieveHallPreviewAsImage(String hallName, double requestedWidth, double requestedHeight, boolean preserveRatio, boolean smooth) {
         try {
-            return getHallPreviewFromResultSetAsImage( dbConnection.getResultFromQuery("select PREVIEW from " + DataReferences.DBNAME + ".PIANTINEPREVIEW where NOME_SALA = '" + hallName + "';")
+            return getHallPreviewFromResultSetAsImage( dbConnection.getResultFromQuery("select PREVIEW from " + DataReferences.DBNAME + ".MAPPREVIEWS where NOME_SALA = '" + hallName + "';")
                                                      , requestedWidth
                                                      , requestedHeight
                                                      , preserveRatio
@@ -79,7 +79,7 @@ public class HallDaoImpl implements HallDao {
     @Override
     public InputStream retrieveHallPreviewAsStream(String hallName) {
         try {
-            return retrieveHallPreviewFromResultSetAsStream(dbConnection.getResultFromQuery("select PREVIEW from " + DataReferences.DBNAME + ".PIANTINEPREVIEW where NOME_SALA = '" + hallName + "';"));
+            return retrieveHallPreviewFromResultSetAsStream(dbConnection.getResultFromQuery("select PREVIEW from " + DataReferences.DBNAME + ".MAPPREVIEWS where NOME_SALA = '" + hallName + "';"));
         } catch (SQLException e) {
             throw new ApplicationException(e);
         }
@@ -153,7 +153,7 @@ public class HallDaoImpl implements HallDao {
     }
 
     private void doRenameHall(String oldHallName, String newHallName) {
-        String query = "UPDATE " + DataReferences.DBNAME + ".PIANTINE SET NOME_SALA = ? WHERE NOME_SALA = '" + oldHallName + "';";
+        String query = "UPDATE " + DataReferences.DBNAME + ".MAPS SET NOME_SALA = ? WHERE NOME_SALA = '" + oldHallName + "';";
         try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {
             ps.setString(1, newHallName);
             ps.execute();
@@ -163,7 +163,7 @@ public class HallDaoImpl implements HallDao {
     }
 
     private void doRenamePreview(String oldHallName, String newHallName) {
-        String query = "UPDATE " + DataReferences.DBNAME + ".PIANTINEPREVIEW SET NOME_SALA = ? WHERE NOME_SALA = '" + oldHallName + "';";
+        String query = "UPDATE " + DataReferences.DBNAME + ".MAPPREVIEWS SET NOME_SALA = ? WHERE NOME_SALA = '" + oldHallName + "';";
         try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {
             ps.setString(1, newHallName);
             ps.execute();
@@ -173,7 +173,7 @@ public class HallDaoImpl implements HallDao {
     }
 
     private void doInsertHallPreview(String hallName, ByteArrayInputStream previewStream) {
-        String query = "insert into " + DataReferences.DBNAME + ".PIANTINEPREVIEW (NOME_SALA, PREVIEW) values (?,?)";
+        String query = "insert into " + DataReferences.DBNAME + ".MAPPREVIEWS (NOME_SALA, PREVIEW) values (?,?)";
         try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {
             ps.setString(1, hallName);
             ps.setBinaryStream(2, previewStream, previewStream.available());
@@ -184,7 +184,7 @@ public class HallDaoImpl implements HallDao {
     }
 
     private void doRemovePreview(String hallName) {
-        String query = "delete from "+ DataReferences.DBNAME + ".PIANTINEPREVIEW where NOME_SALA = '" + hallName + "';";
+        String query = "delete from "+ DataReferences.DBNAME + ".MAPPREVIEWS where NOME_SALA = '" + hallName + "';";
         try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {
             ps.execute();
         } catch (SQLException e) {
@@ -194,7 +194,7 @@ public class HallDaoImpl implements HallDao {
     }
 
     private void doUpdateHallPreview(String hallName, ByteArrayInputStream previewStream) {
-        String query = "UPDATE " + DataReferences.DBNAME + ".PIANTINEPREVIEW SET PREVIEW = ? WHERE NOME_SALA = '" + hallName + "';";
+        String query = "UPDATE " + DataReferences.DBNAME + ".MAPPREVIEWS SET PREVIEW = ? WHERE NOME_SALA = '" + hallName + "';";
         try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {
             ps.setBinaryStream(1, previewStream, previewStream.available());
             ps.execute();
@@ -206,7 +206,7 @@ public class HallDaoImpl implements HallDao {
     private void doInsertSeats(String hallName, List<Seat> toUpdate) throws SQLException {
         PreparedStatement ps = null;
         try {
-            String query = "INSERT INTO " + DataReferences.DBNAME + ".PIANTINE(NOME_SALA,NOME_POSTO,COORD_X, COORD_Y, TIPO_POSTO) values (?,?,?,?,?)";
+            String query = "INSERT INTO " + DataReferences.DBNAME + ".MAPS(NOME_SALA,NOME_POSTO,COORD_X, COORD_Y, TIPO_POSTO) values (?,?,?,?,?)";
             for(Seat s : toUpdate) {
                 ps = dbConnection.getPreparedStatementFromQuery(query);
                 ps.setString(1, hallName);
@@ -245,7 +245,7 @@ public class HallDaoImpl implements HallDao {
     }
 
     private void doRemoveSeats(String hallName) {
-        String query = "delete from "+ DataReferences.DBNAME + ".PIANTINE where NOME_SALA = '" + hallName + "';";
+        String query = "delete from "+ DataReferences.DBNAME + ".MAPS where NOME_SALA = '" + hallName + "';";
         try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {
             ps.execute();
         } catch (SQLException e) {
