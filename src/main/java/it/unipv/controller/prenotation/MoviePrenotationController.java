@@ -3,6 +3,7 @@ package it.unipv.controller.prenotation;
 import java.io.IOException;
 import java.util.*;
 
+import it.unipv.controller.common.IHomeTrigger;
 import it.unipv.db.*;
 import it.unipv.dao.HallDao;
 import it.unipv.dao.PrenotationDao;
@@ -13,7 +14,6 @@ import it.unipv.dao.PrenotationDaoImpl;
 import it.unipv.dao.PricesDaoImpl;
 import it.unipv.dao.ScheduleDaoImpl;
 import it.unipv.controller.common.*;
-import it.unipv.controller.home.HomeController;
 import it.unipv.model.*;
 import it.unipv.utils.ApplicationException;
 import javafx.application.Platform;
@@ -55,7 +55,7 @@ public class MoviePrenotationController implements ICloseablePane {
     private Prenotation finalPrenotation;
     private User user;
     private boolean opened = false;
-    private HomeController homeController;
+    private IHomeTrigger homeController;
     private HallViewer hallViewer;
     private PricesDao pricesDao;
     private HallDao hallDao;
@@ -66,7 +66,7 @@ public class MoviePrenotationController implements ICloseablePane {
     @FXML private AnchorPane orariPanel, salaHeader, summaryPanel;
     @FXML private ScrollPane salaPanel;
 
-    public void init(it.unipv.controller.home.HomeController homeController, String date, Movie m, User user, DBConnection dbConnection) {
+    public void init(IHomeTrigger homeController, String date, Movie m, User user, DBConnection dbConnection) {
         this.homeController = homeController;
         this.movie = m;
         this.scheduleDate = date;

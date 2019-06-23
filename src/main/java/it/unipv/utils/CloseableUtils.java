@@ -5,7 +5,7 @@ import java.io.Flushable;
 import java.io.IOException;
 
 /**
- * Classe utilizzata per chiudere/flushare possibili Closeable e Flushable
+ * Classe utilizzata per chiudere possibili Closeable
  */
 public class CloseableUtils {
 

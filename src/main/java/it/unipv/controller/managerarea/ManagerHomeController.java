@@ -1,8 +1,8 @@
 package it.unipv.controller.managerarea;
 
+import it.unipv.controller.common.IHomeTrigger;
 import it.unipv.db.DBConnection;
 import it.unipv.controller.common.ICloseablePane;
-import it.unipv.controller.home.HomeController;
 import it.unipv.utils.ApplicationException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,11 +23,11 @@ public class ManagerHomeController {
     @FXML private BorderPane mainPanel;
     @FXML Label hallModifierLabel, schedulerLabel, movieListLabel, userListLabel, pricesModifierLabel, exitLabel;
     private List<Label> labels = new ArrayList<>();
-    private HomeController homeController;
+    private IHomeTrigger homeController;
     private List<ICloseablePane> iCloseablePanes = new ArrayList<>();
     private DBConnection dbConnection;
 
-    public void init(HomeController homeController, DBConnection dbConnection) {
+    public void init(IHomeTrigger homeController, DBConnection dbConnection) {
         this.homeController = homeController;
         this.dbConnection = dbConnection;
         addLabelsToList();

@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import it.unipv.controller.common.IHomeTrigger;
 import it.unipv.db.DBConnection;
 import it.unipv.dao.UserDao;
 import it.unipv.dao.UserDaoImpl;
 import it.unipv.conversion.UserInfo;
 import it.unipv.controller.common.GUIUtils;
-import it.unipv.controller.home.HomeController;
 import it.unipv.model.User;
 import it.unipv.utils.ApplicationException;
 import javafx.fxml.FXML;
@@ -31,12 +31,12 @@ public class LoginController implements Initializable {
     @FXML private TextField usernameTextfield;
     @FXML private PasswordField passwordTextfield;
     @FXML private CheckBox rememberCheckbox;
-    private HomeController homeController;
+    private IHomeTrigger homeController;
     private DBConnection dbConnection;
     private UserDao userDao;
     private List<User> userList = new ArrayList<>();
 
-    public void init(HomeController summoner, DBConnection dbConnection) {
+    public void init(IHomeTrigger summoner, DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         this.userDao = new UserDaoImpl(dbConnection);
         this.homeController = summoner;

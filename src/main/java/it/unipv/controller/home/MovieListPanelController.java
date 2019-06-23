@@ -31,14 +31,14 @@ public class MovieListPanelController {
     private static int rowCount = 0;
     private static int columnCount = 0;
     private static int columnMax = 0;
-    private HomeController homeController;
+    private IHomeTrigger homeController;
     @FXML private ScrollPane movieScroll;
     @FXML private Rectangle rectangleGenere, rectangle2D3D;
     @FXML private AnchorPane filterContainer, genereWindow;
     @FXML private Line lineGenere;
     @FXML private Label genreLabel;
 
-    public void init(HomeController homeController, double initialWidth, DBConnection dbConnection) {
+    public void init(IHomeTrigger homeController, double initialWidth, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.homeController = homeController;
         rectangle2D3D.setVisible(false);
@@ -106,32 +106,23 @@ public class MovieListPanelController {
     }
 
     public void animationGenere(){
-        KeyValue heightValueForward = new KeyValue(rectangleGenere.heightProperty(), rectangleGenere.getHeight()+240);
-        KeyValue heightValueBackwards = new KeyValue(rectangleGenere.heightProperty(), rectangleGenere.getHeight()-240);
-        KeyFrame forwardH = new KeyFrame(javafx.util.Duration.seconds(0.3), heightValueForward);
-        KeyFrame backwardH = new KeyFrame(javafx.util.Duration.seconds(0.3), heightValueBackwards);
-        Timeline timelineForwardH = new Timeline(forwardH);
-        Timeline timelineBackwardH = new Timeline(backwardH);
-        FadeTransition fadeIn = new FadeTransition(javafx.util.Duration.seconds(0.4), genereWindow);
-        FadeTransition fadeOut = new FadeTransition(javafx.util.Duration.seconds(0.1), genereWindow);
-
         if(!genereWindow.isVisible()){
             genereWindow.setOpacity(0);
             genereWindow.setVisible(true);
-            timelineForwardH.play();
-
+            new Timeline(new KeyFrame(javafx.util.Duration.seconds(0.3), new KeyValue(rectangleGenere.heightProperty(), rectangleGenere.getHeight()+240))).play();
+            FadeTransition fadeIn = new FadeTransition(javafx.util.Duration.seconds(0.4), genereWindow);
             fadeIn.setDelay(javafx.util.Duration.seconds(0.2));
             fadeIn.setFromValue(0);
             fadeIn.setToValue(1.0);
             fadeIn.play();
         } else {
             if(genereWindow.isVisible()){
+                FadeTransition fadeOut = new FadeTransition(javafx.util.Duration.seconds(0.1), genereWindow);
                 fadeOut.setFromValue(1.0);
                 fadeOut.setToValue(0);
                 fadeOut.play();
                 genereWindow.setVisible(false);
-
-                timelineBackwardH.play();
+                new Timeline(new KeyFrame(javafx.util.Duration.seconds(0.3), new KeyValue(rectangleGenere.heightProperty(), rectangleGenere.getHeight()-240))).play();
             }
         }
     }

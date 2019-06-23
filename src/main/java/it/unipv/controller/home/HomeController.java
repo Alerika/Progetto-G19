@@ -1,5 +1,7 @@
 package it.unipv.controller.home;
 
+import it.unipv.controller.common.IHomeInitializer;
+import it.unipv.controller.common.IHomeTrigger;
 import it.unipv.db.DBConnection;
 import it.unipv.conversion.UserInfo;
 import it.unipv.controller.common.ICloseablePane;
@@ -30,7 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeController {
+public class HomeController implements IHomeTrigger, IHomeInitializer {
     @FXML private Rectangle rectangleMenu;
     @FXML private AnchorPane menuWindow, menuContainer;
     @FXML private Label logLabel, nonRegistratoQuestionLabel, registerButton, areaRiservataButton;
@@ -47,6 +49,7 @@ public class HomeController {
     private Stage reservedAreaStage, managerAreaStage;
     private List<ICloseablePane> iCloseablePanes = new ArrayList<>();
 
+    @Override
     public void init(DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         if(checkIfThereIsAlreadyUserSaved()) {
@@ -64,40 +67,27 @@ public class HomeController {
 
     @FXML
     private void animationMenu(){
-        KeyValue widthValueForward = new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() +81);
-        KeyValue widthValueBackwards = new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() -81);
-        KeyValue heightValueForward = new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()+244);
-        KeyValue heightValueBackwards = new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()-244);
-        KeyFrame forwardW = new KeyFrame(javafx.util.Duration.seconds(0.3), widthValueForward);
-        KeyFrame backwardW = new KeyFrame(javafx.util.Duration.seconds(0.15), widthValueBackwards);
-        KeyFrame forwardH = new KeyFrame(javafx.util.Duration.seconds(0.3), heightValueForward);
-        KeyFrame backwardH = new KeyFrame(javafx.util.Duration.seconds(0.15), heightValueBackwards);
-        Timeline timelineForwardH = new Timeline(forwardH);
-        Timeline timelineBackwardH = new Timeline(backwardH);
-        Timeline timelineForwardW = new Timeline(forwardW);
-        Timeline timelineBackwardW = new Timeline(backwardW);
-        FadeTransition fadeIn = new FadeTransition(javafx.util.Duration.seconds(0.4), menuWindow);
-        FadeTransition fadeOut = new FadeTransition(javafx.util.Duration.seconds(0.1), menuWindow);
-
         if(!menuWindow.isVisible()){
             menuWindow.setOpacity(0);
             menuWindow.setVisible(true);
-            timelineForwardW.play();
-            timelineForwardH.play();
+            new Timeline(new KeyFrame(javafx.util.Duration.seconds(0.3), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() +81))).play();
+            new Timeline(new KeyFrame(javafx.util.Duration.seconds(0.3), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()+244))).play();
 
+            FadeTransition fadeIn = new FadeTransition(javafx.util.Duration.seconds(0.4), menuWindow);
             fadeIn.setDelay(javafx.util.Duration.seconds(0.2));
             fadeIn.setFromValue(0);
             fadeIn.setToValue(1.0);
             fadeIn.play();
         } else {
             if(menuWindow.isVisible()){
+                FadeTransition fadeOut = new FadeTransition(javafx.util.Duration.seconds(0.1), menuWindow);
                 fadeOut.setFromValue(1.0);
                 fadeOut.setToValue(0);
                 fadeOut.play();
                 menuWindow.setVisible(false);
 
-                timelineBackwardH.play();
-                timelineBackwardW.play();
+                new Timeline(new KeyFrame(javafx.util.Duration.seconds(0.15), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()-244))).play();
+                new Timeline(new KeyFrame(javafx.util.Duration.seconds(0.15), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() -81))).play();
             }
         }
     }
@@ -120,7 +110,7 @@ public class HomeController {
     @FXML
     private void homeClick() {
         closeAllSubWindows();
-        openHome();
+        openHomePanel();
         animationMenu();
     }
 
@@ -170,7 +160,7 @@ public class HomeController {
 
     @FXML private void logoutListener() { doLogout(); }
 
-    void openHome() {
+    void openHomePanel() {
         try {
             homePanel.getChildren().clear();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/home/movieList.fxml"));
@@ -286,7 +276,7 @@ public class HomeController {
     }
 
     private void openReservedArea() {
-        if(!isHimANormalUser(loggedUser)) {
+        if(isHimAnAdmin(loggedUser)) {
             doOpenManagerArea();
         } else {
             doOpenReservedArea();
@@ -351,7 +341,7 @@ public class HomeController {
         logoutPane.setVisible(true);
         nonRegistratoQuestionLabel.setText("Vuoi uscire?");
         registerButton.setText("logout");
-        if(!isHimANormalUser(loggedUser)) {
+        if(isHimAnAdmin(loggedUser)) {
             areaRiservataButton.setText("Area Manager");
         } else {
             areaRiservataButton.setText("Area Riservata");
@@ -360,36 +350,46 @@ public class HomeController {
         initWelcomePage(loggedUser);
     }
 
-    private boolean isHimANormalUser(User user) {
-        return !( user.getNome().equalsIgnoreCase(DataReferences.ADMINUSERNAME)
-                &&  user.getPassword().equalsIgnoreCase(DataReferences.ADMINPASSWORD));
+    private boolean isHimAnAdmin(User user) {
+        return user.getNome().equalsIgnoreCase(DataReferences.ADMINUSERNAME)
+            && user.getPassword().equalsIgnoreCase(DataReferences.ADMINPASSWORD);
     }
 
     private boolean checkIfThereIsAlreadyUserSaved() {
         return UserInfo.checkIfUserInfoFileExists();
     }
 
+    @Override
     public void triggerNewLogin(User user) {
         closeAllSubWindows();
         loggedUser = user;
         setupLoggedUser();
     }
 
+    @Override
     public void triggerNewMovieEvent() {
         if(mlpc!=null) {
             mlpc.triggerNewMovieEvent();
         }
     }
 
+    @Override
     public void triggerNewHallEvent() {
         if(hlpc!=null) {
             hlpc.triggerNewHallEvent();
         }
     }
 
-    void triggerMovieClicked(Movie movie) {
+    @Override
+    public void triggerMovieClicked(Movie movie) {
         openSingleMoviePanel(movie);
     }
+
+    @Override
+    public void triggerOpenHomePanel() { openHomePanel(); }
+
+    @Override
+    public void triggerOpenReservedArea() { doOpenReservedArea(); }
 
     private void openSingleMoviePanel(Movie movie) {
         try {

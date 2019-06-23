@@ -1,5 +1,6 @@
 package it.unipv.controller.home;
 
+import it.unipv.controller.common.IHomeTrigger;
 import it.unipv.db.DBConnection;
 import it.unipv.dao.ScheduleDao;
 import it.unipv.dao.ScheduleDaoImpl;
@@ -36,7 +37,7 @@ import java.util.List;
 
 public class SingleMoviePanelController implements ICloseablePane {
     private AnchorPane singleFilmPane = new AnchorPane();
-    private HomeController homeController;
+    private IHomeTrigger homeController;
     private Movie movie;
     private User loggedUser;
     private DBConnection dbConnection;
@@ -47,7 +48,7 @@ public class SingleMoviePanelController implements ICloseablePane {
     @FXML private ScrollPane singleMovieScroll;
     @FXML private Label goBackToHomeButton;
 
-    public void init(HomeController homeController, Movie movie, User loggedUser, DBConnection dbConnection) {
+    public void init(IHomeTrigger homeController, Movie movie, User loggedUser, DBConnection dbConnection) {
         this.homeController = homeController;
         this.movie = movie;
         this.loggedUser = loggedUser;
@@ -196,7 +197,7 @@ public class SingleMoviePanelController implements ICloseablePane {
 
         GUIUtils.setScaleTransitionOnControl(goBackToHomeButton);
         goBackToHomeButton.getStylesheets().add("css/BebasNeue.css");
-        goBackToHomeButton.setOnMouseClicked(event -> homeController.openHome());
+        goBackToHomeButton.setOnMouseClicked(event -> homeController.triggerOpenHomePanel());
 
     }
 

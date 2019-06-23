@@ -12,5 +12,4 @@ public interface MovieDao {
     void updateMovieButNotPoster(Movie toUpdate);
     void updateMovie(Movie toUpdate, FileInputStream posterStream);
     void deleteMovie(Movie toDelete);
-
 }

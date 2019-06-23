@@ -1,7 +1,7 @@
 package it.unipv.controller.prenotation;
 
 import it.unipv.controller.common.GUIUtils;
-import it.unipv.controller.home.HomeController;
+import it.unipv.controller.common.IHomeTrigger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -9,9 +9,9 @@ import javafx.stage.Stage;
 public class AvvisoPrenotazioneController {
 
     @FXML private Label areaRiservataButton;
-    private HomeController homeController;
+    private IHomeTrigger homeController;
 
-    public void init(it.unipv.controller.home.HomeController homeController) {
+    public void init(IHomeTrigger homeController) {
         this.homeController = homeController;
         GUIUtils.setScaleTransitionOnControl(areaRiservataButton);
     }
@@ -23,7 +23,7 @@ public class AvvisoPrenotazioneController {
 
     @FXML
     public void openReservedAreaListener() {
-        homeController.doOpenReservedArea();
+        homeController.triggerOpenReservedArea();
         doClose();
     }
     
