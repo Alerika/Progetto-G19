@@ -1,6 +1,8 @@
 package it.unipv.utils;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 public class DataReferences {
 
@@ -17,4 +19,11 @@ public class DataReferences {
 
     public final static String DBNAME = "z6xOH9WKhI";
     public final static String DBPASS = "NSpPIYAmt3";
+
+    public final static List<String> TIPS = Arrays.asList( "Benvenuto in Golden Movie Studio!"
+                                                 , "Hai già visto le nuove uscite?"
+                                                 , "Non riesci ad accedere? Prova a resettare la password!"
+                                                 , "Vorresti contattarci? Scopri come nella pagina delle informazioni!"
+                                                 , "Ricordati di non perdere il codice utente: potrebbe servirti per resettare la password!"
+                                                 , "Ricordati che devi aver effettuato l'accesso per poter prenotare una data!");
 }

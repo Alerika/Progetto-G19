@@ -10,4 +10,6 @@ public interface IHomeTrigger {
     void triggerMovieClicked(Movie movie);
     void triggerOpenHomePanel();
     void triggerOpenReservedArea();
+    void triggerStartStatusEvent(String text);
+    void triggerEndStatusEvent(String text);
 }

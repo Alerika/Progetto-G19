@@ -31,6 +31,7 @@ public class Home extends Application {
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
         stage.show();
         stage.setOnHidden(e -> {
+            hc.closeAll();
             dbConnection.close();
             Platform.exit();
         });

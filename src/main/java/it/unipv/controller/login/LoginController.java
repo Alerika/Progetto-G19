@@ -36,10 +36,10 @@ public class LoginController implements Initializable {
     private UserDao userDao;
     private List<User> userList = new ArrayList<>();
 
-    public void init(IHomeTrigger summoner, DBConnection dbConnection) {
+    public void init(IHomeTrigger homeController, DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         this.userDao = new UserDaoImpl(dbConnection);
-        this.homeController = summoner;
+        this.homeController = homeController;
         GUIUtils.setScaleTransitionOnControl(passwordResetButton);
         initUserListFromCSV();
     }
@@ -82,6 +82,7 @@ public class LoginController implements Initializable {
         if(usernameTextfield.getText().equals("") || passwordTextfield.getText().equals("")){
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi compilare tutti i campi!");
         } else {
+            homeController.triggerStartStatusEvent("Eseguo l'accesso...");
             User user = new User(usernameTextfield.getText().trim(), passwordTextfield.getText().trim());
             if(checkIfItIsAValidUserFromUserList(user)) {
                 fullUserWithAllInfo(user);
@@ -91,9 +92,11 @@ public class LoginController implements Initializable {
                     UserInfo.createUserInfoFileInUserDir(user.getNome(), user.getPassword(), user.getEmail(), user.getCodice());
                 }
 
+                homeController.triggerEndStatusEvent("Complimenti " + user.getNome() + ": accesso effettuato con successo!");
                 doExit();
             } else {
                 GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Non esiste un utente con questo username!");
+                homeController.triggerEndStatusEvent("Errore: utente non riconosciuto!");
             }
         }
     }

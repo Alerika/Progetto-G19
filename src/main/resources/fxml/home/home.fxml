@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -41,7 +42,7 @@
                   </AnchorPane>
                </children>
             </AnchorPane>
-            <BorderPane fx:id="homePanel" layoutX="658.0" layoutY="174.0" prefHeight="594.0" prefWidth="1360.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="174.0" />
+            <BorderPane fx:id="homePanel" layoutX="658.0" layoutY="174.0" prefHeight="565.0" prefWidth="1360.0" AnchorPane.bottomAnchor="29.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="174.0" />
             <AnchorPane fx:id="menuContainer" layoutX="-18.0" layoutY="183.0" prefHeight="318.0" prefWidth="324.0">
                <children>
                   <Rectangle fx:id="rectangleMenu" arcHeight="14.0" arcWidth="14.0" fill="#db8f00" height="67.0" layoutX="57.0" layoutY="17.0" stroke="TRANSPARENT" strokeType="INSIDE" width="161.0" />
@@ -92,6 +93,13 @@
                         </Label>
                      </children>
                   </AnchorPane>
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutY="739.0" prefHeight="31.0" prefWidth="1360.0" style="-fx-background-color: #606060; -fx-border-color: #d3d3d3; -fx-border-width: 1px 0px 0px 0px;" AnchorPane.bottomAnchor="-2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+               <children>
+                  <ProgressBar fx:id="statusPBar" layoutX="1249.0" layoutY="5.0" prefHeight="18.0" prefWidth="80.0" progress="0.0" AnchorPane.rightAnchor="31.0" />
+                  <Label fx:id="statusLabel" alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="136.0" layoutY="6.0" prefHeight="17.0" prefWidth="581.0" text="test" textFill="WHITE" AnchorPane.rightAnchor="117.0" />
+                  <Label fx:id="tipsLabel" layoutX="14.0" layoutY="7.0" prefHeight="17.0" prefWidth="648.0" text="Benvenuto in Golden Movie Studio!" textFill="WHITE" AnchorPane.leftAnchor="14.0" />
                </children>
             </AnchorPane>
          </children>

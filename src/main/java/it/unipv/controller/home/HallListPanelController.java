@@ -1,5 +1,6 @@
 package it.unipv.controller.home;
 
+import it.unipv.controller.common.IHomeTrigger;
 import it.unipv.db.DBConnection;
 import it.unipv.dao.HallDao;
 import it.unipv.dao.HallDaoImpl;
@@ -44,14 +45,24 @@ public class HallListPanelController implements ICloseablePane {
     private static int columnMax = 0;
     private GridPane grigliaSale = new GridPane();
     private Stage hallPreviewStage;
+    private IHomeTrigger homeController;
 
-    public void init(double initialWidth, DBConnection dbConnection) {
+    public void init(IHomeTrigger homeController, double initialWidth, DBConnection dbConnection) {
+        this.homeController = homeController;
         this.hallDao = new HallDaoImpl(dbConnection);
-        initHallNameList();
-        initPreview();
         columnMax = getColumnMaxFromPageWidth(initialWidth);
-        Platform.runLater(this::initHallGrid);
+        createUI();
         checkPageDimension();
+    }
+
+    private void createUI() {
+        homeController.triggerStartStatusEvent("Carico le informazioni sulle sale...");
+        Platform.runLater(() -> {
+            initHallNameList();
+            initPreview();
+            initHallGrid();
+        });
+        homeController.triggerEndStatusEvent("Informazioni sulle sale correttamente caricate!");
     }
 
     private void initHallNameList() {
@@ -177,11 +188,7 @@ public class HallListPanelController implements ICloseablePane {
 
     private List<Seat> initDraggableSeatsList(String nomeSala) { return hallDao.retrieveSeats(nomeSala); }
 
-    void triggerNewHallEvent() {
-        initHallNameList();
-        initPreview();
-        initHallGrid();
-    }
+    void triggerNewHallEvent() { createUI(); }
 
     private int temp = 0;
     private void checkPageDimension() {

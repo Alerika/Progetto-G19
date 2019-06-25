@@ -39,7 +39,7 @@ public class ForgotPasswordController {
     @FXML
     public void infoButtonListener() {
         GUIUtils.showAlert( Alert.AlertType.INFORMATION
-                          ,  "Informazione"
+                          , "Informazione"
                           , "Hai dimenticato il codice utente?"
                           , "Contattaci al numero 0256914783 o all'indirizzo studio@goldenmovie.com.\n"
                                   +  "Uno dei nostri tecnici si occupererà di eseguire il reset della password e di informati a procedura completata!");

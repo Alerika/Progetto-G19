@@ -41,15 +41,26 @@ public class MovieListPanelController {
     public void init(IHomeTrigger homeController, double initialWidth, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.homeController = homeController;
+
         rectangle2D3D.setVisible(false);
         lineGenere.setVisible(false);
         genereWindow.setVisible(false);
         genereWindow.setPickOnBounds(false);
         filterContainer.setPickOnBounds(false);
-        initMovieList();
         columnMax = getColumnMaxFromPageWidth(initialWidth);
-        Platform.runLater(this::initMovieGrid);
+
+        createUI();
+
         checkPageDimension();
+    }
+
+    private void createUI() {
+        homeController.triggerStartStatusEvent("Carico i film programmati...");
+        Platform.runLater(() -> {
+            initMovieList();
+            initMovieGrid();
+        });
+        homeController.triggerEndStatusEvent("Film programmati correttamente caricati!");
     }
 
     private void initMovieList() {
@@ -217,10 +228,7 @@ public class MovieListPanelController {
         initRowAndColumnCount();
     }
 
-    void triggerNewMovieEvent() {
-        initMovieList();
-        initMovieGrid();
-    }
+    void triggerNewMovieEvent() { createUI(); }
 
     private int temp = 0;
     private void checkPageDimension() {

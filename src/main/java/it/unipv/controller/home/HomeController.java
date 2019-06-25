@@ -17,25 +17,31 @@ import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 public class HomeController implements IHomeTrigger, IHomeInitializer {
     @FXML private Rectangle rectangleMenu;
     @FXML private AnchorPane menuWindow, menuContainer;
-    @FXML private Label logLabel, nonRegistratoQuestionLabel, registerButton, areaRiservataButton;
+    @FXML private Label logLabel, nonRegistratoQuestionLabel, registerButton, areaRiservataButton, statusLabel, tipsLabel;
+    @FXML private ProgressBar statusPBar;
     @FXML private AnchorPane logoutPane;
     @FXML private BorderPane homePanel;
     private final Stage stageRegistrazione = new Stage();
@@ -48,6 +54,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     private MovieListPanelController mlpc;
     private Stage reservedAreaStage, managerAreaStage;
     private List<ICloseablePane> iCloseablePanes = new ArrayList<>();
+    private Thread tipsThread;
 
     @Override
     public void init(DBConnection dbConnection) {
@@ -63,6 +70,9 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         menuWindow.setVisible(false);
         menuWindow.setPickOnBounds(false);
         menuContainer.setPickOnBounds(false);
+        statusLabel.setVisible(false);
+        statusPBar.setVisible(false);
+        animateTipsLabel();
     }
 
     @FXML
@@ -70,24 +80,24 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         if(!menuWindow.isVisible()){
             menuWindow.setOpacity(0);
             menuWindow.setVisible(true);
-            new Timeline(new KeyFrame(javafx.util.Duration.seconds(0.3), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() +81))).play();
-            new Timeline(new KeyFrame(javafx.util.Duration.seconds(0.3), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()+244))).play();
+            new Timeline(new KeyFrame(Duration.seconds(0.3), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() +81))).play();
+            new Timeline(new KeyFrame(Duration.seconds(0.3), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()+244))).play();
 
-            FadeTransition fadeIn = new FadeTransition(javafx.util.Duration.seconds(0.4), menuWindow);
-            fadeIn.setDelay(javafx.util.Duration.seconds(0.2));
+            FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.4), menuWindow);
+            fadeIn.setDelay(Duration.seconds(0.2));
             fadeIn.setFromValue(0);
             fadeIn.setToValue(1.0);
             fadeIn.play();
         } else {
             if(menuWindow.isVisible()){
-                FadeTransition fadeOut = new FadeTransition(javafx.util.Duration.seconds(0.1), menuWindow);
+                FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.1), menuWindow);
                 fadeOut.setFromValue(1.0);
                 fadeOut.setToValue(0);
                 fadeOut.play();
                 menuWindow.setVisible(false);
 
-                new Timeline(new KeyFrame(javafx.util.Duration.seconds(0.15), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()-244))).play();
-                new Timeline(new KeyFrame(javafx.util.Duration.seconds(0.15), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() -81))).play();
+                new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()-244))).play();
+                new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() -81))).play();
             }
         }
     }
@@ -110,15 +120,17 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     @FXML
     private void homeClick() {
         closeAllSubWindows();
-        openHomePanel();
-        animationMenu();
+        KeyFrame kf1 = new KeyFrame(Duration.millis(100), e -> animationMenu());
+        KeyFrame kf2 = new KeyFrame(Duration.millis(250), e -> openHomePanel());
+        Platform.runLater(new Timeline(kf1,kf2)::play);
     }
 
     @FXML
     private void salaClick() {
         closeAllSubWindows();
-        openHallList();
-        animationMenu();
+        KeyFrame kf1 = new KeyFrame(Duration.millis(100), e -> animationMenu());
+        KeyFrame kf2 = new KeyFrame(Duration.millis(250), e -> openHallList());
+        Platform.runLater(new Timeline(kf1,kf2)::play);
     }
 
     @FXML
@@ -160,48 +172,32 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
 
     @FXML private void logoutListener() { doLogout(); }
 
-    void openHomePanel() {
+    private void openHomePanel() {
+        mlpc = openNewPanel("/fxml/home/movieList.fxml").getController();
+        mlpc.init(this, homePanel.getWidth(), dbConnection);
+    }
+
+    private FXMLLoader openNewPanel(String fxmlpath) {
         try {
-            homePanel.getChildren().clear();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/home/movieList.fxml"));
-            AnchorPane moviePanel = loader.load();
-            mlpc = loader.getController();
-            mlpc.init(this, homePanel.getWidth(), dbConnection);
-            moviePanel.prefWidthProperty().bind(homePanel.widthProperty());
-            moviePanel.prefHeightProperty().bind(homePanel.heightProperty());
-            homePanel.setCenter(moviePanel);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlpath));
+            AnchorPane pane = loader.load();
+            pane.prefWidthProperty().bind(homePanel.widthProperty());
+            pane.prefHeightProperty().bind(homePanel.heightProperty());
+            homePanel.setCenter(pane);
+            return loader;
         } catch (IOException e) {
             throw new ApplicationException(e);
         }
     }
 
     private void openHallList() {
-        try {
-            homePanel.getChildren().clear();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/home/hallList.fxml"));
-            AnchorPane hallPanel = loader.load();
-            hlpc = loader.getController();
-            hlpc.init(homePanel.getWidth(), dbConnection);
-            hallPanel.prefWidthProperty().bind(homePanel.widthProperty());
-            hallPanel.prefHeightProperty().bind(homePanel.heightProperty());
-            homePanel.setCenter(hallPanel);
-            if(!iCloseablePanes.contains(hlpc)) { iCloseablePanes.add(hlpc); }
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
+        hlpc = openNewPanel("/fxml/home/hallList.fxml").getController();
+        hlpc.init(this, homePanel.getWidth(), dbConnection);
+        if(!iCloseablePanes.contains(hlpc)) { iCloseablePanes.add(hlpc); }
     }
 
     private void openInfo() {
-        try {
-            homePanel.getChildren().clear();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/home/info.fxml"));
-            AnchorPane infoPanel = loader.load();
-            infoPanel.prefWidthProperty().bind(homePanel.widthProperty());
-            infoPanel.prefHeightProperty().bind(homePanel.heightProperty());
-            homePanel.setCenter(infoPanel);
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
+        openNewPanel("/fxml/home/info.fxml");
     }
 
     private void openRegistrazione(){
@@ -221,6 +217,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     }
 
     private void doLogout() {
+        triggerStartStatusEvent("Disconnessione in corso...");
         logLabel.setText("effettua il login");
         nonRegistratoQuestionLabel.setText("non sei registrato?");
         registerButton.setText("Registrati");
@@ -251,6 +248,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         closeAllSubWindows();
 
         initWelcomePage(loggedUser);
+        triggerEndStatusEvent("Disconnessione avvenuta con successo!");
     }
 
     private void closeAllSubWindows() {
@@ -311,7 +309,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     }
 
     private boolean isReservedAreaOpened = false;
-    public void doOpenReservedArea() {
+    private void doOpenReservedArea() {
         if(!isReservedAreaOpened) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/userarea/AreaRiservataHome.fxml"));
@@ -380,30 +378,83 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
-    @Override
-    public void triggerMovieClicked(Movie movie) {
+    @Override public void triggerMovieClicked(Movie movie) {
         openSingleMoviePanel(movie);
     }
 
-    @Override
-    public void triggerOpenHomePanel() { openHomePanel(); }
-
-    @Override
-    public void triggerOpenReservedArea() { doOpenReservedArea(); }
-
     private void openSingleMoviePanel(Movie movie) {
-        try {
-            homePanel.getChildren().clear();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/home/singleMoviePanel.fxml"));
-            AnchorPane singleMoviePanel = loader.load();
-            SingleMoviePanelController smpc = loader.getController();
-            smpc.init(this, movie, loggedUser, dbConnection);
-            singleMoviePanel.prefWidthProperty().bind(homePanel.widthProperty());
-            singleMoviePanel.prefHeightProperty().bind(homePanel.heightProperty());
-            if(!iCloseablePanes.contains(smpc)) { iCloseablePanes.add(smpc); }
-            homePanel.setCenter(singleMoviePanel);
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
+        SingleMoviePanelController smpc = openNewPanel("/fxml/home/singleMoviePanel.fxml").getController();
+        smpc.init(this, movie, loggedUser, dbConnection);
+        if(!iCloseablePanes.contains(smpc)) { iCloseablePanes.add(smpc); }
+    }
+
+    @Override public void triggerOpenHomePanel() { openHomePanel(); }
+
+    @Override public void triggerOpenReservedArea() { doOpenReservedArea(); }
+
+    @Override
+    public void triggerStartStatusEvent(String text) {
+        statusLabel.setVisible(true);
+        statusPBar.setVisible(true);
+        statusLabel.setText(text);
+        statusPBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+    }
+
+    @Override
+    public void triggerEndStatusEvent(String text) {
+        KeyFrame kf1 = new KeyFrame(Duration.millis(100), event -> {
+            statusLabel.setText(text);
+            statusPBar.setProgress(100);
+        });
+
+        KeyFrame kf2 = new KeyFrame(Duration.seconds(5), e -> {
+            statusLabel.setVisible(false);
+            statusPBar.setVisible(false);
+        });
+
+        Platform.runLater(new Timeline(kf1,kf2)::play);
+    }
+
+    @Override
+    public void closeAll() {
+        if(tipsThread!=null) { tipsThread.interrupt(); }
+        closeAllSubWindows();
+    }
+
+    private void animateTipsLabel() {
+        List<String> tips = DataReferences.TIPS;
+        tipsThread = new Thread(() -> {
+            boolean shouldDie = false;
+            while (!shouldDie) {
+                try {
+                    for (String s : tips) {
+                        Platform.runLater(() -> {
+                            setFadeOutOnLabel(tipsLabel);
+                            tipsLabel.setText(s);
+                            setFadeInOnLabel(tipsLabel);
+                        });
+                        sleep(5000);
+                    }
+                } catch (InterruptedException e) {
+                    shouldDie = true;
+                }
+            }
+        });
+        tipsThread.start();
+    }
+
+    private static void setFadeInOnLabel(Label label) {
+        final FadeTransition fadeIn = new FadeTransition(Duration.millis(1000));
+        fadeIn.setNode(label);
+        fadeIn.setToValue(1);
+        fadeIn.playFromStart();
+    }
+
+    private static void setFadeOutOnLabel(Label label) {
+        final FadeTransition fadeOut = new FadeTransition(Duration.millis(1000));
+        fadeOut.setNode(label);
+        fadeOut.setToValue(0);
+        fadeOut.playFromStart();
+        label.setOpacity(0);
     }
 }
