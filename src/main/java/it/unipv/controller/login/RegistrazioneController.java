@@ -42,34 +42,39 @@ public class RegistrazioneController {
                 if(!isAlreadyThereThisEmail()) {
                     if(isEmailValid()) {
                         if(passwordTextfield.getText().equals(retryPasswordTextfield.getText())) {
-                            String codice = getUserCode();
-                            userDao.insertNewUser(new User( usernameTextfield.getText()
-                                                                 , passwordTextfield.getText()
-                                                                 , emailTextfield.getText()
-                                                                 , codice));
-                            GUIUtils.showAlert( Alert.AlertType.INFORMATION
-                                              , "Info"
-                                              , "Informazione:"
-                                              , "Registrazione avvenuta con successo!\n"
-                                                       + "Codice utente: " + codice + ". Ricordati di non smarrirlo, potrebbe esserti utile per reimpostare la password!");
+                            doRealRegistrationAndShowConfirm();
                             doExit();
                         } else {
-                            GUIUtils.showAlert(Alert.AlertType.ERROR,  "Errore", "Si è verificato un errore:", "Le password non coincidono!");
-                            clearTextField(passwordTextfield, retryPasswordTextfield);
+                            showError("Le password non coincidono!", passwordTextfield, retryPasswordTextfield);
                         }
                     } else {
-                        GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Non hai inserito una E-mail valida!");
-                        clearTextField(emailTextfield, passwordTextfield, retryPasswordTextfield);
+                        showError("Non hai inserito una E-mail valida!", emailTextfield, passwordTextfield, retryPasswordTextfield);
                     }
                 } else {
-                    GUIUtils.showAlert(Alert.AlertType.ERROR,  "Errore", "Si è verificato un errore:", "E-mail già esistente!");
-                    clearTextField(emailTextfield, passwordTextfield, retryPasswordTextfield);
+                    showError("E-mail già esistente!", emailTextfield, passwordTextfield, retryPasswordTextfield);
                 }
             } else {
-                GUIUtils.showAlert(Alert.AlertType.ERROR,  "Errore", "Si è verificato un errore:", "Nome utente già esistente!");
-                clearTextField(usernameTextfield, passwordTextfield, retryPasswordTextfield);
+                showError("Nome utente già esistente!", usernameTextfield, passwordTextfield, retryPasswordTextfield);
             }
         }
+    }
+
+    private void doRealRegistrationAndShowConfirm() {
+        String codice = getUserCode();
+        userDao.insertNewUser(new User( usernameTextfield.getText()
+                                      , passwordTextfield.getText()
+                                      , emailTextfield.getText()
+                                      , codice));
+        GUIUtils.showAlert( Alert.AlertType.INFORMATION
+                          , "Info"
+                          , "Informazione:"
+                          , "Registrazione avvenuta con successo!\n"
+                                   + "Codice utente: " + codice + ". Ricordati di non smarrirlo, potrebbe esserti utile per reimpostare la password!");
+    }
+
+    private void showError(String dialogMessageText, TextField... toClear) {
+        GUIUtils.showAlert(Alert.AlertType.ERROR,  "Errore", "Si è verificato un errore:", dialogMessageText);
+        clearTextField(toClear);
     }
 
     private String getUserCode() {
