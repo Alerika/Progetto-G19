@@ -1,16 +1,13 @@
 package it.unipv.controller.home;
 
-import it.unipv.controller.common.IHomeInitializer;
-import it.unipv.controller.common.IHomeTrigger;
+import it.unipv.controller.common.*;
 import it.unipv.db.DBConnection;
 import it.unipv.conversion.UserInfo;
-import it.unipv.controller.common.ICloseablePane;
 import it.unipv.model.Movie;
 import it.unipv.controller.login.LoginController;
 import it.unipv.controller.login.RegistrazioneController;
 import it.unipv.model.User;
 import it.unipv.controller.managerarea.ManagerHomeController;
-import it.unipv.controller.userarea.AreaRiservataHomeController;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 import javafx.animation.FadeTransition;
@@ -35,8 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Thread.sleep;
-
 public class HomeController implements IHomeTrigger, IHomeInitializer {
     @FXML private Rectangle rectangleMenu;
     @FXML private AnchorPane menuWindow, menuContainer;
@@ -48,10 +43,10 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     private DBConnection dbConnection;
     private final Stage stageLogin = new Stage();
     private User loggedUser;
-    private ManagerHomeController mhc;
-    private AreaRiservataHomeController arhc;
-    private HallListPanelController hlpc;
-    private MovieListPanelController mlpc;
+    private ManagerHomeController managerHomeController;
+    private IUserReservedAreaInitializer areaRiservataInitializer;
+    private HallListPanelController hallListPanelController;
+    private MovieListPanelController movieListPanelController;
     private Stage reservedAreaStage, managerAreaStage;
     private List<ICloseablePane> iCloseablePanes = new ArrayList<>();
     private Thread tipsThread;
@@ -73,6 +68,11 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         statusLabel.setVisible(false);
         statusPBar.setVisible(false);
         animateTipsLabel();
+    }
+
+    private void animateTipsLabel() {
+        tipsThread = GUIUtils.getTipsThread(DataReferences.HOMETIPS, tipsLabel, 10000);
+        tipsThread.start();
     }
 
     @FXML
@@ -121,7 +121,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     private void homeClick() {
         closeAllSubWindows();
         KeyFrame kf1 = new KeyFrame(Duration.millis(100), e -> animationMenu());
-        KeyFrame kf2 = new KeyFrame(Duration.millis(280), e -> openHomePanel());
+        KeyFrame kf2 = new KeyFrame(Duration.millis(290), e -> openHomePanel());
         Platform.runLater(new Timeline(kf1,kf2)::play);
     }
 
@@ -129,7 +129,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     private void salaClick() {
         closeAllSubWindows();
         KeyFrame kf1 = new KeyFrame(Duration.millis(100), e -> animationMenu());
-        KeyFrame kf2 = new KeyFrame(Duration.millis(280), e -> openHallList());
+        KeyFrame kf2 = new KeyFrame(Duration.millis(290), e -> openHallList());
         Platform.runLater(new Timeline(kf1,kf2)::play);
     }
 
@@ -173,8 +173,8 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     @FXML private void logoutListener() { doLogout(); }
 
     private void openHomePanel() {
-        mlpc = openNewPanel("/fxml/home/movieList.fxml").getController();
-        mlpc.init(this, homePanel.getWidth(), dbConnection);
+        movieListPanelController = openNewPanel("/fxml/home/movieList.fxml").getController();
+        movieListPanelController.init(this, homePanel.getWidth(), dbConnection);
     }
 
     private FXMLLoader openNewPanel(String fxmlpath) {
@@ -191,9 +191,9 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     }
 
     private void openHallList() {
-        hlpc = openNewPanel("/fxml/home/hallList.fxml").getController();
-        hlpc.init(this, homePanel.getWidth(), dbConnection);
-        if(!iCloseablePanes.contains(hlpc)) { iCloseablePanes.add(hlpc); }
+        hallListPanelController = openNewPanel("/fxml/home/hallList.fxml").getController();
+        hallListPanelController.init(this, homePanel.getWidth(), dbConnection);
+        if(!iCloseablePanes.contains(hallListPanelController)) { iCloseablePanes.add(hallListPanelController); }
     }
 
     private void openInfo() {
@@ -232,7 +232,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         if(reservedAreaStage != null) {
             if(reservedAreaStage.isShowing()) {
                 isReservedAreaOpened = false;
-                arhc.closeAllSubWindows();
+                areaRiservataInitializer.closeAllSubWindows();
                 reservedAreaStage.close();
             }
         }
@@ -240,7 +240,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         if(managerAreaStage != null) {
             if(managerAreaStage.isShowing()) {
                 isManagerAreaOpened = false;
-                mhc.closeAllSubWindows();
+                managerHomeController.closeAllSubWindows();
                 managerAreaStage.close();
             }
         }
@@ -287,8 +287,8 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/managerarea/ManagerHome.fxml"));
                 Parent root = loader.load();
-                mhc = loader.getController();
-                mhc.init(this, dbConnection);
+                managerHomeController = loader.getController();
+                managerHomeController.init(this, dbConnection);
                 managerAreaStage = new Stage();
                 managerAreaStage.setScene(new Scene(root));
                 managerAreaStage.setTitle("Area Manager");
@@ -297,7 +297,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
                 managerAreaStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
                 managerAreaStage.setOnCloseRequest( event -> {
                     isManagerAreaOpened = false;
-                    mhc.closeAllSubWindows();
+                    managerHomeController.closeAllSubWindows();
                 });
                 managerAreaStage.show();
                 isManagerAreaOpened = true;
@@ -314,8 +314,8 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/userarea/AreaRiservataHome.fxml"));
                 Parent p = loader.load();
-                arhc = loader.getController();
-                arhc.init(loggedUser, true, dbConnection);
+                areaRiservataInitializer = loader.getController();
+                areaRiservataInitializer.init(loggedUser, true, dbConnection);
                 reservedAreaStage = new Stage();
                 reservedAreaStage.setScene(new Scene(p));
                 reservedAreaStage.setMinHeight(850);
@@ -324,7 +324,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
                 reservedAreaStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
                 reservedAreaStage.setOnCloseRequest( event -> {
                     isReservedAreaOpened = false;
-                    arhc.closeAllSubWindows();
+                    areaRiservataInitializer.closeAllSubWindows();
                 });
                 reservedAreaStage.show();
                 isReservedAreaOpened = true;
@@ -366,15 +366,15 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
 
     @Override
     public void triggerNewMovieEvent() {
-        if(mlpc!=null) {
-            mlpc.triggerNewMovieEvent();
+        if(movieListPanelController !=null) {
+            movieListPanelController.triggerNewMovieEvent();
         }
     }
 
     @Override
     public void triggerNewHallEvent() {
-        if(hlpc!=null) {
-            hlpc.triggerNewHallEvent();
+        if(hallListPanelController !=null) {
+            hallListPanelController.triggerNewHallEvent();
         }
     }
 
@@ -400,7 +400,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         statusPBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
     }
 
-    private Timeline timeline;
+    private static Timeline timeline;
     @Override
     public void triggerEndStatusEvent(String text) {
         if(timeline!=null) { timeline.stop(); }
@@ -424,42 +424,5 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     public void closeAll() {
         if(tipsThread!=null) { tipsThread.interrupt(); }
         closeAllSubWindows();
-    }
-
-    private void animateTipsLabel() {
-        List<String> tips = DataReferences.TIPS;
-        tipsThread = new Thread(() -> {
-            boolean shouldDie = false;
-            while (!shouldDie) {
-                try {
-                    for (String s : tips) {
-                        Platform.runLater(() -> {
-                            setFadeOutOnLabel(tipsLabel);
-                            tipsLabel.setText(s);
-                            setFadeInOnLabel(tipsLabel);
-                        });
-                        sleep(5000);
-                    }
-                } catch (InterruptedException e) {
-                    shouldDie = true;
-                }
-            }
-        });
-        tipsThread.start();
-    }
-
-    private static void setFadeInOnLabel(Label label) {
-        final FadeTransition fadeIn = new FadeTransition(Duration.millis(1000));
-        fadeIn.setNode(label);
-        fadeIn.setToValue(1);
-        fadeIn.playFromStart();
-    }
-
-    private static void setFadeOutOnLabel(Label label) {
-        final FadeTransition fadeOut = new FadeTransition(Duration.millis(1000));
-        fadeOut.setNode(label);
-        fadeOut.setToValue(0);
-        fadeOut.playFromStart();
-        label.setOpacity(0);
     }
 }

@@ -3,6 +3,7 @@ package it.unipv.controller.userarea;
 import java.io.File;
 import java.util.*;
 
+import it.unipv.controller.common.IUserReservedAreaTrigger;
 import it.unipv.db.DBConnection;
 import it.unipv.dao.PrenotationDao;
 import it.unipv.dao.PrenotationDaoImpl;
@@ -12,6 +13,7 @@ import it.unipv.model.User;
 import it.unipv.model.Prenotation;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -32,15 +34,26 @@ public class CurrentPrenotationPanelController {
     private static int columnCount = 0;
     private GridPane grigliaPrenotazioni = new GridPane();
     private PrenotationDao prenotationDao;
+    private IUserReservedAreaTrigger areaRiservataController;
     @FXML private ScrollPane prenotationsPanel;
     @FXML private TextField searchBarTextfield;
     @FXML private Label searchButton;
 
-    public void init(User user, DBConnection dbConnection) {
+    public void init(IUserReservedAreaTrigger areaRiservataController, User user, DBConnection dbConnection) {
         this.user = user;
         this.prenotationDao = new PrenotationDaoImpl(dbConnection);
+        this.areaRiservataController = areaRiservataController;
         GUIUtils.setScaleTransitionOnControl(searchButton);
-        createPrenotationListGrid();
+        createUI();
+    }
+
+    private void createUI () {
+        areaRiservataController.triggerStartStatusEvent("Carico le prenotazioni effettuate...");
+        Platform.runLater(() -> {
+            initPrenotationList();
+            createPrenotationListGrid();
+        });
+        areaRiservataController.triggerEndStatusEvent("Prenotazioni di " + user.getNome() + " correttamente caricate!");
     }
 
     private void initPrenotationList() {
@@ -58,8 +71,6 @@ public class CurrentPrenotationPanelController {
     private void createPrenotationListGrid() {
         grigliaPrenotazioni.getChildren().clear();
         GUIUtils.setScaleTransitionOnControl(searchButton);
-
-        initPrenotationList();
 
         for (Prenotation p : prenotations) {
             createGridCellFromPrenotation(p);
@@ -160,7 +171,7 @@ public class CurrentPrenotationPanelController {
         columnCount=0;
     }
 
-    private void refreshUI() { createPrenotationListGrid(); }
+    private void refreshUI() { createUI(); }
 
     @FXML
     public void searchButtonListener() {

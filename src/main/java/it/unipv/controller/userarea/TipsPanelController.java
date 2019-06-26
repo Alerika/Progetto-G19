@@ -1,5 +1,6 @@
 package it.unipv.controller.userarea;
 
+import it.unipv.controller.common.IUserReservedAreaTrigger;
 import it.unipv.db.*;
 import it.unipv.dao.MovieDao;
 import it.unipv.dao.PrenotationDao;
@@ -39,18 +40,28 @@ public class TipsPanelController {
     private GridPane grigliaFilm = new GridPane();
     private MovieDao movieDao;
     private PrenotationDao prenotationDao;
+    private IUserReservedAreaTrigger areaRiservataController;
     @FXML private ScrollPane tipsPanel;
     @FXML private Label welcomeLabel;
 
-    public void init(User loggedUser, double initialWidth, DBConnection dbConnection) {
+    public void init(IUserReservedAreaTrigger areaRiservataController, User loggedUser, double initialWidth, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.prenotationDao = new PrenotationDaoImpl(dbConnection);
         this.loggedUser = loggedUser;
-        initFullMovieList();
-        initMovieList();
+        this.areaRiservataController = areaRiservataController;
         columnMax = getColumnMaxFromPageWidth(initialWidth);
-        createMovieGrid();
+        createUI();
         checkPageDimension();
+    }
+
+    private void createUI() {
+        areaRiservataController.triggerStartStatusEvent("Carico suggerimenti in base ai film visti da " + loggedUser.getNome() + "...");
+        Platform.runLater(() -> {
+            initFullMovieList();
+            initMovieList();
+            createMovieGrid();
+        });
+        areaRiservataController.triggerEndStatusEvent("Suggerimenti per " + loggedUser.getNome() + " correttamente caricati!");
     }
 
     private void initFullMovieList() {
@@ -204,10 +215,7 @@ public class TipsPanelController {
         return mostRepeated;
     }
 
-    private void refreshUI() {
-        grigliaFilm.getChildren().clear();
-        createMovieGrid();
-    }
+    private void refreshUI() { createMovieGrid(); }
 
     private int getColumnMaxFromPageWidth(double width) {
         if(width<800) {

@@ -1,23 +1,23 @@
 package it.unipv.controller.common;
 
 import it.unipv.utils.CloseableUtils;
-import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.ScaleTransition;
+import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
+
+import static java.lang.Thread.sleep;
 
 public class GUIUtils {
 
@@ -105,5 +105,40 @@ public class GUIUtils {
         inputDialog.setHeaderText(header);
         inputDialog.setContentText(message);
         return inputDialog.showAndWait();
+    }
+
+    public static Thread getTipsThread(List<String> tips, Label tipsLabel, int sleepTime) {
+        return new Thread(() -> {
+            boolean shouldDie = false;
+            while (!shouldDie) {
+                try {
+                    for (String s : tips) {
+                        Platform.runLater(() -> {
+                            setFadeOutOnLabel(tipsLabel);
+                            tipsLabel.setText(s);
+                            setFadeInOnLabel(tipsLabel);
+                        });
+                        sleep(sleepTime);
+                    }
+                } catch (InterruptedException e) {
+                    shouldDie = true;
+                }
+            }
+        });
+    }
+
+    private static void setFadeInOnLabel(Label label) {
+        final FadeTransition fadeIn = new FadeTransition(Duration.millis(1000));
+        fadeIn.setNode(label);
+        fadeIn.setToValue(1);
+        fadeIn.playFromStart();
+    }
+
+    private static void setFadeOutOnLabel(Label label) {
+        final FadeTransition fadeOut = new FadeTransition(Duration.millis(1000));
+        fadeOut.setNode(label);
+        fadeOut.setToValue(0);
+        fadeOut.playFromStart();
+        label.setOpacity(0);
     }
 }

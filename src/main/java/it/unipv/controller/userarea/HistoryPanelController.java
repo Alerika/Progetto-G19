@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import it.unipv.controller.common.IUserReservedAreaTrigger;
 import it.unipv.db.*;
 import it.unipv.dao.MovieDao;
 import it.unipv.dao.PrenotationDao;
@@ -46,28 +47,35 @@ public class HistoryPanelController implements ICloseablePane {
     private GridPane grigliaFilm = new GridPane();
     private Stage oldestPrenotationStage;
     private MovieDao movieDao;
+    private IUserReservedAreaTrigger areaRiservataController;
     private PrenotationDao prenotationDao;
     @FXML private ScrollPane historyPanel;
     @FXML private TextField searchBarTextfield;
     @FXML private Label searchButton;
 
 
-    public void init(User loggedUser, double initialWidth, DBConnection dbConnection) {
+    public void init(IUserReservedAreaTrigger areaRiservataController, User loggedUser, double initialWidth, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.prenotationDao = new PrenotationDaoImpl(dbConnection);
         this.loggedUser = loggedUser;
+        this.areaRiservataController = areaRiservataController;
         GUIUtils.setScaleTransitionOnControl(searchButton);
-        initMovieAndPrenotationList();
         columnMax = getColumnMaxFromPageWidth(initialWidth);
-        createMovieGrid();
+
+        createUI();
         checkPageDimension();
     }
 
-
-    private void refreshUI() {
-        grigliaFilm.getChildren().clear();
-        createMovieGrid();
+    private void createUI() {
+        areaRiservataController.triggerStartStatusEvent("Carico film visti in precedenza...");
+        Platform.runLater(() -> {
+            initMovieAndPrenotationList();
+            createMovieGrid();
+        });
+        areaRiservataController.triggerEndStatusEvent("Lista film visti da " + loggedUser.getNome() + " caricata con successo!");
     }
+
+    private void refreshUI() { createMovieGrid(); }
 
     private int getColumnMaxFromPageWidth(double width) {
         if(width<800) {
