@@ -121,7 +121,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     private void homeClick() {
         closeAllSubWindows();
         KeyFrame kf1 = new KeyFrame(Duration.millis(100), e -> animationMenu());
-        KeyFrame kf2 = new KeyFrame(Duration.millis(250), e -> openHomePanel());
+        KeyFrame kf2 = new KeyFrame(Duration.millis(280), e -> openHomePanel());
         Platform.runLater(new Timeline(kf1,kf2)::play);
     }
 
@@ -129,7 +129,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     private void salaClick() {
         closeAllSubWindows();
         KeyFrame kf1 = new KeyFrame(Duration.millis(100), e -> animationMenu());
-        KeyFrame kf2 = new KeyFrame(Duration.millis(250), e -> openHallList());
+        KeyFrame kf2 = new KeyFrame(Duration.millis(280), e -> openHallList());
         Platform.runLater(new Timeline(kf1,kf2)::play);
     }
 
@@ -400,8 +400,11 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         statusPBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
     }
 
+    private Timeline timeline;
     @Override
     public void triggerEndStatusEvent(String text) {
+        if(timeline!=null) { timeline.stop(); }
+
         KeyFrame kf1 = new KeyFrame(Duration.millis(100), event -> {
             statusLabel.setText(text);
             statusPBar.setProgress(100);
@@ -412,7 +415,9 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
             statusPBar.setVisible(false);
         });
 
-        Platform.runLater(new Timeline(kf1,kf2)::play);
+        timeline = new Timeline(kf1, kf2);
+
+        Platform.runLater(timeline::play);
     }
 
     @Override
