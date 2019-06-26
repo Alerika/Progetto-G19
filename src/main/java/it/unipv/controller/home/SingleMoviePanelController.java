@@ -54,7 +54,13 @@ public class SingleMoviePanelController implements ICloseablePane {
         this.loggedUser = loggedUser;
         this.dbConnection = dbConnection;
         this.scheduleDao = new ScheduleDaoImpl(dbConnection);
+        createUI();
+    }
+
+    private void createUI() {
+        homeController.triggerStartStatusEvent("Recupero le informazioni di " + movie.getTitolo() + "...");
         Platform.runLater(this::populateSingleFilmPane);
+        homeController.triggerEndStatusEvent("Informazioni riguardanti " + movie.getTitolo() + " correttamente recuperate!");
     }
 
     private void setLabelParameter(Label toSet, String text, Color color, double layoutX, double layoutY) {
@@ -67,7 +73,6 @@ public class SingleMoviePanelController implements ICloseablePane {
 
     private void populateSingleFilmPane() {
         singleFilmPane.getChildren().clear();
-
 
         ImageView poster = new ImageView(movie.getLocandina());
         poster.setPreserveRatio(true);
