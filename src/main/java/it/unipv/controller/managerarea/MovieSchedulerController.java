@@ -31,8 +31,8 @@ import javafx.stage.Stage;
 
 public class MovieSchedulerController implements ICloseablePane {
 
-    @FXML Label nuovaProgrammazioneButton;
-    @FXML ScrollPane schedulerPanel;
+    @FXML private Label nuovaProgrammazioneButton;
+    @FXML private ScrollPane schedulerPanel;
     private Stage movieSchedulerEditorStage;
     private GridPane grigliaProgrammazione = new GridPane();
     private static int rowCount = 0;
@@ -66,7 +66,7 @@ public class MovieSchedulerController implements ICloseablePane {
     }
 
     private boolean isMovieSchedulerEditorAlreadyOpened = false;
-    @FXML public void nuovaProgrammazioneButtonListener() {
+    @FXML private void nuovaProgrammazioneButtonListener() {
         if(!isMovieSchedulerEditorAlreadyOpened) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/managerarea/MovieScheduleEditor.fxml"));

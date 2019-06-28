@@ -35,24 +35,31 @@ import org.apache.commons.lang3.StringUtils;
 
 public class MovieListPanelController implements ICloseablePane {
 
-    @FXML TextField searchBarTextfield;
-    @FXML Label searchButton;
-    @FXML ScrollPane movieListPanel;
+    @FXML private TextField searchBarTextfield;
+    @FXML private Label searchButton;
+    @FXML private ScrollPane movieListPanel;
 
     private GridPane grigliaFilm = new GridPane();
     private static int rowCount = 0;
     private static int columnCount = 0;
     private List<Movie> movies = new ArrayList<>();
-    private ManagerHomeController managerHomeController;
+    private IManagerAreaTrigger managerHomeController;
     private Stage movieEditorControllerStage;
     private MovieDao movieDao;
     private ScheduleDao scheduleDao;
 
-    public void init(ManagerHomeController managerHomeController, DBConnection dbConnection) {
+    public void init(IManagerAreaTrigger managerHomeController, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.scheduleDao = new ScheduleDaoImpl(dbConnection);
         this.managerHomeController = managerHomeController;
+        createUI();
+    }
+
+    private void createUI() {
+        managerHomeController.triggerStartStatusEvent("Carico tutti i film presenti a sistema...");
+        initMoviesList();
         createMovieListGrid();
+        managerHomeController.triggerEndStatusEvent("Film caricati correttamente!");
     }
 
     private void initMoviesList() {
@@ -62,7 +69,6 @@ public class MovieListPanelController implements ICloseablePane {
 
     private void createMovieListGrid() {
         grigliaFilm.getChildren().clear();
-        initMoviesList();
 
         for (Movie movie : movies) {
             createViewFromMoviesList(movie);
@@ -119,18 +125,7 @@ public class MovieListPanelController implements ICloseablePane {
 
         setVisibleIcon.setLayoutY(movieTitleLabel.getLayoutY());
         setVisibleIcon.setLayoutX(movieTitleLabel.getLayoutX()+270);
-        setVisibleIcon.setOnMouseClicked(event -> {
-            Optional<ButtonType> option =
-                    GUIUtils.showConfirmationAlert( "Attenzione"
-                                                  , "Richiesta conferma"
-                                                  , "Sei sicuro di voler rendere " + movie.getTitolo() + " programmabile?");
-            if(option.orElse(null)==ButtonType.YES) {
-                movie.setStatus(MovieStatusTYPE.AVAILABLE);
-                movieDao.updateMovieButNotPoster(movie);
-                managerHomeController.triggerToHomeNewMovieEvent();
-                refreshUI();
-            }
-        });
+        setVisibleIcon.setOnMouseClicked(event -> doSetVisible(movie));
 
         editIcon.setLayoutY(movieTitleLabel.getLayoutY());
         editIcon.setLayoutX(movieTitleLabel.getLayoutX()+305);
@@ -138,24 +133,43 @@ public class MovieListPanelController implements ICloseablePane {
 
         deleteIcon.setLayoutY(movieTitleLabel.getLayoutY());
         deleteIcon.setLayoutX(movieTitleLabel.getLayoutX()+340);
-        deleteIcon.setOnMouseClicked(e -> {
-            Optional<ButtonType> option =
-                    GUIUtils.showConfirmationAlert( "Attenzione"
-                                                  , "Richiesta conferma:"
-                                                  , "Sei sicuro di voler eliminare " + movie.getTitolo() + " e le sue relative programmazioni?");
-            if(option.orElse(null)==ButtonType.YES) {
-                removeAssociatedSchedules(movie);
-                movieDao.deleteMovie(movie);
-                managerHomeController.triggerToHomeNewMovieEvent();
-                refreshUI();
-            }
-        });
+        deleteIcon.setOnMouseClicked(e -> doDelete(movie));
 
         pane.getChildren().add(movieTitleLabel);
         if(!movie.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
             pane.getChildren().add(setVisibleIcon);
         }
         pane.getChildren().addAll(editIcon, deleteIcon);
+    }
+
+    private void doDelete(Movie movie) {
+        Optional<ButtonType> option =
+                GUIUtils.showConfirmationAlert( "Attenzione"
+                                              , "Richiesta conferma:"
+                                              , "Sei sicuro di voler eliminare " + movie.getTitolo() + " e le sue relative programmazioni?");
+        if(option.orElse(null)==ButtonType.YES) {
+            managerHomeController.triggerStartStatusEvent("Elimino il film " + movie.getTitolo() + "...");
+            removeAssociatedSchedules(movie);
+            movieDao.deleteMovie(movie);
+            managerHomeController.triggerToHomeNewMovieEvent();
+            refreshUI();
+            managerHomeController.triggerEndStatusEvent("Film " + movie.getTitolo() + " cancellato correttamente!");
+        }
+    }
+
+    private void doSetVisible(Movie movie) {
+        Optional<ButtonType> option =
+                GUIUtils.showConfirmationAlert( "Attenzione"
+                                              , "Richiesta conferma"
+                                              , "Sei sicuro di voler rendere " + movie.getTitolo() + " programmabile?");
+        if(option.orElse(null)==ButtonType.YES) {
+            managerHomeController.triggerStartStatusEvent("Rendo visibile " + movie.getTitolo() + "...");
+            movie.setStatus(MovieStatusTYPE.AVAILABLE);
+            movieDao.updateMovieButNotPoster(movie);
+            managerHomeController.triggerToHomeNewMovieEvent();
+            refreshUI();
+            managerHomeController.triggerEndStatusEvent(movie.getTitolo() + " ora è correttamente programmabile!");
+        }
     }
 
     private boolean isMovieEditorAlreadyOpened = false;
@@ -189,10 +203,10 @@ public class MovieListPanelController implements ICloseablePane {
     }
 
     private void refreshUI() {
-        createMovieListGrid();
+        createUI();
     }
 
-    @FXML public void searchButtonListener() {
+    @FXML private void searchButtonListener() {
         String searchedMovieTitle = searchBarTextfield.getText();
         if(searchedMovieTitle!=null) {
             grigliaFilm.getChildren().clear();
@@ -208,15 +222,23 @@ public class MovieListPanelController implements ICloseablePane {
     }
 
     void triggerOverwriteMovieButNotPosterEvent(Movie movie) {
-        movieDao.updateMovieButNotPoster(movie);
-        refreshUI();
-        managerHomeController.triggerToHomeNewMovieEvent();
+        triggerToHome(movie, null);
     }
 
     void triggerOverwriteMovieEvent(Movie movie, FileInputStream posterStream) {
-        movieDao.updateMovie(movie, posterStream);
+        triggerToHome(movie, posterStream);
+    }
+
+    private void triggerToHome(Movie movie, FileInputStream posterStream) {
+        managerHomeController.triggerStartStatusEvent("Aggiorno il film " + movie.getTitolo() + "...");
+        if(posterStream == null) {
+            movieDao.updateMovieButNotPoster(movie);
+        } else {
+            movieDao.updateMovie(movie, posterStream);
+        }
         refreshUI();
         managerHomeController.triggerToHomeNewMovieEvent();
+        managerHomeController.triggerEndStatusEvent(movie.getTitolo() + " correttamente aggiornato!");
     }
 
     @Override

@@ -22,17 +22,17 @@ import javafx.stage.FileChooser;
 
 public class MovieEditorController {
 
-    @FXML TextField imgTextField;
-    @FXML Button searchButton;
-    @FXML TextField titleTextField;
-    @FXML TextField genreTextField;
-    @FXML TextField directionTextField;
-    @FXML TextField castTextField;
-    @FXML TextField timeTextField;
-    @FXML TextField yearTextField;
-    @FXML ComboBox movieTypeComboBox;
-    @FXML TextArea plotTextArea;
-    @FXML Label saveButton;
+    @FXML private TextField imgTextField;
+    @FXML private Button searchButton;
+    @FXML private TextField titleTextField;
+    @FXML private TextField genreTextField;
+    @FXML private TextField directionTextField;
+    @FXML private TextField castTextField;
+    @FXML private TextField timeTextField;
+    @FXML private TextField yearTextField;
+    @FXML private ComboBox movieTypeComboBox;
+    @FXML private TextArea plotTextArea;
+    @FXML private Label saveButton;
     private boolean wasItAlreadyCreated;
     private Movie movie;
     private ProgrammationPanelController programmationPanelController;
@@ -163,11 +163,10 @@ public class MovieEditorController {
     private void createNewMovie() {
         Movie m = getMovieFromTextFields();
         try {
-            movieDao.insertNewMovie(m, new FileInputStream(imgTextField.getText()));
+            programmationPanelController.triggerNewMovieEvent(m, new FileInputStream(imgTextField.getText()));
         } catch (FileNotFoundException e) {
             throw new ApplicationException(e);
         }
-        programmationPanelController.triggerNewMovieEvent();
         wasItAlreadyCreated = true;
         movie = m;
     }

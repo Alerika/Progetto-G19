@@ -1,38 +1,55 @@
 package it.unipv.controller.managerarea;
 
-import it.unipv.controller.common.IHomeTrigger;
+import it.unipv.controller.common.*;
 import it.unipv.db.DBConnection;
-import it.unipv.controller.common.ICloseablePane;
 import it.unipv.utils.ApplicationException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.unipv.utils.DataReferences;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 
-public class ManagerHomeController {
+public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaInitializer {
 
     @FXML private BorderPane mainPanel;
-    @FXML Label hallModifierLabel, schedulerLabel, movieListLabel, userListLabel, pricesModifierLabel, exitLabel;
+    @FXML private Label hallModifierLabel, schedulerLabel, movieListLabel, userListLabel, pricesModifierLabel, exitLabel, statusLabel, animatedTipsLabel;
+    @FXML private ProgressBar statusPBar;
     private List<Label> labels = new ArrayList<>();
     private IHomeTrigger homeController;
     private List<ICloseablePane> iCloseablePanes = new ArrayList<>();
     private DBConnection dbConnection;
+    private Thread animatedTipsThread;
 
+    @Override
     public void init(IHomeTrigger homeController, DBConnection dbConnection) {
         this.homeController = homeController;
         this.dbConnection = dbConnection;
         addLabelsToList();
         setOnMouseEnteredToLabels();
         setOnMouseExitedToLabels();
+
+        statusLabel.setVisible(false);
+        statusPBar.setVisible(false);
+        animateTipsLabel();
+    }
+
+    private void animateTipsLabel() {
+        animatedTipsThread = GUIUtils.getTipsThread(DataReferences.MANAGERAREATIPS, animatedTipsLabel, 5000);
+        animatedTipsThread.start();
     }
 
     private void addLabelsToList() {
@@ -70,110 +87,33 @@ public class ManagerHomeController {
     }
 
     @FXML
-    public void filterByOptions(MouseEvent event){
+    private void filterByOptions(MouseEvent event){
         Label label = (Label)event.getSource();
 
         switch(label.getText()) {
             case "MODIFICA SALE": {
-                try {
-                    if(!openedPane.equals("MODIFICA SALE")) {
-                        hallModifierLabel.setStyle("-fx-background-color:#db8f00");
-                        setTransparentOtherLabels("MODIFICA SALE");
-                        mainPanel.getChildren().clear();
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/managerarea/HallPanel.fxml"));
-                        AnchorPane hallPanel = loader.load();
-                        HallPanelController hpc = loader.getController();
-                        hpc.init(this, mainPanel.getWidth(), dbConnection);
-                        mainPanel.setCenter(hallPanel);
-                        openedPane = "MODIFICA SALE";
-                        if(!iCloseablePanes.contains(hpc)) { iCloseablePanes.add(hpc); }
-                    }
-                } catch (IOException ex) {
-                    throw new ApplicationException(ex);
-                }
+                openHallPanel();
                 break;
             }
 
             case "PROGRAMMAZIONE":
-                try {
-                    if(!openedPane.equals("PROGRAMMAZIONE")) {
-                        schedulerLabel.setStyle("-fx-background-color:#db8f00");
-                        setTransparentOtherLabels("PROGRAMMAZIONE");
-                        mainPanel.getChildren().clear();
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/managerarea/ProgrammationPanel.fxml"));
-                        AnchorPane programmationPanel = loader.load();
-                        ProgrammationPanelController ppc = loader.getController();
-                        ppc.init(this, mainPanel.getWidth(), dbConnection);
-                        mainPanel.setCenter(programmationPanel);
-                        openedPane = "PROGRAMMAZIONE";
-                        if(!iCloseablePanes.contains(ppc)) { iCloseablePanes.add(ppc); }
-                    }
-                } catch (IOException e) {
-                    throw new ApplicationException(e);
-                }
+                openProgrammationPanel();
                 break;
 
             case "LISTA FILM":
-                try {
-                    if(!openedPane.equals("LISTA FILM")) {
-                        movieListLabel.setStyle("-fx-background-color:#db8f00");
-                        setTransparentOtherLabels("LISTA FILM");
-                        mainPanel.getChildren().clear();
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/managerarea/MovieListPanel.fxml"));
-                        AnchorPane movieListPanel = loader.load();
-                        MovieListPanelController mlpc = loader.getController();
-                        mlpc.init(this, dbConnection);
-                        mainPanel.setCenter(movieListPanel);
-                        openedPane = "LISTA FILM";
-                        if(!iCloseablePanes.contains(mlpc)) { iCloseablePanes.add(mlpc); }
-                    }
-                } catch (IOException e) {
-                    throw new ApplicationException(e);
-                }
+                openMovieListPanel();
                 break;
 
             case "LISTA UTENTI":
-                try {
-                    if(!openedPane.equals("LISTA UTENTI")){
-                        userListLabel.setStyle("-fx-background-color:#db8f00");
-                        setTransparentOtherLabels("LISTA UTENTI");
-                        mainPanel.getChildren().clear();
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/managerarea/UserListPanel.fxml"));
-                        AnchorPane userListPanel = loader.load();
-                        UserListPanelController ulpc = loader.getController();
-                        ulpc.init(dbConnection);
-                        mainPanel.setCenter(userListPanel);
-                        openedPane = "LISTA UTENTI";
-                    }
-                } catch (IOException e) {
-                    throw new ApplicationException(e);
-                }
+                openUserListPanel();
                 break;
 
             case "MODIFICA PREZZI":
-                try {
-                    if(!openedPane.equals("MODIFICA PREZZI")){
-                        pricesModifierLabel.setStyle("-fx-background-color:#db8f00");
-                        setTransparentOtherLabels("MODIFICA PREZZI");
-                        mainPanel.getChildren().clear();
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/managerarea/PricesPanel.fxml"));
-                        AnchorPane modifyPricesPanel = loader.load();
-                        PricesPanelController ppc = loader.getController();
-                        ppc.init(dbConnection);
-                        mainPanel.setCenter(modifyPricesPanel);
-                        openedPane = "MODIFICA PREZZI";
-                        if(!iCloseablePanes.contains(ppc)) { iCloseablePanes.add(ppc); }
-                    }
-                } catch (IOException e) {
-                    throw new ApplicationException(e);
-                }
+                openPricesPanel();
                 break;
 
             case "ESCI":
-                Stage stage = (Stage) mainPanel.getScene().getWindow();
-                stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
-                closeAllSubWindows();
-                stage.close();
+                doExit();
                 break;
 
             default:
@@ -181,10 +121,72 @@ public class ManagerHomeController {
         }
     }
 
+    private void openHallPanel() {
+        if(!openedPane.equals("MODIFICA SALE")) {
+            HallPanelController hpc = openNewPanel("MODIFICA SALE", hallModifierLabel, "/fxml/managerarea/HallPanel.fxml").getController();
+            hpc.init(this, mainPanel.getWidth(), dbConnection);
+            if(!iCloseablePanes.contains(hpc)) { iCloseablePanes.add(hpc); }
+        }
+    }
+
+    private void openProgrammationPanel() {
+        if(!openedPane.equals("PROGRAMMAZIONE")) {
+            ProgrammationPanelController ppc = openNewPanel("PROGRAMMAZIONE", schedulerLabel, "/fxml/managerarea/ProgrammationPanel.fxml").getController();
+            ppc.init(this, mainPanel.getWidth(), dbConnection);
+            if(!iCloseablePanes.contains(ppc)) { iCloseablePanes.add(ppc); }
+        }
+    }
+
+    private void openMovieListPanel() {
+        if(!openedPane.equals("LISTA FILM")) {
+            MovieListPanelController mlpc = openNewPanel("LISTA FILM", movieListLabel, "/fxml/managerarea/MovieListPanel.fxml").getController();
+            mlpc.init(this, dbConnection);
+            if(!iCloseablePanes.contains(mlpc)) { iCloseablePanes.add(mlpc); }
+        }
+    }
+
+    private void openUserListPanel() {
+        if(!openedPane.equals("LISTA UTENTI")){
+            UserListPanelController ulpc = openNewPanel("LISTA UTENTI", userListLabel, "/fxml/managerarea/UserListPanel.fxml").getController();
+            ulpc.init(this, dbConnection);
+        }
+    }
+
+    private void openPricesPanel() {
+        if(!openedPane.equals("MODIFICA PREZZI")){
+            PricesPanelController ppc = openNewPanel("MODIFICA PREZZI", pricesModifierLabel, "/fxml/managerarea/PricesPanel.fxml").getController();
+            ppc.init(this, dbConnection);
+        }
+    }
+
+    private void doExit() {
+        Stage stage = (Stage) mainPanel.getScene().getWindow();
+        stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
+        closeAllSubWindows();
+        stage.close();
+    }
+
+    private FXMLLoader openNewPanel(String name, Label label, String fxmlpath) {
+        try {
+            label.setStyle("-fx-background-color:#db8f00");
+            setTransparentOtherLabels(name);
+            mainPanel.getChildren().clear();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlpath));
+            AnchorPane pane = loader.load();
+            mainPanel.setCenter(pane);
+            openedPane = name;
+            return loader;
+        } catch (IOException e) {
+            throw new ApplicationException(e);
+        }
+    }
+
+    @Override
     public void closeAllSubWindows() {
         for(ICloseablePane i : iCloseablePanes) {
             i.closeAllSubWindows();
         }
+        if(animatedTipsThread != null) { animatedTipsThread.interrupt(); }
     }
 
     private void setTransparentOtherLabels(String nameToExclude) {
@@ -195,6 +197,34 @@ public class ManagerHomeController {
         }
     }
 
-    void triggerToHomeNewMovieEvent() { homeController.triggerNewMovieEvent(); }
-    void triggerToHomeNewHallEvent() { homeController.triggerNewHallEvent(); }
+    @Override public void triggerToHomeNewMovieEvent() { homeController.triggerNewMovieEvent(); }
+    @Override public void triggerToHomeNewHallEvent() { homeController.triggerNewHallEvent(); }
+
+    @Override
+    public void triggerStartStatusEvent(String text) {
+        statusLabel.setVisible(true);
+        statusPBar.setVisible(true);
+        statusLabel.setText(text);
+        statusPBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+    }
+
+    private static Timeline timeline;
+    @Override
+    public void triggerEndStatusEvent(String text) {
+        if(timeline!=null) { timeline.stop(); }
+
+        KeyFrame kf1 = new KeyFrame(Duration.millis(100), event -> {
+            statusLabel.setText(text);
+            statusPBar.setProgress(100);
+        });
+
+        KeyFrame kf2 = new KeyFrame(Duration.seconds(4), e -> {
+            statusLabel.setVisible(false);
+            statusPBar.setVisible(false);
+        });
+
+        timeline = new Timeline(kf1, kf2);
+
+        Platform.runLater(timeline::play);
+    }
 }

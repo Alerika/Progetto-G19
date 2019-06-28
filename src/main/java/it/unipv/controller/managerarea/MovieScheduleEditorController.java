@@ -24,10 +24,10 @@ import javafx.scene.layout.AnchorPane;
 
 public class MovieScheduleEditorController {
 
-    @FXML DatePicker datePicker;
-    @FXML AnchorPane timeSpinnerContainer;
-    @FXML ComboBox hallComboBox;
-    @FXML Label salvaProgrammazioneButton;
+    @FXML private DatePicker datePicker;
+    @FXML private AnchorPane timeSpinnerContainer;
+    @FXML private ComboBox hallComboBox;
+    @FXML private Label salvaProgrammazioneButton;
     private CustomTimeSpinner timeSpinner;
     private Movie movie;
     private MovieSchedulerController moviePanelController;

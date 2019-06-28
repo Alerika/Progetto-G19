@@ -463,14 +463,18 @@ class HallEditor extends JFrame {
 
         private void doSave() {
             if(wasItAlreadyCreated) {
+                Platform.runLater(() ->hallPanelController.triggerStartEventToManagerHome("Aggiorno la piantina di " + nomeSala + "..."));
                 hallDao.updateHallSeats(nomeSala, draggableSeatsList);
                 hallDao.updateHallPreview(nomeSala, saveSnapshot(this));
-                JOptionPane.showMessageDialog(hallEditor, "Piantina sovrascritta con successo!");
+                JOptionPane.showMessageDialog(hallEditor, "Piantina aggiornata con successo!");
+                Platform.runLater(() -> hallPanelController.triggerEndEventToManagerHome("Piantina di " + nomeSala + " aggiornata con successo!"));
             } else {
+                Platform.runLater(() ->hallPanelController.triggerStartEventToManagerHome("Creo la piantina della sala " + nomeSala + "..."));
                 hallDao.insertNewHall(nomeSala, draggableSeatsList);
                 hallDao.insertNewHallpreview(nomeSala, saveSnapshot(this));
                 JOptionPane.showMessageDialog(hallEditor, "Piantina creata con successo!");
                 wasItAlreadyCreated = true;
+                Platform.runLater(() -> hallPanelController.triggerEndEventToManagerHome("Sala " + nomeSala + " creata con successo!"));
             }
             Platform.runLater(() -> hallPanelController.triggerModificationToHallList());
             isSomethingChanged = false;

@@ -7,7 +7,6 @@ import it.unipv.model.Movie;
 import it.unipv.controller.login.LoginController;
 import it.unipv.controller.login.RegistrazioneController;
 import it.unipv.model.User;
-import it.unipv.controller.managerarea.ManagerHomeController;
 import it.unipv.utils.ApplicationException;
 import it.unipv.utils.DataReferences;
 import javafx.animation.FadeTransition;
@@ -43,7 +42,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     private DBConnection dbConnection;
     private final Stage stageLogin = new Stage();
     private User loggedUser;
-    private ManagerHomeController managerHomeController;
+    private IManagerAreaInitializer managerHomeController;
     private IUserReservedAreaInitializer areaRiservataInitializer;
     private HallListPanelController hallListPanelController;
     private MovieListPanelController movieListPanelController;
@@ -229,14 +228,15 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
             UserInfo.deleteUserInfoFileInUserDir();
         }
 
-        if(reservedAreaStage != null) {
-            if(reservedAreaStage.isShowing()) {
-                isReservedAreaOpened = false;
-                areaRiservataInitializer.closeAllSubWindows();
-                reservedAreaStage.close();
-            }
-        }
+        closeReservedArea();
+        closeManagerArea();
+        closeAllSubWindows();
 
+        initWelcomePage(loggedUser);
+        triggerEndStatusEvent("Disconnessione avvenuta con successo!");
+    }
+
+    private void closeManagerArea() {
         if(managerAreaStage != null) {
             if(managerAreaStage.isShowing()) {
                 isManagerAreaOpened = false;
@@ -244,11 +244,16 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
                 managerAreaStage.close();
             }
         }
+    }
 
-        closeAllSubWindows();
-
-        initWelcomePage(loggedUser);
-        triggerEndStatusEvent("Disconnessione avvenuta con successo!");
+    private void closeReservedArea() {
+        if(reservedAreaStage != null) {
+            if(reservedAreaStage.isShowing()) {
+                isReservedAreaOpened = false;
+                areaRiservataInitializer.closeAllSubWindows();
+                reservedAreaStage.close();
+            }
+        }
     }
 
     private void closeAllSubWindows() {
@@ -423,6 +428,8 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     @Override
     public void closeAll() {
         if(tipsThread!=null) { tipsThread.interrupt(); }
+        closeReservedArea();
+        closeManagerArea();
         closeAllSubWindows();
     }
 }

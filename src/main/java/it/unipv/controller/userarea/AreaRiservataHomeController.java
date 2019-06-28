@@ -56,7 +56,7 @@ public class AreaRiservataHomeController implements IUserReservedAreaInitializer
     }
 
     private void animateTipsLabel() {
-        animatedTipsThread = GUIUtils.getTipsThread(DataReferences.RESERVEDAREATIPS, animatedTipsLabel, 5000);
+        animatedTipsThread = GUIUtils.getTipsThread(DataReferences.USERRESERVEDAREATIPS, animatedTipsLabel, 5000);
         animatedTipsThread.start();
     }
 

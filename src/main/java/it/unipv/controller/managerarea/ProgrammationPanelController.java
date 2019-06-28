@@ -33,30 +33,36 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ProgrammationPanelController implements ICloseablePane {
 
-    @FXML Label nuovoFilmButton;
-    @FXML ScrollPane moviePanel;
+    @FXML private Label nuovoFilmButton;
+    @FXML private ScrollPane moviePanel;
     private GridPane grigliaFilm = new GridPane();
     private static int rowCount = 0;
     private static int columnCount = 0;
     private int columnMax = 2;
     private List<Movie> movies = new ArrayList<>();
-    private ManagerHomeController managerHomeController;
+    private IManagerAreaTrigger managerHomeController;
     private Stage movieEditorStage, movieSchedulerStage;
     private MovieSchedulerController msc;
     private MovieDao movieDao;
     private ScheduleDao scheduleDao;
     private DBConnection dbConnection;
 
-    public void init(ManagerHomeController managerHomeController, double initialWidth, DBConnection dbConnection) {
+    public void init(IManagerAreaTrigger managerHomeController, double initialWidth, DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.scheduleDao = new ScheduleDaoImpl(dbConnection);
         this.managerHomeController = managerHomeController;
-        initMoviesList();
         columnMax = getColumnMaxFromPageWidth(initialWidth);
-        createMovieGrid();
+        createUI();
         checkPageDimension();
 
+    }
+
+    private void createUI() {
+        managerHomeController.triggerStartStatusEvent("Carico film attualmente programmati...");
+        initMoviesList();
+        createMovieGrid();
+        managerHomeController.triggerEndStatusEvent("Film programmati correttamente caricati!");
     }
 
     private void initMoviesList() {
@@ -97,20 +103,22 @@ public class ProgrammationPanelController implements ICloseablePane {
 
         posterPreview.setOnMouseClicked(e -> openMovieEditor(movie, false));
 
+        Font infoFont = Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15);
+
         Label genereFilmLabel = new Label(StringUtils.abbreviate("Genere: " + movie.getGenere(), 28));
-        genereFilmLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
+        genereFilmLabel.setFont(infoFont);
         genereFilmLabel.setTextFill(Color.WHITE);
 
         Label regiaFilmLabel = new Label(StringUtils.abbreviate("Regia: " + movie.getRegia(),28));
-        regiaFilmLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
+        regiaFilmLabel.setFont(infoFont);
         regiaFilmLabel.setTextFill(Color.WHITE);
 
         Label castFilmLabel = new Label(StringUtils.abbreviate("Cast: " + movie.getCast(), 28));
-        castFilmLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
+        castFilmLabel.setFont(infoFont);
         castFilmLabel.setTextFill(Color.WHITE);
 
         Label annoFilmLabel = new Label(StringUtils.abbreviate("Anno: " + movie.getAnno(),28));
-        annoFilmLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
+        annoFilmLabel.setFont(infoFont);
         annoFilmLabel.setTextFill(Color.WHITE);
 
         Label deleteIcon = new Label();
@@ -159,18 +167,7 @@ public class ProgrammationPanelController implements ICloseablePane {
 
         hideMovieIcon.setLayoutY(nomeFilmLabel.getLayoutY()+167);
         hideMovieIcon.setLayoutX(nomeFilmLabel.getLayoutX());
-        hideMovieIcon.setOnMouseClicked(event -> {
-            Optional<ButtonType> option =
-                    GUIUtils.showConfirmationAlert( "Attenzione"
-                                                  , "Richiesta conferma:"
-                                                  , "Sei sicuro di voler nascondere " + movie.getTitolo() + " dai film programmabili?");
-            if(option.orElse(null)==ButtonType.YES) {
-                movie.setStatus(MovieStatusTYPE.NOT_AVAILABLE);
-                movieDao.updateMovieButNotPoster(movie);
-                managerHomeController.triggerToHomeNewMovieEvent();
-                refreshUIandMovieList();
-            }
-        });
+        hideMovieIcon.setOnMouseClicked(event -> doHideMovie(movie));
 
         showSchedulesIcon.setLayoutY(nomeFilmLabel.getLayoutY()+167);
         showSchedulesIcon.setLayoutX(nomeFilmLabel.getLayoutX()+40);
@@ -178,18 +175,7 @@ public class ProgrammationPanelController implements ICloseablePane {
 
         deleteIcon.setLayoutY(nomeFilmLabel.getLayoutY()+167);
         deleteIcon.setLayoutX(nomeFilmLabel.getLayoutX()+80);
-        deleteIcon.setOnMouseClicked(e -> {
-            Optional<ButtonType> option =
-                    GUIUtils.showConfirmationAlert( "Attenzione"
-                                                  , "Richiesta conferma:"
-                                                  , "Sei sicuro di voler eliminare il film " + movie.getTitolo() +"?");
-            if(option.orElse(null)==ButtonType.YES) {
-                removeAssociatedSchedules(movie);
-                movieDao.deleteMovie(movie);
-                managerHomeController.triggerToHomeNewMovieEvent();
-                refreshUIandMovieList();
-            }
-        });
+        deleteIcon.setOnMouseClicked(e -> doDeleteMovie(movie));
 
         pane.getChildren().addAll( posterPreview
                                  , nomeFilmLabel
@@ -202,6 +188,36 @@ public class ProgrammationPanelController implements ICloseablePane {
                                  , showSchedulesIcon);
 
         GUIUtils.setScaleTransitionOnControl(posterPreview);
+    }
+
+    private void doDeleteMovie(Movie movie) {
+        Optional<ButtonType> option =
+                GUIUtils.showConfirmationAlert( "Attenzione"
+                                              , "Richiesta conferma:"
+                                              , "Sei sicuro di voler eliminare il film " + movie.getTitolo() +"?");
+        if(option.orElse(null)==ButtonType.YES) {
+            managerHomeController.triggerStartStatusEvent("Elimino il film " + movie.getTitolo() + "...");
+            removeAssociatedSchedules(movie);
+            movieDao.deleteMovie(movie);
+            managerHomeController.triggerToHomeNewMovieEvent();
+            refreshUIandMovieList();
+            managerHomeController.triggerEndStatusEvent(movie.getTitolo() + " correttamente eliminato!");
+        }
+    }
+
+    private void doHideMovie(Movie movie) {
+        Optional<ButtonType> option =
+                GUIUtils.showConfirmationAlert( "Attenzione"
+                                              , "Richiesta conferma:"
+                                              , "Sei sicuro di voler nascondere " + movie.getTitolo() + " dai film programmabili?");
+        if(option.orElse(null)==ButtonType.YES) {
+            managerHomeController.triggerStartStatusEvent("Nascondo " + movie.getTitolo() + " dai film programmabili...");
+            movie.setStatus(MovieStatusTYPE.NOT_AVAILABLE);
+            movieDao.updateMovieButNotPoster(movie);
+            managerHomeController.triggerToHomeNewMovieEvent();
+            refreshUIandMovieList();
+            managerHomeController.triggerEndStatusEvent(movie.getTitolo() + " correttamente nascosto dai film programmabili!");
+        }
     }
 
     private boolean isMovieSchedulerAlreadyOpened = false;
@@ -240,7 +256,6 @@ public class ProgrammationPanelController implements ICloseablePane {
                 if(isANewFilm) {
                     mec.init(this, dbConnection);
                     movieEditorStage.setTitle("Editor Film");
-
                 } else {
                     mec.init(movie, this);
                     movieEditorStage.setTitle("Modifica: " + movie.getTitolo());
@@ -264,37 +279,43 @@ public class ProgrammationPanelController implements ICloseablePane {
         }
     }
 
-    @FXML public void nuovoFilmButtonListener() {
+    @FXML private void nuovoFilmButtonListener() {
        openMovieEditor(null, true);
     }
 
-    void triggerNewMovieEvent() {
-        refreshUIandMovieList();
+    void triggerNewMovieEvent(Movie movie, FileInputStream posterStream) {
+        managerHomeController.triggerStartStatusEvent("Inserisco " + movie.getTitolo() + " a sistema...");
+        movieDao.insertNewMovie(movie, posterStream);
         managerHomeController.triggerToHomeNewMovieEvent();
+        refreshUIandMovieList();
+        managerHomeController.triggerEndStatusEvent(movie.getTitolo() + " correttamente inserito a sistema!");
     }
 
     void triggerOverwriteMovieButNotPosterEvent(Movie movie) {
-        movieDao.updateMovieButNotPoster(movie);
-        managerHomeController.triggerToHomeNewMovieEvent();
-        refreshUIandMovieList();
+        triggerToHome(movie, null);
     }
 
     void triggerOverwriteMovieEvent(Movie movie, FileInputStream posterStream) {
-        movieDao.updateMovie(movie, posterStream);
-        managerHomeController.triggerToHomeNewMovieEvent();
-        refreshUIandMovieList();
+        triggerToHome(movie, posterStream);
     }
 
-    private void refreshUIandMovieList() {
-        grigliaFilm.getChildren().clear();
-        initMoviesList();
-        createMovieGrid();
+    private void triggerToHome(Movie movie, FileInputStream posterStream) {
+        managerHomeController.triggerStartStatusEvent("Aggiorno " + movie.getTitolo() + "...");
+        if(posterStream == null) {
+            movieDao.updateMovieButNotPoster(movie);
+            managerHomeController.triggerToHomeNewMovieEvent();
+            refreshUIandMovieList();
+        } else {
+            movieDao.updateMovie(movie, posterStream);
+            managerHomeController.triggerToHomeNewMovieEvent();
+            refreshUIandMovieList();
+        }
+        managerHomeController.triggerEndStatusEvent(movie.getTitolo() + " correttamente aggiornato!");
     }
 
-    private void refreshUI() {
-        grigliaFilm.getChildren().clear();
-        createMovieGrid();
-    }
+    private void refreshUIandMovieList() { createUI(); }
+
+    private void refreshUI() { createMovieGrid(); }
 
     private int temp = 0;
     private void checkPageDimension() {

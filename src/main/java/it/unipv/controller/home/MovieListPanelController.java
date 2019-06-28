@@ -148,8 +148,8 @@ public class MovieListPanelController {
         }
 
         lineGenere.setLayoutY(label.getLayoutY()+30);
-        lineGenere.setStartX(-label.getWidth()/3);
-        lineGenere.setEndX(label.getWidth()/3);
+        lineGenere.setStartX(-label.getWidth()/2);
+        lineGenere.setEndX(label.getWidth()/2);
     }
 
     public void genereClicked(MouseEvent event) {

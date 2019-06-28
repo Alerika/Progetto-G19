@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import it.unipv.controller.common.IManagerAreaTrigger;
 import it.unipv.db.DBConnection;
 import it.unipv.dao.HallDao;
 import it.unipv.dao.HallDaoImpl;
@@ -28,8 +29,8 @@ import org.apache.commons.io.FilenameUtils;
 
 public class HallPanelController implements ICloseablePane {
 
-    @FXML ScrollPane hallPanel;
-    @FXML Label nuovaSalaButton;
+    @FXML private ScrollPane hallPanel;
+    @FXML private Label nuovaSalaButton;
     private GridPane grigliaSale = new GridPane();
     private static int rowCount = 0;
     private static int columnCount = 0;
@@ -37,21 +38,28 @@ public class HallPanelController implements ICloseablePane {
     private List<String> hallNames = new ArrayList<>();
     private List<Image> previews = new ArrayList<>();
     private int hallNamesSize = 0;
-    private ManagerHomeController managerHomeController;
+    private IManagerAreaTrigger managerHomeController;
     private HallEditor hallEditor;
     private HallDao hallDao;
     private DBConnection dbConnection;
 
-    public void init(ManagerHomeController managerHomeController, double initialWidth, DBConnection dbConnection) {
+    public void init(IManagerAreaTrigger managerHomeController, double initialWidth, DBConnection dbConnection) {
         this.managerHomeController = managerHomeController;
         this.dbConnection = dbConnection;
         hallDao = new HallDaoImpl(dbConnection);
-        initHallNameList();
-        initPreview();
         columnMax = getColumnMaxFromPageWidth(initialWidth);
-        Platform.runLater(this::createHallGrid);
+
+        createUI();
 
         checkPageDimension();
+    }
+
+    private void createUI() {
+        managerHomeController.triggerStartStatusEvent("Carico le informazioni sulle sale...");
+        initHallNameList();
+        initPreview();
+        createHallGrid();
+        managerHomeController.triggerEndStatusEvent("Informazioni sulle sale correttamente caricate!");
     }
 
     private void initHallNameList() {
@@ -141,11 +149,13 @@ public class HallPanelController implements ICloseablePane {
                                               , "Richiesta conferma:"
                                               , "Vuoi davvero eliminare la piantina " + hallName + "?");
         if(option.orElse(null)==ButtonType.YES) {
+            managerHomeController.triggerStartStatusEvent("Rimuovo " + hallName + "...");
             hallDao.removeHallAndPreview(hallName);
             initHallNameList();
             initPreview();
             managerHomeController.triggerToHomeNewHallEvent();
             refreshUIandHallList();
+            managerHomeController.triggerEndStatusEvent("Piantina " + hallName + " correttamente eliminata!");
         }
     }
 
@@ -154,16 +164,18 @@ public class HallPanelController implements ICloseablePane {
         if(newHallName!=null) {
             if(!newHallName.trim().equalsIgnoreCase("")) {
                 if(checkIfItIsFree(newHallName)) {
-                        labelToModify.setText(newHallName);
-                        renameIcon.setTooltip(new Tooltip("Rinomina " + newHallName));
-                        deleteIcon.setTooltip(new Tooltip("Elimina " + newHallName));
+                    managerHomeController.triggerStartStatusEvent("Rinomino " + hallName + " in " + newHallName + "...");
+                    labelToModify.setText(newHallName);
+                    renameIcon.setTooltip(new Tooltip("Rinomina " + newHallName));
+                    deleteIcon.setTooltip(new Tooltip("Elimina " + newHallName));
 
-                        hallDao.renameHallAndPreview(hallName, newHallName);
-                        initHallNameList();
-                        initPreview();
+                    hallDao.renameHallAndPreview(hallName, newHallName);
+                    initHallNameList();
+                    initPreview();
 
-                        managerHomeController.triggerToHomeNewHallEvent();
-                        GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "Sala rinominata con successo!");
+                    managerHomeController.triggerToHomeNewHallEvent();
+                    GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "Sala rinominata con successo!");
+                    managerHomeController.triggerEndStatusEvent(hallName + " correttamente rinominata!");
                 } else {
                     GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Esiste già una sala con questo nome!");
                 }
@@ -184,7 +196,7 @@ public class HallPanelController implements ICloseablePane {
         return status;
     }
 
-    @FXML public void newHallListener() {
+    @FXML private void newHallListener() {
         String nomeSala = GUIUtils.showInputAlert("Nuova Sala", "Stai creando una nuova sala:", "Inserisci il nome della sala").orElse(null);
         if(nomeSala!=null) {
             if(nomeSala.equalsIgnoreCase("") || nomeSala.trim().length()==0) {
@@ -270,11 +282,15 @@ public class HallPanelController implements ICloseablePane {
         managerHomeController.triggerToHomeNewHallEvent();
     }
 
-    private void refreshUIandHallList() {
-        initHallNameList();
-        initPreview();
-        createHallGrid();
+    void triggerStartEventToManagerHome(String text) {
+        managerHomeController.triggerStartStatusEvent(text);
     }
+
+    void triggerEndEventToManagerHome(String text) {
+        managerHomeController.triggerStartStatusEvent(text);
+    }
+
+    private void refreshUIandHallList() { createUI(); }
 
     private void refreshUI() {
         createHallGrid();
