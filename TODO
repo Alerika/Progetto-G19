@@ -2,8 +2,7 @@ Parte comune:
 [X] Login
 [X] Logout
 [X] Portare tutto su database
-[ ] Creare un logger
-[ ] Mostrare un qualche segnale di caricamento quando vengono fatte operazioni su db
+[X] Mostrare un qualche segnale di caricamento quando vengono fatte operazioni su db
 [ ] Capire se è possibile portare gli attuali JFrame in FX
 [ ] Capire perché i JFrame vanno in background quando chiusi e poi riaperti
 [ ] ...
