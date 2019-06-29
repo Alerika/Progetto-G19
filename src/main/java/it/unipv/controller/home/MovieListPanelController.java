@@ -31,12 +31,14 @@ public class MovieListPanelController {
     private static int rowCount = 0;
     private static int columnCount = 0;
     private static int columnMax = 0;
+    private boolean isGridFiltered = false;
     private IHomeTrigger homeController;
     @FXML private ScrollPane movieScroll;
     @FXML private Rectangle rectangleGenere, rectangle2D3D;
     @FXML private AnchorPane filterContainer, genereWindow;
     @FXML private Line lineGenere;
     @FXML private Label genreLabel;
+    @FXML private ImageView homeImage;
 
     public void init(IHomeTrigger homeController, double initialWidth, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
@@ -49,9 +51,19 @@ public class MovieListPanelController {
         filterContainer.setPickOnBounds(false);
         columnMax = getColumnMaxFromPageWidth(initialWidth);
 
+        setHomeIconListener();
         createUI();
-
         checkPageDimension();
+    }
+
+    private void setHomeIconListener() {
+        GUIUtils.setScaleTransitionOnControl(homeImage);
+        homeImage.setOnMouseClicked(e -> {
+            if(isGridFiltered) {
+                homeController.triggerOpenHomePanel();
+                isGridFiltered = false;
+            }
+        });
     }
 
     private void createUI() {
@@ -138,7 +150,6 @@ public class MovieListPanelController {
         }
     }
 
-
     private MovieTYPE type;
 
     public void hoverGenereEnter(MouseEvent event){
@@ -163,6 +174,7 @@ public class MovieListPanelController {
         }
 
         animationGenere();
+        isGridFiltered = true;
     }
 
     public void animation2D3D(MouseEvent event){
@@ -190,6 +202,7 @@ public class MovieListPanelController {
                 type = MovieTYPE.THREED;
                 break;
         }
+        isGridFiltered = true;
     }
 
     private void filterMoviesByMovieTYPE(MovieTYPE type) {

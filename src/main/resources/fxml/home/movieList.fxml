@@ -25,7 +25,7 @@
       </BorderPane>
       <AnchorPane fx:id="filterContainer" layoutY="18.0" prefHeight="309.0" prefWidth="833.0" AnchorPane.bottomAnchor="365.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="18.0">
          <children>
-            <Rectangle fx:id="rectangle1" arcHeight="14.0" arcWidth="14.0" fill="#db8f00" height="67.0" layoutX="404.0" layoutY="11.0" stroke="TRANSPARENT" strokeType="INSIDE" width="415.0" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="11.0" />
+            <Rectangle fx:id="rectangle1" arcHeight="14.0" arcWidth="14.0" fill="#db8f00" height="67.0" layoutX="404.0" layoutY="11.0" stroke="TRANSPARENT" strokeType="INSIDE" width="473.0" AnchorPane.bottomAnchor="231.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="11.0" />
             <Label fx:id="nonRegistrato1" alignment="CENTER" contentDisplay="CENTER" layoutX="417.0" layoutY="28.0" prefHeight="31.0" prefWidth="93.0" stylesheets="@../../css/BebasNeue.css" text="filtra per:" textAlignment="CENTER" textFill="WHITE" AnchorPane.rightAnchor="323.0" AnchorPane.topAnchor="28.0">
                <font>
                   <Font name="Bebas Neue Regular" size="21.0" />
@@ -93,6 +93,11 @@
                   <Line fx:id="lineGenere" endX="26.0" layoutX="53.0" layoutY="28.0" startX="-26.0" stroke="WHITE" strokeWidth="2.0" />
                </children>
             </AnchorPane>
+            <ImageView fx:id="homeImage" fitHeight="31.0" fitWidth="35.0" layoutX="362.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="440.0" AnchorPane.topAnchor="28.0">
+               <image>
+                  <Image url="@../../images/homeIcon.png" />
+               </image>
+            </ImageView>
          </children>
       </AnchorPane>
    </children>
