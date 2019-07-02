@@ -38,7 +38,7 @@ public class ProgrammationPanelController implements ICloseablePane {
     private GridPane grigliaFilm = new GridPane();
     private static int rowCount = 0;
     private static int columnCount = 0;
-    private int columnMax = 2;
+    private int columnMax;
     private List<Movie> movies = new ArrayList<>();
     private IManagerAreaTrigger managerHomeController;
     private Stage movieEditorStage, movieSchedulerStage;
@@ -47,12 +47,12 @@ public class ProgrammationPanelController implements ICloseablePane {
     private ScheduleDao scheduleDao;
     private DBConnection dbConnection;
 
-    public void init(IManagerAreaTrigger managerHomeController, double initialWidth, DBConnection dbConnection) {
+    public void init(IManagerAreaTrigger managerHomeController, DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.scheduleDao = new ScheduleDaoImpl(dbConnection);
         this.managerHomeController = managerHomeController;
-        columnMax = getColumnMaxFromPageWidth(initialWidth);
+        columnMax = getColumnMaxFromPageWidth(moviePanel.getScene().getWindow().getWidth());
         createUI();
         checkPageDimension();
 

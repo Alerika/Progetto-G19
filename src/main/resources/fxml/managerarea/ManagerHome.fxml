@@ -9,10 +9,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.unipv.controller.managerarea.ManagerHomeController">
+<AnchorPane prefHeight="725.0" prefWidth="1057.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.unipv.controller.managerarea.ManagerHomeController">
    <children>
-      <BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="842.0" prefWidth="1057.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane fx:id="mainPane" prefHeight="694.0" prefWidth="1057.0" AnchorPane.bottomAnchor="31.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
             <AnchorPane prefHeight="140.0" prefWidth="780.0" style="-fx-background-color: #db8f00;" BorderPane.alignment="CENTER">
                <children>
@@ -91,7 +90,7 @@
             </BorderPane>
          </center>
       </BorderPane>
-      <AnchorPane layoutY="841.0" prefHeight="31.0" prefWidth="1057.0" style="-fx-background-color: #606060; -fx-border-color: #d3d3d3; -fx-border-width: 1px 0px 0px 0px;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <AnchorPane layoutY="694.0" prefHeight="31.0" prefWidth="1057.0" style="-fx-background-color: #606060; -fx-border-color: #d3d3d3; -fx-border-width: 1px 0px 0px 0px;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <Label fx:id="animatedTipsLabel" layoutX="10.0" layoutY="7.0" prefHeight="17.0" prefWidth="529.0" text="Benvenuto in Golden Movie Studio!" textFill="WHITE" />
             <Label fx:id="statusLabel" alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="551.0" layoutY="7.0" prefHeight="17.0" prefWidth="404.0" text="test" textFill="WHITE" AnchorPane.rightAnchor="102.0" />

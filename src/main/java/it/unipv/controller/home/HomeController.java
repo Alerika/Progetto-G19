@@ -295,8 +295,8 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
                 managerAreaStage = new Stage();
                 managerAreaStage.setScene(new Scene(root));
                 managerAreaStage.setTitle("Area Manager");
-                managerAreaStage.setMinHeight(850);
-                managerAreaStage.setMinWidth(1100);
+                managerAreaStage.setMinHeight(700);
+                managerAreaStage.setMinWidth(1050);
                 managerAreaStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
                 managerAreaStage.setOnCloseRequest( event -> {
                     isManagerAreaOpened = false;

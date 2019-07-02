@@ -124,7 +124,7 @@ public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaI
     private void openHallPanel() {
         if(!openedPane.equals("MODIFICA SALE")) {
             HallPanelController hpc = openNewPanel("MODIFICA SALE", hallModifierLabel, "/fxml/managerarea/HallPanel.fxml").getController();
-            hpc.init(this, mainPanel.getWidth(), dbConnection);
+            hpc.init(this, dbConnection);
             if(!iCloseablePanes.contains(hpc)) { iCloseablePanes.add(hpc); }
         }
     }
@@ -132,7 +132,7 @@ public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaI
     private void openProgrammationPanel() {
         if(!openedPane.equals("PROGRAMMAZIONE")) {
             ProgrammationPanelController ppc = openNewPanel("PROGRAMMAZIONE", schedulerLabel, "/fxml/managerarea/ProgrammationPanel.fxml").getController();
-            ppc.init(this, mainPanel.getWidth(), dbConnection);
+            ppc.init(this, dbConnection);
             if(!iCloseablePanes.contains(ppc)) { iCloseablePanes.add(ppc); }
         }
     }

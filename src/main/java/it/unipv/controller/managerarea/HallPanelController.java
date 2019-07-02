@@ -34,7 +34,7 @@ public class HallPanelController implements ICloseablePane {
     private GridPane grigliaSale = new GridPane();
     private static int rowCount = 0;
     private static int columnCount = 0;
-    private int columnMax = 3;
+    private int columnMax;
     private List<String> hallNames = new ArrayList<>();
     private List<Image> previews = new ArrayList<>();
     private int hallNamesSize = 0;
@@ -43,11 +43,12 @@ public class HallPanelController implements ICloseablePane {
     private HallDao hallDao;
     private DBConnection dbConnection;
 
-    public void init(IManagerAreaTrigger managerHomeController, double initialWidth, DBConnection dbConnection) {
+    public void init(IManagerAreaTrigger managerHomeController, DBConnection dbConnection) {
         this.managerHomeController = managerHomeController;
         this.dbConnection = dbConnection;
         hallDao = new HallDaoImpl(dbConnection);
-        columnMax = getColumnMaxFromPageWidth(initialWidth);
+
+        columnMax = getColumnMaxFromPageWidth(nuovaSalaButton.getScene().getWindow().getWidth());
 
         createUI();
 
