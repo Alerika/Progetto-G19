@@ -88,16 +88,14 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
             fadeIn.setToValue(1.0);
             fadeIn.play();
         } else {
-            if(menuWindow.isVisible()){
-                FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.1), menuWindow);
-                fadeOut.setFromValue(1.0);
-                fadeOut.setToValue(0);
-                fadeOut.play();
-                menuWindow.setVisible(false);
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.1), menuWindow);
+            fadeOut.setFromValue(1.0);
+            fadeOut.setToValue(0);
+            fadeOut.play();
+            menuWindow.setVisible(false);
 
-                new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()-244))).play();
-                new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() -81))).play();
-            }
+            new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight() - 244))).play();
+            new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() - 81))).play();
         }
     }
 

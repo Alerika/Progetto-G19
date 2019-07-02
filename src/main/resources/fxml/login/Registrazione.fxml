@@ -7,66 +7,66 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="691.0" prefWidth="450.0" style="-fx-background-color: black;" stylesheets="@../../css/BebasNeue.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.unipv.controller.login.RegistrazioneController">
+<AnchorPane id="AnchorPane" prefHeight="605.0" prefWidth="450.0" style="-fx-background-color: black;" stylesheets="@../../css/BebasNeue.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.unipv.controller.login.RegistrazioneController">
    <children>
-      <AnchorPane prefHeight="112.0" prefWidth="460.0" style="-fx-background-color: #db8f00;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <AnchorPane prefHeight="85.0" prefWidth="460.0" style="-fx-background-color: #db8f00;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label layoutX="132.0" layoutY="30.0" text="registrazione" textFill="WHITE">
+            <Label layoutX="118.0" layoutY="13.0" text="registrazione" textFill="WHITE">
                <font>
                   <Font name="Bebas Neue Regular" size="46.0" />
                </font>
             </Label>
          </children>
       </AnchorPane>
-      <AnchorPane layoutY="112.0" prefHeight="579.0" prefWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <AnchorPane layoutY="78.0" prefHeight="506.0" prefWidth="450.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label layoutX="205.0" layoutY="31.0" text="E-mail:" textFill="WHITE">
+            <Label layoutX="205.0" layoutY="21.0" text="E-mail:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <TextField fx:id="emailTextfield" alignment="CENTER" layoutX="59.0" layoutY="65.0" prefHeight="37.0" prefWidth="331.0" promptText="E-mail">
+            <TextField fx:id="emailTextfield" alignment="CENTER" layoutX="59.0" layoutY="55.0" prefHeight="37.0" prefWidth="331.0" promptText="E-mail">
                <font>
                   <Font size="18.0" />
                </font>
             </TextField>
-            <Label layoutX="194.0" layoutY="136.0" text="Username:" textFill="WHITE">
+            <Label layoutX="194.0" layoutY="126.0" text="Username:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <TextField fx:id="usernameTextfield" alignment="CENTER" layoutX="59.0" layoutY="169.0" prefHeight="37.0" prefWidth="331.0" promptText="Username">
+            <TextField fx:id="usernameTextfield" alignment="CENTER" layoutX="59.0" layoutY="159.0" prefHeight="37.0" prefWidth="331.0" promptText="Username">
                <font>
                   <Font size="18.0" />
                </font>
             </TextField>
-            <Label layoutX="193.0" layoutY="238.0" text="Password:" textFill="WHITE">
+            <Label layoutX="193.0" layoutY="228.0" text="Password:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <PasswordField fx:id="passwordTextfield" alignment="CENTER" layoutX="59.0" layoutY="273.0" prefHeight="37.0" prefWidth="331.0" promptText="Password">
+            <PasswordField fx:id="passwordTextfield" alignment="CENTER" layoutX="59.0" layoutY="263.0" prefHeight="37.0" prefWidth="331.0" promptText="Password">
                <font>
                   <Font size="18.0" />
                </font>
             </PasswordField>
-            <Label layoutX="167.0" layoutY="348.0" text="Ripeti la Password:" textFill="WHITE">
+            <Label layoutX="167.0" layoutY="338.0" text="Ripeti la Password:" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="18.0" />
                </font>
             </Label>
-            <PasswordField fx:id="retryPasswordTextfield" alignment="CENTER" layoutX="59.0" layoutY="383.0" prefHeight="37.0" prefWidth="331.0" promptText="Ripeti la Password">
+            <PasswordField fx:id="retryPasswordTextfield" alignment="CENTER" layoutX="59.0" layoutY="373.0" prefHeight="37.0" prefWidth="331.0" promptText="Ripeti la Password">
                <font>
                   <Font size="18.0" />
                </font>
             </PasswordField>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#db8f00" height="48.0" layoutX="229.0" layoutY="470.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="3.0" style="-fx-cursor: hand;" width="139.0" />
-            <Label alignment="CENTER" layoutX="261.0" layoutY="480.0" onMouseClicked="#doRegister" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Registrati" textFill="WHITE">
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#db8f00" height="48.0" layoutX="229.0" layoutY="460.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="3.0" style="-fx-cursor: hand;" width="139.0" />
+            <Label alignment="CENTER" layoutX="261.0" layoutY="470.0" onMouseClicked="#doRegister" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Registrati" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>
             </Label>
-            <Label fx:id="cancelLabel" alignment="CENTER" layoutX="89.0" layoutY="478.0" onMouseClicked="#doCancel" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Annulla" textFill="WHITE">
+            <Label fx:id="cancelLabel" alignment="CENTER" layoutX="89.0" layoutY="468.0" onMouseClicked="#doCancel" prefHeight="29.0" prefWidth="95.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Annulla" textFill="WHITE">
                <font>
                   <Font name="Bebas" size="22.0" />
                </font>
