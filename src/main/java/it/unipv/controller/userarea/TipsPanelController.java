@@ -44,12 +44,12 @@ public class TipsPanelController {
     @FXML private ScrollPane tipsPanel;
     @FXML private Label welcomeLabel;
 
-    public void init(IUserReservedAreaTrigger areaRiservataController, User loggedUser, double initialWidth, DBConnection dbConnection) {
+    public void init(IUserReservedAreaTrigger areaRiservataController, User loggedUser, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.prenotationDao = new PrenotationDaoImpl(dbConnection);
         this.loggedUser = loggedUser;
         this.areaRiservataController = areaRiservataController;
-        columnMax = getColumnMaxFromPageWidth(initialWidth);
+        columnMax = getColumnMaxFromPageWidth(tipsPanel.getScene().getWindow().getWidth());
         createUI();
         checkPageDimension();
     }

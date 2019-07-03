@@ -321,8 +321,8 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
                 areaRiservataInitializer.init(loggedUser, true, dbConnection);
                 reservedAreaStage = new Stage();
                 reservedAreaStage.setScene(new Scene(p));
-                reservedAreaStage.setMinHeight(850);
-                reservedAreaStage.setMinWidth(1200);
+                reservedAreaStage.setMinHeight(710);
+                reservedAreaStage.setMinWidth(1020);
                 reservedAreaStage.setTitle("Area riservata di " + loggedUser.getNome());
                 reservedAreaStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
                 reservedAreaStage.setOnCloseRequest( event -> {

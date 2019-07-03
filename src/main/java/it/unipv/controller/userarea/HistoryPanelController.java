@@ -41,7 +41,7 @@ public class HistoryPanelController implements ICloseablePane {
     private User loggedUser;
     private static int rowCount = 0;
     private static int columnCount = 0;
-    private static int columnMax = 2;
+    private static int columnMax;
     private List<Movie> movies = new ArrayList<>();
     private List<Prenotation> prenotations = new ArrayList<>();
     private GridPane grigliaFilm = new GridPane();
@@ -54,13 +54,13 @@ public class HistoryPanelController implements ICloseablePane {
     @FXML private Label searchButton;
 
 
-    public void init(IUserReservedAreaTrigger areaRiservataController, User loggedUser, double initialWidth, DBConnection dbConnection) {
+    public void init(IUserReservedAreaTrigger areaRiservataController, User loggedUser, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.prenotationDao = new PrenotationDaoImpl(dbConnection);
         this.loggedUser = loggedUser;
         this.areaRiservataController = areaRiservataController;
         GUIUtils.setScaleTransitionOnControl(searchButton);
-        columnMax = getColumnMaxFromPageWidth(initialWidth);
+        columnMax = getColumnMaxFromPageWidth(historyPanel.getScene().getWindow().getWidth());
 
         createUI();
         checkPageDimension();

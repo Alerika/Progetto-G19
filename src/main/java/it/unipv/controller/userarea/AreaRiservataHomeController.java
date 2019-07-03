@@ -142,7 +142,7 @@ public class AreaRiservataHomeController implements IUserReservedAreaInitializer
     private void openHistoryPanel() {
         if(!openedPane.equals("FILM VISTI")) {
             HistoryPanelController hpc = openNewPanel("FILM VISTI", seenMoviesLabel, "/fxml/userarea/HistoryPanel.fxml").getController();
-            hpc.init(this, loggedUser, mainPanel.getWidth(), dbConnection);
+            hpc.init(this, loggedUser, dbConnection);
             if(!iCloseablePanes.contains(hpc)) {
                 iCloseablePanes.add(hpc);
             }
@@ -152,7 +152,7 @@ public class AreaRiservataHomeController implements IUserReservedAreaInitializer
     private void openTipsPanel() {
         if(!openedPane.equals("SUGGERIMENTI")){
             TipsPanelController tpc = openNewPanel("SUGGERIMENTI", tipsLabel, "/fxml/userarea/TipsPanel.fxml").getController();
-            tpc.init(this, loggedUser, mainPanel.getWidth(), dbConnection);
+            tpc.init(this, loggedUser, dbConnection);
         }
     }
 
