@@ -23,12 +23,6 @@
          <center>
             <ScrollPane fx:id="moviePanel" prefHeight="200.0" prefWidth="200.0" style="-fx-background: black; -fx-border-color: black; -fx-outline: none; -fx-background-color: transparent;" stylesheets="@../../css/ScrollBarStyle.css" BorderPane.alignment="CENTER" />
          </center>
-         <left>
-            <AnchorPane prefHeight="347.0" prefWidth="14.0" BorderPane.alignment="CENTER" />
-         </left>
-         <bottom>
-            <AnchorPane prefHeight="13.0" prefWidth="600.0" BorderPane.alignment="CENTER" />
-         </bottom>
       </BorderPane>
    </children>
 </AnchorPane>

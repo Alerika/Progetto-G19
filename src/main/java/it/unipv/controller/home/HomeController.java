@@ -74,6 +74,22 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         tipsThread.start();
     }
 
+    private void initWelcomePage(User user) {
+        try {
+            homePanel.getChildren().clear();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/home/welcome.fxml"));
+            AnchorPane welcomePanel = loader.load();
+            welcomePanel.prefWidthProperty().bind(homePanel.widthProperty());
+            welcomePanel.prefHeightProperty().bind(homePanel.heightProperty());
+            WelcomePanelController wpc = loader.getController();
+            wpc.init(user, dbConnection, stageRegistrazione);
+            homePanel.setCenter(welcomePanel);
+        } catch (IOException e) {
+            throw new ApplicationException(e);
+        }
+    }
+
+    /* *********************************************************** METODI RIGUARDANTI IL MENÙ *********************************************************** */
     @FXML
     private void animationMenu(){
         if(!menuWindow.isVisible()){
@@ -96,21 +112,6 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
 
             new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight() - 244))).play();
             new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() - 81))).play();
-        }
-    }
-
-    private void initWelcomePage(User user) {
-        try {
-            homePanel.getChildren().clear();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/home/welcome.fxml"));
-            AnchorPane welcomePanel = loader.load();
-            welcomePanel.prefWidthProperty().bind(homePanel.widthProperty());
-            welcomePanel.prefHeightProperty().bind(homePanel.heightProperty());
-            WelcomePanelController wpc = loader.getController();
-            wpc.init(user, dbConnection, stageRegistrazione);
-            homePanel.setCenter(welcomePanel);
-        } catch (IOException e) {
-            throw new ApplicationException(e);
         }
     }
 
@@ -137,6 +138,37 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         animationMenu();
     }
 
+    private void openHomePanel() {
+        movieListPanelController = openNewPanel("/fxml/home/movieList.fxml").getController();
+        movieListPanelController.init(this, dbConnection);
+    }
+
+    private void openHallList() {
+        hallListPanelController = openNewPanel("/fxml/home/hallList.fxml").getController();
+        hallListPanelController.init(this, dbConnection);
+        if(!iCloseablePanes.contains(hallListPanelController)) { iCloseablePanes.add(hallListPanelController); }
+    }
+
+    private void openInfo() {
+        openNewPanel("/fxml/home/info.fxml");
+    }
+
+    private FXMLLoader openNewPanel(String fxmlpath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlpath));
+            AnchorPane pane = loader.load();
+            pane.prefWidthProperty().bind(homePanel.widthProperty());
+            pane.prefHeightProperty().bind(homePanel.heightProperty());
+            homePanel.setCenter(pane);
+            return loader;
+        } catch (IOException e) {
+            throw new ApplicationException(e);
+        }
+    }
+
+    /* ************************************************************************************************************************************************** */
+
+    /* *********************************************************** APERTURA/CHIUSURA LOGIN-REGISTRAZIONE-AREARISERVATA *********************************************************** */
     @FXML
     private void areaRiservataClick() {
         openReservedArea();
@@ -168,113 +200,6 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     }
 
     @FXML private void logoutListener() { doLogout(); }
-
-    private void openHomePanel() {
-        movieListPanelController = openNewPanel("/fxml/home/movieList.fxml").getController();
-        movieListPanelController.init(this, homePanel.getWidth(), dbConnection);
-    }
-
-    private FXMLLoader openNewPanel(String fxmlpath) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlpath));
-            AnchorPane pane = loader.load();
-            pane.prefWidthProperty().bind(homePanel.widthProperty());
-            pane.prefHeightProperty().bind(homePanel.heightProperty());
-            homePanel.setCenter(pane);
-            return loader;
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
-    }
-
-    private void openHallList() {
-        hallListPanelController = openNewPanel("/fxml/home/hallList.fxml").getController();
-        hallListPanelController.init(this, homePanel.getWidth(), dbConnection);
-        if(!iCloseablePanes.contains(hallListPanelController)) { iCloseablePanes.add(hallListPanelController); }
-    }
-
-    private void openInfo() {
-        openNewPanel("/fxml/home/info.fxml");
-    }
-
-    private void openRegistrazione(){
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Registrazione.fxml"));
-            Parent p = loader.load();
-            RegistrazioneController rc = loader.getController();
-            rc.init(dbConnection);
-            stageRegistrazione.setScene(new Scene(p));
-            stageRegistrazione.setResizable(false);
-            stageRegistrazione.setTitle("Registrazione");
-            stageRegistrazione.show();
-            stageRegistrazione.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
-    }
-
-    private void doLogout() {
-        triggerStartStatusEvent("Disconnessione in corso...");
-        logLabel.setText("effettua il login");
-        nonRegistratoQuestionLabel.setText("non sei registrato?");
-        registerButton.setText("Registrati");
-        areaRiservataButton.setVisible(false);
-        logoutPane.setVisible(false);
-        loggedUser = null;
-
-        if(checkIfThereIsAlreadyUserSaved()) {
-            UserInfo.deleteUserInfoFileInUserDir();
-        }
-
-        closeReservedArea();
-        closeManagerArea();
-        closeAllSubWindows();
-
-        initWelcomePage(loggedUser);
-        triggerEndStatusEvent("Disconnessione avvenuta con successo!");
-    }
-
-    private void closeManagerArea() {
-        if(managerAreaStage != null) {
-            if(managerAreaStage.isShowing()) {
-                isManagerAreaOpened = false;
-                managerHomeController.closeAllSubWindows();
-                managerAreaStage.close();
-            }
-        }
-    }
-
-    private void closeReservedArea() {
-        if(reservedAreaStage != null) {
-            if(reservedAreaStage.isShowing()) {
-                isReservedAreaOpened = false;
-                areaRiservataInitializer.closeAllSubWindows();
-                reservedAreaStage.close();
-            }
-        }
-    }
-
-    private void closeAllSubWindows() {
-        for(ICloseablePane i : iCloseablePanes) {
-            i.closeAllSubWindows();
-        }
-    }
-
-    private void openLogin(){
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Login.fxml"));
-            Parent p = loader.load();
-            LoginController lc = loader.getController();
-            lc.init(this, dbConnection);
-            stageLogin.setScene(new Scene(p));
-            stageLogin.setTitle("Login");
-            stageLogin.setResizable(false);
-            stageLogin.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-            stageLogin.show();
-        } catch (IOException ex) {
-            throw new ApplicationException(ex);
-        }
-    }
 
     private void openReservedArea() {
         if(isHimAnAdmin(loggedUser)) {
@@ -337,6 +262,75 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    private void openRegistrazione(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Registrazione.fxml"));
+            Parent p = loader.load();
+            RegistrazioneController rc = loader.getController();
+            rc.init(dbConnection);
+            stageRegistrazione.setScene(new Scene(p));
+            stageRegistrazione.setResizable(false);
+            stageRegistrazione.setTitle("Registrazione");
+            stageRegistrazione.show();
+            stageRegistrazione.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+        } catch (IOException e) {
+            throw new ApplicationException(e);
+        }
+    }
+
+    private void openLogin(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Login.fxml"));
+            Parent p = loader.load();
+            LoginController lc = loader.getController();
+            lc.init(this, dbConnection);
+            stageLogin.setScene(new Scene(p));
+            stageLogin.setTitle("Login");
+            stageLogin.setResizable(false);
+            stageLogin.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+            stageLogin.show();
+        } catch (IOException ex) {
+            throw new ApplicationException(ex);
+        }
+    }
+
+    private void closeManagerArea() {
+        if(managerAreaStage != null) {
+            if(managerAreaStage.isShowing()) {
+                isManagerAreaOpened = false;
+                managerHomeController.closeAllSubWindows();
+                managerAreaStage.close();
+            }
+        }
+    }
+
+    private void closeReservedArea() {
+        if(reservedAreaStage != null) {
+            if(reservedAreaStage.isShowing()) {
+                isReservedAreaOpened = false;
+                areaRiservataInitializer.closeAllSubWindows();
+                reservedAreaStage.close();
+            }
+        }
+    }
+
+    private void closeAllSubWindows() {
+        for(ICloseablePane i : iCloseablePanes) {
+            i.closeAllSubWindows();
+        }
+    }
+
+    @Override
+    public void closeAll() {
+        if(tipsThread!=null) { tipsThread.interrupt(); }
+        closeReservedArea();
+        closeManagerArea();
+        closeAllSubWindows();
+    }
+    /* *************************************************************************************************************************************************************************** */
+
+
+    /* *********************************************************** SETUP LOGIN/LOGOUT *********************************************************** */
     private void setupLoggedUser() {
         logLabel.setText(loggedUser.getNome());
         logoutPane.setVisible(true);
@@ -351,6 +345,27 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         initWelcomePage(loggedUser);
     }
 
+    private void doLogout() {
+        triggerStartStatusEvent("Disconnessione in corso...");
+        logLabel.setText("effettua il login");
+        nonRegistratoQuestionLabel.setText("non sei registrato?");
+        registerButton.setText("Registrati");
+        areaRiservataButton.setVisible(false);
+        logoutPane.setVisible(false);
+        loggedUser = null;
+
+        if(checkIfThereIsAlreadyUserSaved()) {
+            UserInfo.deleteUserInfoFileInUserDir();
+        }
+
+        closeReservedArea();
+        closeManagerArea();
+        closeAllSubWindows();
+
+        initWelcomePage(loggedUser);
+        triggerEndStatusEvent("Disconnessione avvenuta con successo!");
+    }
+
     private boolean isHimAnAdmin(User user) {
         return user.getNome().equalsIgnoreCase(DataReferences.ADMINUSERNAME)
             && user.getPassword().equalsIgnoreCase(DataReferences.ADMINPASSWORD);
@@ -359,7 +374,9 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     private boolean checkIfThereIsAlreadyUserSaved() {
         return UserInfo.checkIfUserInfoFileExists();
     }
+    /* ****************************************************************************************************************************************** */
 
+    /* *********************************************************** TRIGGER UTILIZZATI DA ALTRE CLASSI *********************************************************** */
     @Override
     public void triggerNewLogin(User user) {
         closeAllSubWindows();
@@ -422,12 +439,5 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
 
         Platform.runLater(timeline::play);
     }
-
-    @Override
-    public void closeAll() {
-        if(tipsThread!=null) { tipsThread.interrupt(); }
-        closeReservedArea();
-        closeManagerArea();
-        closeAllSubWindows();
-    }
+    /* ********************************************************************************************************************************************************** */
 }

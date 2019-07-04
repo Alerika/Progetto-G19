@@ -33,6 +33,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Controller di resources.fxml.home.hallList.fxml
+ * Questa classe viene utilizzata per mostrare, nella Home, la lista delle sale presenti a sistema:
+ *     viene mostrata l'anteprima e le informazioni riguardanti i posti a sedere presenti nella sala;
+ *     se si clicca sull'anteprima si apre una finestra che mostra l'immagine a dimensioni "reali".
+ */
 public class HallListPanelController implements ICloseablePane {
 
     @FXML private ScrollPane hallPanel;
@@ -42,19 +48,25 @@ public class HallListPanelController implements ICloseablePane {
     private int hallNamesSize = 0;
     private static int hallRowCount = 0;
     private static int hallColumnCount = 0;
-    private static int columnMax = 0;
+    private static int columnMax;
     private GridPane grigliaSale = new GridPane();
     private Stage hallPreviewStage;
     private IHomeTrigger homeController;
 
-    public void init(IHomeTrigger homeController, double initialWidth, DBConnection dbConnection) {
+    /**
+     * Costruttore/metodo principale del controller, chiamato all'inizializzazione della classe.
+     * @param homeController -> serve per segnalare alla home (statusBar) le operazioni effettuate.
+     * @param dbConnection -> la connessione al database con la quale si instanzia HallDaoImpl.
+     */
+    public void init(IHomeTrigger homeController, DBConnection dbConnection) {
         this.homeController = homeController;
         this.hallDao = new HallDaoImpl(dbConnection);
-        columnMax = getColumnMaxFromPageWidth(initialWidth);
+        columnMax = getColumnMaxFromPageWidth(hallPanel.getScene().getWindow().getWidth());
         createUI();
         checkPageDimension();
     }
 
+    //Disegna l'interfaccia segnalando alla Home lo status (progressBar).
     private void createUI() {
         homeController.triggerStartStatusEvent("Carico le informazioni sulle sale...");
         Platform.runLater(() -> {
@@ -65,12 +77,14 @@ public class HallListPanelController implements ICloseablePane {
         homeController.triggerEndStatusEvent("Informazioni sulle sale correttamente caricate!");
     }
 
+    //Instanzio la lista dei nomi delle sale
     private void initHallNameList() {
         hallNames = hallDao.retrieveHallNames();
         Collections.sort(hallNames);
         hallNamesSize = hallNames.size();
     }
 
+    //Instanzio la lista delle preview, grazie alla lista dei nomi delle sale
     private void initPreview() {
         previews.clear();
         for(int i = 0; i<hallNamesSize; i++) {
@@ -78,6 +92,7 @@ public class HallListPanelController implements ICloseablePane {
         }
     }
 
+    //Creo la visualizzazione in griglia delle sale
     private void initHallGrid() {
         grigliaSale.getChildren().clear();
 
@@ -89,6 +104,7 @@ public class HallListPanelController implements ICloseablePane {
         hallColumnCount = 0;
     }
 
+    //Creo la singola cella della griglia, contenete Preview e informazioni della singola sala
     private void createViewFromPreviews(String hallName, Image preview) {
         Font font = Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15);
 
@@ -108,23 +124,18 @@ public class HallListPanelController implements ICloseablePane {
         Label numPostiDisabiliLabel = new Label("Posti per disabili: " + numPostiDisabili);
         numPostiDisabiliLabel.setFont(font);
         numPostiDisabiliLabel.setTextFill(Color.WHITE);
-        if (numPostiDisabili == 0) {
-            numPostiDisabiliLabel.setVisible(false);
-        }
+        if (numPostiDisabili == 0) { numPostiDisabiliLabel.setVisible(false); }
 
         Label numPostiVIPLabel = new Label("Posti VIP: " + numPostiVIP);
         numPostiVIPLabel.setFont(font);
         numPostiVIPLabel.setTextFill(Color.WHITE);
-        if (numPostiVIP == 0) {
-            numPostiVIPLabel.setVisible(false);
-        }
+        if (numPostiVIP == 0) { numPostiVIPLabel.setVisible(false); }
 
         grigliaSale.setHgap(150);
         grigliaSale.setVgap(60);
 
         ImageView snapHallView = new ImageView(preview);
         snapHallView.setOnMouseClicked(event -> openHallPreview(nomeSalaLabel.getText()));
-
 
         AnchorPane pane = new AnchorPane();
         if (hallColumnCount == columnMax) {
@@ -143,14 +154,15 @@ public class HallListPanelController implements ICloseablePane {
         numPostiVIPLabel.setLayoutY(numPostiDisabiliLabel.getLayoutY() + 15);
 
         pane.getChildren().addAll( snapHallView
-                , nomeSalaLabel
-                , numPostiTotaliLabel
-                , numPostiDisabiliLabel
-                , numPostiVIPLabel);
+                                 , nomeSalaLabel
+                                 , numPostiTotaliLabel
+                                 , numPostiDisabiliLabel
+                                 , numPostiVIPLabel);
 
         GUIUtils.setScaleTransitionOnControl(snapHallView);
     }
 
+    //Metodo utilizzato al click su una preview: mostra, in una nuova finestra, l'immagine della sala a dimensioni "reali".
     private void openHallPreview(String nomeSala) {
         BorderPane borderPane = new BorderPane();
 
@@ -176,6 +188,10 @@ public class HallListPanelController implements ICloseablePane {
         hallPreviewStage.show();
     }
 
+    //Inizializzo la lista dei posti a sedere, così da ricavare le informazioni da mettere sotto alle preview
+    private List<Seat> initDraggableSeatsList(String nomeSala) { return hallDao.retrieveSeats(nomeSala); }
+
+    //Ricavo il numero di posti a sedere (di un determinato tipo) di una sala
     private int getSeatNumberPerType(List<Seat> mdsList, SeatTYPE type) {
         int res = 0;
         for(Seat mds : mdsList) {
@@ -186,10 +202,10 @@ public class HallListPanelController implements ICloseablePane {
         return res;
     }
 
-    private List<Seat> initDraggableSeatsList(String nomeSala) { return hallDao.retrieveSeats(nomeSala); }
-
+    //Se si verifica l'evento di una modifica o aggiunta di sala dalla parte manager, ricreo la UI ricaricando le informazioni
     void triggerNewHallEvent() { createUI(); }
 
+    //Metodo utilizzato per monitorare la dimensione della finestra e modificare la UI in base ai cambiamenti
     private int temp = 0;
     private void checkPageDimension() {
         Platform.runLater(() -> {
@@ -221,6 +237,7 @@ public class HallListPanelController implements ICloseablePane {
         }
     }
 
+    //Metodo chiamato in chiusura del progetto: permette di chiudere la sottofinestra della preview, se aperta
     @Override
     public void closeAllSubWindows() {
         if(hallPreviewStage!=null) { hallPreviewStage.close(); }

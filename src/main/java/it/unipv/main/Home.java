@@ -11,6 +11,13 @@ import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+/**
+ * Classe principale del progetto: avvia home.fxml pilotato da it.unipv.controller.home.HomeController.
+ * All'avvio crea una connessione con il database, per poi chiuderla una volta che si chiude l'intero programma:
+ *     questo perché il sito myremotesql permette di avere poche connessioni attive alla volta.
+ * In chiusura, inoltre, richiama il metodo closeAll dell'HomeController, principalmente per chiudere tutto
+ * ciò che non viene chiuso in automatico da JavaFX, come il thread dei suggerimenti.
+ */
 public class Home extends Application {
 
     private DBConnection dbConnection;

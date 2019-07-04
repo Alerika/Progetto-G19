@@ -40,7 +40,7 @@ public class MovieListPanelController {
     @FXML private Label genreLabel;
     @FXML private ImageView homeImage;
 
-    public void init(IHomeTrigger homeController, double initialWidth, DBConnection dbConnection) {
+    public void init(IHomeTrigger homeController, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.homeController = homeController;
 
@@ -49,11 +49,20 @@ public class MovieListPanelController {
         genereWindow.setVisible(false);
         genereWindow.setPickOnBounds(false);
         filterContainer.setPickOnBounds(false);
-        columnMax = getColumnMaxFromPageWidth(initialWidth);
+        columnMax = getColumnMaxFromPageWidth(movieScroll.getScene().getWindow().getWidth());
 
         setHomeIconListener();
         createUI();
         checkPageDimension();
+    }
+
+    private void createUI() {
+        homeController.triggerStartStatusEvent("Carico i film programmati...");
+        Platform.runLater(() -> {
+            initMovieList();
+            initMovieGrid();
+        });
+        homeController.triggerEndStatusEvent("Film programmati correttamente caricati!");
     }
 
     private void setHomeIconListener() {
@@ -64,15 +73,6 @@ public class MovieListPanelController {
                 isGridFiltered = false;
             }
         });
-    }
-
-    private void createUI() {
-        homeController.triggerStartStatusEvent("Carico i film programmati...");
-        Platform.runLater(() -> {
-            initMovieList();
-            initMovieGrid();
-        });
-        homeController.triggerEndStatusEvent("Film programmati correttamente caricati!");
     }
 
     private void initMovieList() {
@@ -263,9 +263,9 @@ public class MovieListPanelController {
             return 2;
         } else if(width>=800 && width<=1360) {
             return 3;
-        } else if(width>1360 && width<=1600) {
+        } else if(width>1360 && width<=1400) {
             return 3;
-        } else if(width>1600 && width<=1700) {
+        } else if(width>1400 && width<=1700) {
             return 4;
         } else if(width>1700){
             return 5;
