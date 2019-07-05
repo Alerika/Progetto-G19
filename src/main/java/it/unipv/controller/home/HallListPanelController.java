@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Controller di resources.fxml.home.hallList.fxml
+ * Controller di resources/fxml/home/hallList.fxml
  * Questa classe viene utilizzata per mostrare, nella Home, la lista delle sale presenti a sistema:
  *     viene mostrata l'anteprima e le informazioni riguardanti i posti a sedere presenti nella sala;
  *     se si clicca sull'anteprima si apre una finestra che mostra l'immagine a dimensioni "reali".
@@ -54,9 +54,9 @@ public class HallListPanelController implements ICloseablePane {
     private IHomeTrigger homeController;
 
     /**
-     * Costruttore/metodo principale del controller, chiamato all'inizializzazione della classe.
+     * Metodo principale del controller, chiamato all'inizializzazione della classe.
      * @param homeController -> serve per segnalare alla home (statusBar) le operazioni effettuate.
-     * @param dbConnection -> la connessione al database con la quale si instanzia HallDaoImpl.
+     * @param dbConnection -> la connessione al database con la quale si istanzia HallDaoImpl.
      */
     public void init(IHomeTrigger homeController, DBConnection dbConnection) {
         this.homeController = homeController;
@@ -77,14 +77,14 @@ public class HallListPanelController implements ICloseablePane {
         homeController.triggerEndStatusEvent("Informazioni sulle sale correttamente caricate!");
     }
 
-    //Instanzio la lista dei nomi delle sale
+    //Istanzio la lista dei nomi delle sale
     private void initHallNameList() {
         hallNames = hallDao.retrieveHallNames();
         Collections.sort(hallNames);
         hallNamesSize = hallNames.size();
     }
 
-    //Instanzio la lista delle preview, grazie alla lista dei nomi delle sale
+    //Istanzio la lista delle preview, grazie alla lista dei nomi delle sale
     private void initPreview() {
         previews.clear();
         for(int i = 0; i<hallNamesSize; i++) {
@@ -202,7 +202,7 @@ public class HallListPanelController implements ICloseablePane {
         return res;
     }
 
-    //Se si verifica l'evento di una modifica o aggiunta di sala dalla parte manager, ricreo la UI ricaricando le informazioni
+    /** Se si verifica l'evento di una modifica o aggiunta di sala dalla parte manager, ricreo la UI ricaricando le informazioni */
     void triggerNewHallEvent() { createUI(); }
 
     //Metodo utilizzato per monitorare la dimensione della finestra e modificare la UI in base ai cambiamenti
@@ -237,7 +237,7 @@ public class HallListPanelController implements ICloseablePane {
         }
     }
 
-    //Metodo chiamato in chiusura del progetto: permette di chiudere la sottofinestra della preview, se aperta
+    /** Metodo chiamato in chiusura del progetto: permette di chiudere la sottofinestra della preview, se aperta */
     @Override
     public void closeAllSubWindows() {
         if(hallPreviewStage!=null) { hallPreviewStage.close(); }

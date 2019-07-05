@@ -31,6 +31,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller di resources/fxml/home/home.fxml
+ * Questa classe è il controller principale da cui parte tutto il resto; è composta graficamente da:
+ *     Pulsanti di Login/Logout
+ *     Menu
+ *     Panello principale (homePanel) che si aggiorna richiamando gli altri controller a seconda di ciò che viene clickato nel menu.
+ *     Status bar, che contiene la label dei suggerimenti (tipsLabel), la label dello stato (statusLabel) e la progress bar dello status (statusPBar)
+ * I suggerimenti sono animati da tipsThread, il quale viene stoppato al termine dell'esecuzione del programma;
+ * Ci sono diversi trigger per l'aggiornamento delle pagine (se il Manager effettua cambiamenti è giusto che la home si aggiorni adeguatamente),
+ *     e per la progress bar dello stato, poiché se vengono effettuate operazioni dal database è giusto mostrare all'utente una sorta di caricamento;
+ * Implementa IHomeInitializer, invocato da chi deve iare la classe (it.unipv.main.Home);
+ * Implementa IHomeTrigger, invocato da chi deve utilizzare uno dei suoi trigger (i controller che vengono istanziati a seconda di ciò che si sceglie di fare).
+ */
 public class HomeController implements IHomeTrigger, IHomeInitializer {
     @FXML private Rectangle rectangleMenu;
     @FXML private AnchorPane menuWindow, menuContainer;
@@ -50,6 +63,15 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     private List<ICloseablePane> iCloseablePanes = new ArrayList<>();
     private Thread tipsThread;
 
+    /**
+     * Metodo principale del controller, chiamato all'inizializzazione della classe.
+     * Imposta la situazione di partenza del programma: verifica se ci siano utenti salvati nelle informazioni
+     *     per eseguire un login automatico; imposta lo stato di visibilità degli elementi (ad esempio, se
+     *     esiste un utente precedentemente salvato mostra il pulsante di logout, viceversa lo nasconde);
+     *     infine fa partire il thread dei suggerimenti, che viene stoppato alla chiusura del programma.
+     * @param dbConnection -> è la connessione al database che viene istanziata all'apertura del programma da
+     *                        it.unipv.main.Home e che verrà poi passata a tutti gli altri controller invocati.
+     */
     @Override
     public void init(DBConnection dbConnection) {
         this.dbConnection = dbConnection;
@@ -69,27 +91,21 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         animateTipsLabel();
     }
 
+    // Metodo che gestisce il thread dei suggerimenti della status bar;
     private void animateTipsLabel() {
         tipsThread = GUIUtils.getTipsThread(DataReferences.HOMETIPS, tipsLabel, 10000);
         tipsThread.start();
     }
 
+    //La pagina di benvenuto viene inizializzata quando si avvia il programma e ogni volta che si effettua un logout
     private void initWelcomePage(User user) {
-        try {
-            homePanel.getChildren().clear();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/home/welcome.fxml"));
-            AnchorPane welcomePanel = loader.load();
-            welcomePanel.prefWidthProperty().bind(homePanel.widthProperty());
-            welcomePanel.prefHeightProperty().bind(homePanel.heightProperty());
-            WelcomePanelController wpc = loader.getController();
-            wpc.init(user, dbConnection, stageRegistrazione);
-            homePanel.setCenter(welcomePanel);
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
+        homePanel.getChildren().clear();
+        WelcomePanelController wpc = openNewPanel("/fxml/home/welcome.fxml").getController();
+        wpc.init(user, dbConnection, stageRegistrazione);
     }
 
     /* *********************************************************** METODI RIGUARDANTI IL MENÙ *********************************************************** */
+    //Il metodo gestisce l'animazione del menu, sia in apertura che chiusura
     @FXML
     private void animationMenu(){
         if(!menuWindow.isVisible()){
@@ -115,6 +131,10 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    /* Metodo invocato al click del pulsante "Home" del menu:
+     *     ci sono due frame perché bisogna dare il tempo al menù di richiudersi finendo la sua animazione
+     *     dopo che il menù si è chiuso parte il frame che inizializza la lista dei film.
+    */
     @FXML
     private void homeClick() {
         closeAllSubWindows();
@@ -123,6 +143,10 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         Platform.runLater(new Timeline(kf1,kf2)::play);
     }
 
+    /* Metodo invocato al click del pulsante "Lista Sale" del menu:
+     *     ci sono due frame perché bisogna dare il tempo al menù di richiudersi finendo la sua animazione
+     *     dopo che il menù si è chiuso parte il frame che inizializza la lista delle sale.
+    */
     @FXML
     private void salaClick() {
         closeAllSubWindows();
@@ -131,6 +155,10 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         Platform.runLater(new Timeline(kf1,kf2)::play);
     }
 
+    /* Metodo invocato al click del pulsante "Info e Orari" del menu
+     * Qua non ho bisogno dei due frame perché le informazioni non vengono prese dal database
+     *     e quindi non ho un tempo di attesa che potrebbe bloccarmi la UI;
+    */
     @FXML
     private void infoClick() {
         closeAllSubWindows();
@@ -153,6 +181,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         openNewPanel("/fxml/home/info.fxml");
     }
 
+    //Metodo che serve per caricare un nuovo pannello
     private FXMLLoader openNewPanel(String fxmlpath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlpath));
@@ -169,12 +198,14 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     /* ************************************************************************************************************************************************** */
 
     /* *********************************************************** APERTURA/CHIUSURA LOGIN-REGISTRAZIONE-AREARISERVATA *********************************************************** */
+    //Metodo invocato al click del pulsante "Area Riservata" del menu (visibile una volta loggati)
     @FXML
     private void areaRiservataClick() {
         openReservedArea();
         animationMenu();
     }
 
+    //Metodo invocato al click del pulsante "Registrati" del menu (visibile se non si è loggati)
     @FXML
     private void registrationWindow(){
         if(!stageRegistrazione.isShowing()){
@@ -188,6 +219,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    //Metodo invocato al click del tasto "Login" (visibile se non si è loggati)
     @FXML
     private void loginWindow(){
         if(!stageLogin.isShowing()){
@@ -199,6 +231,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    //Metodo invocato al click del tasto "Logout" (visibile se si è loggati)
     @FXML private void logoutListener() { doLogout(); }
 
     private void openReservedArea() {
@@ -209,6 +242,10 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    /* Metodo che effettivamente apre l'area manager; ne apre una alla volta, nel senso che se è già aperta non ne apre un'altra.
+     *     Alla chiusura dell'area manager, vengono chiuse anche tutte le sottofinestre ad esse relativa.
+     * FXML caricato -> resources/fxml/managerarea/ManagerHome.fxml
+    */
     private boolean isManagerAreaOpened = false;
     private void doOpenManagerArea() {
         if(!isManagerAreaOpened) {
@@ -236,6 +273,10 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
 
     }
 
+    /* Metodo che effettivamente apre l'area riservata utente; ne apre una alla volta, nel senso che se è già aperta non ne apre un'altra.
+     *     Alla chiusura dell'area riservata, vengono chiuse anche tutte le sottofinestre ad esse relativa.
+     * FXML caricato -> resources/fxml/userarea/AreaRiservataHome.fxml
+    */
     private boolean isReservedAreaOpened = false;
     private void doOpenReservedArea() {
         if(!isReservedAreaOpened) {
@@ -262,6 +303,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    //Metodo che effettivamente apre la pagina di registrazione, caricando resources/fxml/login/Registrazione.fxml
     private void openRegistrazione(){
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Registrazione.fxml"));
@@ -278,6 +320,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    //Metodo che effettivamente apre la pagina di login, caricando resources/fxml/login/Login.fxml
     private void openLogin(){
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Login.fxml"));
@@ -294,6 +337,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    //Metodo utilizzato per chiudere l'area manager, compresa ogni sua sottofinestra, richiamato alla chiusura del cinema
     private void closeManagerArea() {
         if(managerAreaStage != null) {
             if(managerAreaStage.isShowing()) {
@@ -304,6 +348,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    //Metodo utilizzato per chiudere l'area riservata, compresa ogni sua sottofinestra, richiamato alla chiusura del cinema
     private void closeReservedArea() {
         if(reservedAreaStage != null) {
             if(reservedAreaStage.isShowing()) {
@@ -314,12 +359,16 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    //Metodo utilizzato per chiudere ogni sottofinestra del programma principale
     private void closeAllSubWindows() {
         for(ICloseablePane i : iCloseablePanes) {
             i.closeAllSubWindows();
         }
     }
 
+    /* Metodo utilizzato per chiudere tutto ciò che riguarda il cinema, utilizzato dalla classe principale
+     *     it.unipv.main.Home alla chiusura totale del sistema
+    */
     @Override
     public void closeAll() {
         if(tipsThread!=null) { tipsThread.interrupt(); }
@@ -331,6 +380,12 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
 
 
     /* *********************************************************** SETUP LOGIN/LOGOUT *********************************************************** */
+    /* Metodo utilizzato per impostare il programma una volta registrato un evento di login:
+     *     viene settata la label "Login" con il nome dell'utente loggato ed al click permette l'apertura dell'area riservata a seconda del tipo di utente;
+     *     viene mostrata e settata la label del menù "areaRiservata" con il nome dell'area riservata relativa all'utente che si è loggato;
+     *     il tasto di registrazione del menu viene settato come tasto di logout;
+     *     infine viene mostrata la pagina di welcome del cinema.
+    */
     private void setupLoggedUser() {
         logLabel.setText(loggedUser.getNome());
         logoutPane.setVisible(true);
@@ -345,6 +400,12 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         initWelcomePage(loggedUser);
     }
 
+    /* Metodo utilizzato per impostare il programma una volta registrato l'evento di logout:
+     *    viene settata la label (che prima conteneva il nome dell'utente e che portava alla sua area riservata) come label che ora apre il form di login ;
+     *    vengono mostrati i tasti di registrazione (del menu e della schermata di welcome);
+     *    viene cancellato il file delle informazioni utente, visto che si è sloggato ;
+     *    vengono chiuse tutte le sottofinestre relative al sistema intero.
+    */
     private void doLogout() {
         triggerStartStatusEvent("Disconnessione in corso...");
         logLabel.setText("effettua il login");
@@ -366,17 +427,23 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         triggerEndStatusEvent("Disconnessione avvenuta con successo!");
     }
 
+    //Metodo che controlla se l'utente registrato è un admin; in caso positivo ritorna true, altrimenti false.
     private boolean isHimAnAdmin(User user) {
         return user.getNome().equalsIgnoreCase(DataReferences.ADMINUSERNAME)
             && user.getPassword().equalsIgnoreCase(DataReferences.ADMINPASSWORD);
     }
 
+    /* Metodo che controlla se esiste un file di informazioni utente in data/utenti;
+     *    se esiste vuol dire che l'utente ha scelto di ricordarsi i dati al login
+     *    e che quindi il sistema deve accedere automaticamente all'avvio.
+    */
     private boolean checkIfThereIsAlreadyUserSaved() {
         return UserInfo.checkIfUserInfoFileExists();
     }
     /* ****************************************************************************************************************************************** */
 
     /* *********************************************************** TRIGGER UTILIZZATI DA ALTRE CLASSI *********************************************************** */
+    /** Metodo invocato dal form di login per segnalare alla Home che si è verificato un evento di Login. */
     @Override
     public void triggerNewLogin(User user) {
         closeAllSubWindows();
@@ -384,6 +451,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         setupLoggedUser();
     }
 
+    /** Metodo utilizzato per segnalare alla Home e, di conseguenza, al panel dei film, un cambiamento nella lista film. */
     @Override
     public void triggerNewMovieEvent() {
         if(movieListPanelController !=null) {
@@ -391,6 +459,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    /** Metodo utilizzato per segnalare alla home e, di conseguenza, al panel delle sale, un cambiamento nella lista sale. */
     @Override
     public void triggerNewHallEvent() {
         if(hallListPanelController !=null) {
@@ -398,20 +467,27 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         }
     }
 
+    /** Metodo utilizzato per segnalare alla Home che l'utente ha clickato su un film:
+     *     al click viene aperta la schermata di visualizzazione delle informazioni del singolo film.
+    */
     @Override public void triggerMovieClicked(Movie movie) {
         openSingleMoviePanel(movie);
     }
 
+    //Metodo che effettivamente apre la pagina di visualizzazione informazioni del singolo film.
     private void openSingleMoviePanel(Movie movie) {
         SingleMoviePanelController smpc = openNewPanel("/fxml/home/singleMoviePanel.fxml").getController();
         smpc.init(this, movie, loggedUser, dbConnection);
         if(!iCloseablePanes.contains(smpc)) { iCloseablePanes.add(smpc); }
     }
 
+    /** Metodo utilizzato per segnalare alla Home di ritornare alla lista dei film. */
     @Override public void triggerOpenHomePanel() { openHomePanel(); }
 
+    /** Metodo utilizzato per segnalare alla Home di aprire l'area riservata utente. */
     @Override public void triggerOpenReservedArea() { doOpenReservedArea(); }
 
+    /** Metodo utilizzato per segnalare lo status iniziale dell'operazione in corso. */
     @Override
     public void triggerStartStatusEvent(String text) {
         statusLabel.setVisible(true);
@@ -420,6 +496,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         statusPBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
     }
 
+    /** Metodo utilizzato per segnalare lo status finale dell'operazione in corso. */
     private static Timeline timeline;
     @Override
     public void triggerEndStatusEvent(String text) {

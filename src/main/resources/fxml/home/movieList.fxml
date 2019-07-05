@@ -32,12 +32,12 @@
                </font>
             </Label>
             <Rectangle fx:id="rectangle2D3D" arcHeight="14.0" arcWidth="14.0" fill="#381200" height="44.0" layoutX="542.0" layoutY="23.0" stroke="TRANSPARENT" strokeType="INSIDE" width="55.0" AnchorPane.rightAnchor="236.0" AnchorPane.topAnchor="23.0" />
-            <Label alignment="CENTER" layoutX="556.0" layoutY="23.0" onMouseClicked="#animation2D3D" prefHeight="44.0" prefWidth="28.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="2D" textFill="WHITE" AnchorPane.rightAnchor="249.0" AnchorPane.topAnchor="23.0">
+            <Label alignment="CENTER" layoutX="556.0" layoutY="23.0" onMouseClicked="#click2D3D" prefHeight="44.0" prefWidth="28.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="2D" textFill="WHITE" AnchorPane.rightAnchor="249.0" AnchorPane.topAnchor="23.0">
                <font>
                   <Font name="Bebas Neue Regular" size="24.0" />
                </font>
             </Label>
-            <Label alignment="CENTER" layoutX="623.0" layoutY="23.0" onMouseClicked="#animation2D3D" prefHeight="44.0" prefWidth="28.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="3D" textFill="WHITE" AnchorPane.rightAnchor="182.0" AnchorPane.topAnchor="23.0">
+            <Label alignment="CENTER" layoutX="623.0" layoutY="23.0" onMouseClicked="#click2D3D" prefHeight="44.0" prefWidth="28.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="3D" textFill="WHITE" AnchorPane.rightAnchor="182.0" AnchorPane.topAnchor="23.0">
                <font>
                   <Font name="Bebas Neue Regular" size="24.0" />
                </font>

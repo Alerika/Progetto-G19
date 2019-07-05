@@ -16,12 +16,26 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Controller di resources/fxml/home/welcome.fxml
+ * Questa classe viene utilizzata per mostrare, nella Home, un messaggio di benvenuto:
+ *     viene mostrato il messaggio di benvenuto e, se non ci sono utenti loggati, mostra anche un tasto aggiuntivo di registrazione.
+ */
 public class WelcomePanelController {
 
-    @FXML AnchorPane welcomeFooter;
-    @FXML Label welcomeLabel, registerLabel;
+    @FXML private AnchorPane welcomeFooter;
+    @FXML private Label welcomeLabel, registerLabel;
     private Stage stageRegistrazione;
 
+    /**
+     * Metodo principale del controller, chiamato all'inizializzazione della classe.
+     * @param loggedUser -> l'utente che è attualmente loggato, è null se non c'è nessuno loggato
+     * @param dbConnection -> la connessione al database che serve al form di registrazione
+     * @param stageRegistrazione -> lo stage di registrazione della home: utilizzo questo al posto di crearne uno nuovo
+     *                                  soprattutto perché sia che lo apro da qua, sia che lo apro dalla home, viene
+     *                                  segnalato che lo stage è aperto; questo perché è giusto che si apra solo un
+     *                                  form di registrazione alla volta.
+     */
     public void init(User loggedUser, DBConnection dbConnection, Stage stageRegistrazione) {
         this.stageRegistrazione = stageRegistrazione;
         if(loggedUser==null) {
@@ -34,12 +48,14 @@ public class WelcomePanelController {
         }
     }
 
+    //Metodo che si occupa di aprire il form di registrazione
     private void openRegisterPage(DBConnection dbConnection) {
         if(!stageRegistrazione.isShowing()) {
             doOpenRegisterPage(dbConnection);
         }
     }
 
+    //Metodo che effettivamente apre il form di registrazione
     private void doOpenRegisterPage(DBConnection dbConnection) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Registrazione.fxml"));

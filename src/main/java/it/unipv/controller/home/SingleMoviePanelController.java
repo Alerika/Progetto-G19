@@ -35,6 +35,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Controller di resources/fxml/home/sinlgeMoviePanel.fxml
+ * Questa classe viene utilizzata per mostrare, nella Home, le informazioni riguardanti il singolo film e i giorni in cui esso viene proiettato:
+ *     viene mostrata la locandina e le informazioni del film, con anche le date delle proiezioni che, se cliccate, portano al form di prenotazione.
+ */
 public class SingleMoviePanelController implements ICloseablePane {
     private AnchorPane singleFilmPane = new AnchorPane();
     private IHomeTrigger homeController;
@@ -48,6 +53,13 @@ public class SingleMoviePanelController implements ICloseablePane {
     @FXML private ScrollPane singleMovieScroll;
     @FXML private Label goBackToHomeButton;
 
+    /**
+     * Metodo principale del controller, chiamato all'inizializzazione della classe.
+     * @param homeController -> serve per segnalare alla home (statusBar) le operazioni effettuate;
+     * @param movie -> è il singolo film che viene mostrato;
+     * @param loggedUser -> l'utente che è attualmente loggato, è null se non c'è nessuno loggato;
+     * @param dbConnection -> la connessione al database con la quale si istanzia scheduleDaoImpl.
+     */
     public void init(IHomeTrigger homeController, Movie movie, User loggedUser, DBConnection dbConnection) {
         this.homeController = homeController;
         this.movie = movie;
@@ -57,12 +69,14 @@ public class SingleMoviePanelController implements ICloseablePane {
         createUI();
     }
 
+    //Metodo che disegna l'interfaccia segnalando alla Home lo status (progressBar).
     private void createUI() {
         homeController.triggerStartStatusEvent("Recupero le informazioni di " + movie.getTitolo() + "...");
         Platform.runLater(this::populateSingleFilmPane);
         homeController.triggerEndStatusEvent("Informazioni riguardanti " + movie.getTitolo() + " correttamente recuperate!");
     }
 
+    //Metodo utilizzato per impostare le informazioni delle label che mostrano le informazioni del film
     private void setLabelParameter(Label toSet, String text, Color color, double layoutX, double layoutY) {
         toSet.setText(text);
         toSet.setTextFill(color);
@@ -71,6 +85,7 @@ public class SingleMoviePanelController implements ICloseablePane {
         toSet.setFont(font);
     }
 
+    //Metodo utilizzato per popolare la schermata con tutte le informazioni del film
     private void populateSingleFilmPane() {
         singleFilmPane.getChildren().clear();
 
@@ -206,6 +221,10 @@ public class SingleMoviePanelController implements ICloseablePane {
 
     }
 
+    /* Metodo utilizzato per inizializzare le TextArea; visto che le informazioni possono variare da film a film,
+     *     non posso impostare una grandezza fissa per le textarea della trama e del cast, quindi esse si devono
+     *     ridimensionare in base al contenuto.
+    */
     private void setupTextArea(TextArea textArea, double layoutX, double layoutY, String styleClass) {
         textArea.getStylesheets().add("css/TextAreaStyle.css");
         textArea.sceneProperty().addListener((observableNewScene, oldScene, newScene) -> {
@@ -227,6 +246,7 @@ public class SingleMoviePanelController implements ICloseablePane {
         textArea.setLayoutY(layoutY);
     }
 
+    // Metodo che crea le label contenenti i giorni delle proiezioni. Al click su una di esse, porta alla prenotazione di quella data specifica.
     private void createHourLabels(double initialX, double initialY) {
         double x = initialX;
         double y = initialY;
@@ -277,11 +297,13 @@ public class SingleMoviePanelController implements ICloseablePane {
         }
     }
 
+    //Metodo che controlla se l'utente loggato è un admin: in questo caso, non si può effettuare una prenotazione.
     private boolean isHimANormalUser(User user) {
         return !( user.getNome().equalsIgnoreCase(DataReferences.ADMINUSERNAME)
                 &&  user.getPassword().equalsIgnoreCase(DataReferences.ADMINPASSWORD));
     }
 
+    //Metodo utilizzato per formattare il tooltip per non renderlo così lungo da uscire dalla schermata.
     private String getFormattedTooltipText(Movie movie) {
         StringBuilder res = new StringBuilder();
         char[] temp = movie.getCast().toCharArray();
@@ -300,6 +322,7 @@ public class SingleMoviePanelController implements ICloseablePane {
         return res.toString();
     }
 
+    //Metodo utilizzato per l'apertura della pagina di prenotazione, questa volta esterna alla Home.
     private boolean isPrenotationAreaOpened = false;
     private void openPrenotationStage(Movie movie, Label scheduleLabel) {
         if(!isPrenotationAreaOpened) {
@@ -322,6 +345,7 @@ public class SingleMoviePanelController implements ICloseablePane {
         }
     }
 
+    //Metodo utilizzato per recuperare le programmazioni relative al film
     private List<Schedule> getProgrammationListFromMovie(Movie m) {
         String date = "";
         List<Schedule> allSchedules = scheduleDao.retrieveMovieSchedules();
@@ -338,6 +362,9 @@ public class SingleMoviePanelController implements ICloseablePane {
         return res;
     }
 
+    /** Metodo chiamato in chiusura del progetto:
+     *      permette di chiudere la sottofinestra della prenotazione, se aperta, comprese le sue eventuali sottofinestre aggiuntive.
+    */
     @Override
     public void closeAllSubWindows() {
         if(prenotationStage!=null) { prenotationStage.close(); }
