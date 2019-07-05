@@ -14,7 +14,7 @@ public class TestDB extends TestCase {
     public void provaLettura() {
         DBConnection dbConnection = new DBConnection();
         try {
-            writeResultSet(dbConnection.getResultFromQuery("select * from z6xOH9WKhI.PIANTINE"));
+            writeResultSet(dbConnection.getResultFromQuery("select * from z6xOH9WKhI.MAPS"));
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
