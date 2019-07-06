@@ -46,7 +46,7 @@ public class MovieListPanelController {
     @FXML private ImageView homeImage;
 
     /**
-     * Metodo principale del controller, chiamato all'inizializzazione della classe.
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
      * @param homeController -> serve per segnalare alla home (statusBar) le operazioni effettuate.
      * @param dbConnection -> la connessione al database con la quale si istanzia MovieDaoImpl.
      */
@@ -66,7 +66,6 @@ public class MovieListPanelController {
         checkPageDimension();
     }
 
-    //Metodo che disegna l'interfaccia segnalando alla Home lo status (progressBar).
     private void createUI() {
         homeController.triggerStartStatusEvent("Carico i film programmati...");
         Platform.runLater(() -> {
@@ -76,7 +75,6 @@ public class MovieListPanelController {
         homeController.triggerEndStatusEvent("Film programmati correttamente caricati!");
     }
 
-    //Metodo che imposta il listener sull'icona che rimanda alla Home
     private void setHomeIconListener() {
         GUIUtils.setScaleTransitionOnControl(homeImage);
         homeImage.setOnMouseClicked(e -> {
@@ -87,7 +85,6 @@ public class MovieListPanelController {
         });
     }
 
-    //Metodo che inizializza la lista dei film
     private void initMovieList() {
         movies = movieDao.retrieveCompleteMovieList(1000, 0, true, true);
         Collections.sort(movies);
@@ -108,7 +105,6 @@ public class MovieListPanelController {
         initRowAndColumnCount();
     }
 
-    //Metodo che imposta a 0 il numero di righe e di colonne, utile quando si deve ridisegnare la griglia
     private void initRowAndColumnCount() {
         rowCount = 0;
         columnCount = 0;
@@ -180,7 +176,7 @@ public class MovieListPanelController {
         lineGenere.setEndX(label.getWidth()/2);
     }
 
-    //Metodo che si occupa del click sul genere: filtra la griglia dei film mostrando solo quelli che appartengono al genere clickato
+    //Metodo che si occupa del click sul genere: filtra la griglia dei film mostrando solo quelli che appartengono al genere cliccato
     @FXML private void genereClicked(MouseEvent event) {
         Label l = (Label)event.getSource();
         genreLabel.setText(l.getText());
@@ -290,7 +286,6 @@ public class MovieListPanelController {
         });
     }
 
-    //Supporta fino ai 1080p
     private int getColumnMaxFromPageWidth(double width) {
         if(width<800) {
             return 2;

@@ -13,14 +13,21 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.RandomStringUtils;
 
+/**
+ * Controller di resources/fxml/login/Registrazione.fxml
+ * Questa classe viene utilizzata per dare la possibilità all'utente di potersi registrare.
+ */
 public class RegistrazioneController {
 
-    @FXML Label cancelLabel;
-    @FXML TextField usernameTextfield, emailTextfield;
-    @FXML PasswordField passwordTextfield, retryPasswordTextfield;
+    @FXML private TextField usernameTextfield, emailTextfield;
+    @FXML private PasswordField passwordTextfield, retryPasswordTextfield;
     private List<User> users;
     private UserDao userDao;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param dbConnection -> la connessione al database con la quale si istanzia userDaoImpl.
+     */
     public void init(DBConnection dbConnection) {
         userDao = new UserDaoImpl(dbConnection);
         initUserList();
@@ -30,8 +37,15 @@ public class RegistrazioneController {
         users = userDao.retrieveUserList();
     }
 
-    @FXML
-    public void doRegister() {
+    /* Listener al tasto di registrazione, si occupa di verificare una serie di casi in cui non è possibile effettuare la registrazione
+     *    e di dare il via alla registrazione vera e propria. I casi in cui non è possibile registrarsi sono:
+     *        1) Non vengono compilati tutti i campi
+     *        2) Il nome utente esiste già in lista
+     *        3) La mail esiste già in lista
+     *        4) Viene inserita una E-mail non valida (non conforme allo standard)
+     *        5) Le password non coincidono
+     */
+    @FXML private void doRegister() {
         if( usernameTextfield.getText().equalsIgnoreCase("")
          || emailTextfield.getText().equalsIgnoreCase("")
          || passwordTextfield.getText().equalsIgnoreCase("")
@@ -59,6 +73,7 @@ public class RegistrazioneController {
         }
     }
 
+    //Metodo che si occupa di effettuare la registrazione vera e propria al database, assegnando prima all'utente il suo codice
     private void doRealRegistrationAndShowConfirm() {
         String codice = getUserCode();
         userDao.insertNewUser(new User( usernameTextfield.getText()
@@ -77,6 +92,7 @@ public class RegistrazioneController {
         clearTextField(toClear);
     }
 
+    //Metodo che genera un codice univoco e casuale di 5 caratteri alfanumerici da assegnare all'utente che si è registrato
     private String getUserCode() {
         boolean shouldDie = false;
         String res = "";
@@ -125,6 +141,19 @@ public class RegistrazioneController {
         }
     }
 
+    /* Metodo che si occupa di verificare se una E-mail è valida;
+     * Esempi di mail accettate:
+     *     nome@dominio.it
+     *     nome.cognome@dominio.com
+     *     nome123@dominio.net
+     *     123nome@dominio.org
+     *     !nome@dominio.org
+     * Esempi di mail NON accettate:
+     *     ..@dominio.it
+     *     nome.it
+     *     nome@dominio
+     *     nome
+     */
     private boolean isEmailValid() {
         return Pattern.compile("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
                               , Pattern.CASE_INSENSITIVE)
@@ -132,6 +161,7 @@ public class RegistrazioneController {
     }
 
 
+    //Listener al tasto "Annulla", permette la chiusura della finestra
     @FXML private void doCancel() { doExit(); }
 
     private void doExit(){ ((Stage) usernameTextfield.getScene().getWindow()).close(); }

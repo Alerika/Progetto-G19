@@ -28,7 +28,7 @@ public class WelcomePanelController {
     private Stage stageRegistrazione;
 
     /**
-     * Metodo principale del controller, chiamato all'inizializzazione della classe.
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
      * @param loggedUser -> l'utente che è attualmente loggato, è null se non c'è nessuno loggato
      * @param dbConnection -> la connessione al database che serve al form di registrazione
      * @param stageRegistrazione -> lo stage di registrazione della home: utilizzo questo al posto di crearne uno nuovo
@@ -48,14 +48,12 @@ public class WelcomePanelController {
         }
     }
 
-    //Metodo che si occupa di aprire il form di registrazione
     private void openRegisterPage(DBConnection dbConnection) {
         if(!stageRegistrazione.isShowing()) {
             doOpenRegisterPage(dbConnection);
         }
     }
 
-    //Metodo che effettivamente apre il form di registrazione
     private void doOpenRegisterPage(DBConnection dbConnection) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/Registrazione.fxml"));

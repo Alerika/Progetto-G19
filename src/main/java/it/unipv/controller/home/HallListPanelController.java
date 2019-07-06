@@ -54,7 +54,7 @@ public class HallListPanelController implements ICloseablePane {
     private IHomeTrigger homeController;
 
     /**
-     * Metodo principale del controller, chiamato all'inizializzazione della classe.
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
      * @param homeController -> serve per segnalare alla home (statusBar) le operazioni effettuate.
      * @param dbConnection -> la connessione al database con la quale si istanzia HallDaoImpl.
      */

@@ -1,10 +1,8 @@
 package it.unipv.controller.login;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import it.unipv.controller.common.IHomeTrigger;
 import it.unipv.db.DBConnection;
@@ -16,7 +14,6 @@ import it.unipv.model.User;
 import it.unipv.utils.ApplicationException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -25,7 +22,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-public class LoginController implements Initializable {
+/**
+ * Controller di resources/fxml/login/Login.fxml
+ * Questa classe viene utilizzata per dare la possibilità all'utente di accedere al sistema del cinema.
+ */
+public class LoginController {
 
     @FXML private Label loginButton, passwordResetButton;
     @FXML private TextField usernameTextfield;
@@ -36,17 +37,21 @@ public class LoginController implements Initializable {
     private UserDao userDao;
     private List<User> userList = new ArrayList<>();
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param homeController -> serve per segnalare alla home (e alla statusBar) le operazioni effettuate;
+     * @param dbConnection -> la connessione al database con la quale si istanzia userDaoImpl.
+     */
     public void init(IHomeTrigger homeController, DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         this.userDao = new UserDaoImpl(dbConnection);
         this.homeController = homeController;
         GUIUtils.setScaleTransitionOnControl(passwordResetButton);
-        initUserListFromCSV();
+        initUserList();
     }
 
     private boolean isForgotPasswordStageOpened = false;
-    @FXML
-    public void passwordResetButtonListener() {
+    @FXML private void passwordResetButtonListener() {
         if (!isForgotPasswordStageOpened) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login/ForgotPassword.fxml"));
@@ -67,17 +72,19 @@ public class LoginController implements Initializable {
         }
     }
 
-    private void initUserListFromCSV() { userList = userDao.retrieveUserList(); }
+    private void initUserList() { userList = userDao.retrieveUserList(); }
 
-    @FXML
-    public void enterKeyPressed(KeyEvent event) {
+    //Listener al tasto ENTER: se si ha focus su una label e si preme ENTER viene eseguito il metodo di login
+    @FXML private void enterKeyPressed(KeyEvent event) {
         if(event.getCode().equals(KeyCode.ENTER)){
             doLogin();
         }
     }
 
-    @FXML public void loginButtonListener() { doLogin(); }
+    //Listener al tasto di login, se premuto fa eseguire il metodo di login
+    @FXML private void loginButtonListener() { doLogin(); }
 
+    //Metodo che effettivamente si occupa del login; da errore se non si compila tutti i campi o se non esiste un utente con le credenziali inserite
     private void doLogin() {
         if(usernameTextfield.getText().equals("") || passwordTextfield.getText().equals("")){
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi compilare tutti i campi!");
@@ -101,10 +108,12 @@ public class LoginController implements Initializable {
         }
     }
 
+    //Metodo che segnala alla Home di impostare la UI per l'utente che si è appena connesso
     private void doRealLogin(User user) {
         homeController.triggerNewLogin(user);
     }
 
+    //Metodo che si occupa di controllare se l'utente inserito esiste nella lista utenti
     private boolean checkIfItIsAValidUserFromUserList(User u) {
         boolean flag = false;
         for(User user : userList) {
@@ -118,6 +127,7 @@ public class LoginController implements Initializable {
         return flag;
     }
 
+    //Metodo che si occupa di inserire tutte le informazioni dell'utente inserito
     private void fullUserWithAllInfo(User u) {
         for(User user : userList) {
             if( u.getNome().trim().equals(user.getNome())
@@ -129,13 +139,13 @@ public class LoginController implements Initializable {
         }
     }
 
-    @FXML private void doCancel(){
-        doExit();
-    }
+    //Listener al tasto "Annulla", permette la chiusura della finestra
+    @FXML private void doCancel(){ doExit(); }
 
-    @FXML private void doExit(){ ((Stage) loginButton.getScene().getWindow()).close(); }
+    private void doExit(){ ((Stage) loginButton.getScene().getWindow()).close(); }
 
-    @Override public void initialize(URL url, ResourceBundle rb) { }
-
-    void triggerResettedPasswordEvent() { initUserListFromCSV(); }
+    /* Metodo che viene invocato dal form di reset password, se invocato vuol dire che è stata resettata una password
+     *     e si ha necessità di ricaricare la lista utenti
+    */
+    void triggerResettedPasswordEvent() { initUserList(); }
 }

@@ -64,7 +64,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     private Thread tipsThread;
 
     /**
-     * Metodo principale del controller, chiamato all'inizializzazione della classe.
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
      * Imposta la situazione di partenza del programma: verifica se ci siano utenti salvati nelle informazioni
      *     per eseguire un login automatico; imposta lo stato di visibilità degli elementi (ad esempio, se
      *     esiste un utente precedentemente salvato mostra il pulsante di logout, viceversa lo nasconde);
@@ -198,16 +198,12 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     /* ************************************************************************************************************************************************** */
 
     /* *********************************************************** APERTURA/CHIUSURA LOGIN-REGISTRAZIONE-AREARISERVATA *********************************************************** */
-    //Metodo invocato al click del pulsante "Area Riservata" del menu (visibile una volta loggati)
-    @FXML
-    private void areaRiservataClick() {
+    @FXML private void areaRiservataClick() {
         openReservedArea();
         animationMenu();
     }
 
-    //Metodo invocato al click del pulsante "Registrati" del menu (visibile se non si è loggati)
-    @FXML
-    private void registrationWindow(){
+    @FXML private void registrationWindow(){
         if(!stageRegistrazione.isShowing()){
             if(loggedUser==null) {
                 openRegistrazione();
@@ -220,8 +216,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     }
 
     //Metodo invocato al click del tasto "Login" (visibile se non si è loggati)
-    @FXML
-    private void loginWindow(){
+    @FXML private void loginWindow(){
         if(!stageLogin.isShowing()){
             if(loggedUser==null) {
                 openLogin();
@@ -427,7 +422,6 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         triggerEndStatusEvent("Disconnessione avvenuta con successo!");
     }
 
-    //Metodo che controlla se l'utente registrato è un admin; in caso positivo ritorna true, altrimenti false.
     private boolean isHimAnAdmin(User user) {
         return user.getNome().equalsIgnoreCase(DataReferences.ADMINUSERNAME)
             && user.getPassword().equalsIgnoreCase(DataReferences.ADMINPASSWORD);
@@ -474,7 +468,6 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         openSingleMoviePanel(movie);
     }
 
-    //Metodo che effettivamente apre la pagina di visualizzazione informazioni del singolo film.
     private void openSingleMoviePanel(Movie movie) {
         SingleMoviePanelController smpc = openNewPanel("/fxml/home/singleMoviePanel.fxml").getController();
         smpc.init(this, movie, loggedUser, dbConnection);

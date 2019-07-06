@@ -54,7 +54,7 @@ public class SingleMoviePanelController implements ICloseablePane {
     @FXML private Label goBackToHomeButton;
 
     /**
-     * Metodo principale del controller, chiamato all'inizializzazione della classe.
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
      * @param homeController -> serve per segnalare alla home (statusBar) le operazioni effettuate;
      * @param movie -> è il singolo film che viene mostrato;
      * @param loggedUser -> l'utente che è attualmente loggato, è null se non c'è nessuno loggato;
@@ -69,7 +69,6 @@ public class SingleMoviePanelController implements ICloseablePane {
         createUI();
     }
 
-    //Metodo che disegna l'interfaccia segnalando alla Home lo status (progressBar).
     private void createUI() {
         homeController.triggerStartStatusEvent("Recupero le informazioni di " + movie.getTitolo() + "...");
         Platform.runLater(this::populateSingleFilmPane);
@@ -322,7 +321,6 @@ public class SingleMoviePanelController implements ICloseablePane {
         return res.toString();
     }
 
-    //Metodo utilizzato per l'apertura della pagina di prenotazione, questa volta esterna alla Home.
     private boolean isPrenotationAreaOpened = false;
     private void openPrenotationStage(Movie movie, Label scheduleLabel) {
         if(!isPrenotationAreaOpened) {
@@ -345,7 +343,6 @@ public class SingleMoviePanelController implements ICloseablePane {
         }
     }
 
-    //Metodo utilizzato per recuperare le programmazioni relative al film
     private List<Schedule> getProgrammationListFromMovie(Movie m) {
         String date = "";
         List<Schedule> allSchedules = scheduleDao.retrieveMovieSchedules();
