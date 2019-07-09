@@ -228,10 +228,8 @@ public class HallListPanelController implements ICloseablePane {
             return 3;
         } else if(width>1360 && width<=1600) {
             return 4;
-        } else if(width>1600 && width<=1700) {
+        } else if(width>1600) {
             return 5;
-        } else if(width>1700){
-            return 6;
         } else {
             throw new ApplicationException("Impossibile settare numero colonne per width: " + width);
         }

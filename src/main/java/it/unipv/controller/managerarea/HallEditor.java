@@ -301,8 +301,8 @@ class HallEditor extends JFrame {
         //Metodo che si occupa di configurare il singolo posto a sedere, assegnandogli un nome se è richiesto ed il menu richiamabile con click destro
         private void configureMDS(Seat mds, String name, boolean doYouWantName) {
             if(doYouWantName) {
-                createdSeatsName.add(mds.getText());
                 mds.setText(name);
+                createdSeatsName.add(mds.getText());
             }
             mds.setComponentPopupMenu(initJPopupMenu(mds));
             initMouseListenerForMDS(mds);
