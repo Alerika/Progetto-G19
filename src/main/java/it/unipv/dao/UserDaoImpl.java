@@ -20,18 +20,30 @@ public class UserDaoImpl implements UserDao {
 
     public UserDaoImpl(DBConnection dbConnection) { this.dbConnection = dbConnection; }
 
+    /**
+     * Recupera la lista degli utenti dal database.
+     * @return -> lista degli utenti.
+     */
     @Override public List<User> retrieveUserList() { return doRetrieveUserList(); }
 
+    /**
+     * Permette l'inserimento di un nuovo utente sul database.
+     * @param toInsert -> nuovo utente da inserire.
+     */
     @Override public void insertNewUser(User toInsert) { doInsertNewUser(toInsert); }
 
+    /**
+     * Permette di eliminare un utente dal database.
+     * @param toDelete -> l'utente da eliminare.
+     */
     @Override public void deleteUser(User toDelete) { doDeleteUser(toDelete); }
 
+    /**
+     * Permette di aggiornare solamente la password dell'utente.
+     * @param toUpdate -> l'utente di cui si vuole aggiornare la password.
+     */
     @Override public void updateUser(User toUpdate) { doUpdateUser(toUpdate); }
 
-    /**
-     * L'update, in questo caso, prevede solo l'aggiornamento della password.
-     * @param toUpdate -> l'utente da aggiornare con la nuova password.
-     */
     private void doUpdateUser(User toUpdate) {
         String query = "UPDATE " + DataReferences.DBNAME + ".USER SET PASSWORD = ? WHERE CODICE = ?";
         try (PreparedStatement ps = dbConnection.getPreparedStatementFromQuery(query)) {

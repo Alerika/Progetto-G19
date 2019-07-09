@@ -20,14 +20,26 @@ public class ScheduleDaoImpl implements ScheduleDao {
 
     public ScheduleDaoImpl(DBConnection dbConnection) { this.dbConnection = dbConnection; }
 
+    /**
+     * Recupera le informazioni delle programmazioni dal database.
+     * @return -> lista completa delle programmazioni.
+     */
     @Override public List<Schedule> retrieveMovieSchedules() {
         return doRetrieveMovieSchedules();
     }
 
+    /**
+     * Permette di inserire una nuova programmazione nel database.
+     * @param toInsert -> la nuova programmazione da inserire.
+     */
     @Override public void insertNewMovieSchedule(Schedule toInsert) {
         doInsertNewMovieSchedule(toInsert);
     }
 
+    /**
+     * Permette di eliminare una programmazione dal database.
+     * @param toDelete -> la programmazione da eliminare.
+     */
     @Override public void deleteMovieSchedule(Schedule toDelete) {
         doDeleteMovieSchedule(toDelete);
     }

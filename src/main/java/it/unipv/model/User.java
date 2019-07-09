@@ -2,9 +2,8 @@ package it.unipv.model;
 
 /**
  * Oggetto che rappresenta il singolo utente.
- *    Per ora sono presenti solamente due parametri:
- *       nome -> il nickname che si sceglie al momento della registrazione
- *       password -> la password che si sceglie al momento della registrazione
+ *       codice -> dato al momento della registrazione e visibile nell'area riservata, serve per reimpostare
+ *                     la password se dimenticata.
  */
 public class User implements Comparable<User> {
     private String nome;

@@ -6,6 +6,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+/**
+ * Oggetto che rappresenta la programmazione di un film
+ */
 public class Schedule implements Comparable<Schedule> {
     private String movieCode;
     private String date;

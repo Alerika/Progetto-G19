@@ -30,6 +30,11 @@ public class HallDaoImpl implements HallDao {
         this.dbConnection = dbConnection;
     }
 
+    /**
+     * Ricava i posti di una sala a partire dal nome della stessa.
+     * @param hallName -> il nome della sala di cui trovare i posti.
+     * @return -> la lista dei posti correttamente inizializzata.
+     */
     @Override
     public List<Seat> retrieveSeats(String hallName) {
         try {
@@ -39,6 +44,10 @@ public class HallDaoImpl implements HallDao {
         }
     }
 
+    /**
+     * Ricava i nomi delle sale disponibili a sistema.
+     * @return -> lista di stringhe rappresentante i nomi delle sale correttamente inizializzate.
+     */
     @Override
     public List<String> retrieveHallNames() {
         try {
@@ -49,7 +58,7 @@ public class HallDaoImpl implements HallDao {
     }
 
     /**
-     * Questo metodo viene utilizzato per recuperare la preview delle sale come Image con dimensioni impostate come parametri;
+     * Recupera la preview delle sale come Image con dimensioni passate come parametri.
      * @param hallName -> la sala di cui si vuole recuperare l'anteprima;
      * @param requestedWidth -> la larghezza che vogliamo dare alla nostra Image;
      * @param requestedHeight -> l'altezza che voglia dare alla nostra Image;
@@ -71,10 +80,9 @@ public class HallDaoImpl implements HallDao {
     }
 
     /**
-     * Questo metodo viene principalmente utilizzato dalla Home, quando si vuole visualizzare la piantina di una sala:
-     * mi faccio restituire uno stream perché così ho l'immagine vera e propria, e non un oggetto Image.
-     * @param hallName -> è la sala di cui si vuole recuperare l'anteprima come stream
-     * @return -> ritorna l'anteprima come InputStream.
+     * Recupera la preview delle sale come stream: rispetto l'Image, lo stream rappresenta l'immagine "vera e propria".
+     * @param hallName -> la sala di cui si vuole recuperare la preview come stream.
+     * @return -> ritorna la preview della sala come InputStream.
      */
     @Override
     public InputStream retrieveHallPreviewAsStream(String hallName) {
@@ -98,7 +106,7 @@ public class HallDaoImpl implements HallDao {
     }
 
     /**
-     * Cancello tutta la sala e la ricreo perché non è un vero e proprio update:
+     * Cancella tutta la sala e la ricrea: non è un vero e proprio update:
      * possono capitare volte in cui modifico posti già esistenti, ma anche volte in cui inserisco nuovi posti
      * @param hallName -> sala da aggiornare
      * @param toUpdate -> lista posti aggiornati da inserire nuovamente
@@ -113,6 +121,11 @@ public class HallDaoImpl implements HallDao {
         }
     }
 
+    /**
+     * Aggiorna l'anteprima della sala.
+     * @param hallName -> nome della sala di cui si deve aggiornare l'anteprima;
+     * @param previewStream -> stream della preview da caricare sul database.
+     */
     @Override
     public void updateHallPreview(String hallName, ByteArrayInputStream previewStream) {
         try {
@@ -122,12 +135,21 @@ public class HallDaoImpl implements HallDao {
         }
     }
 
+    /**
+     * Rimuove sia l'anteprima della sala, sia le informazioni riguardanti i posti della sala.
+     * @param hallName -> nome della sala di cui si deve rimuovere ogni informazione.
+     */
     @Override
     public void removeHallAndPreview(String hallName) {
         doRemoveSeats(hallName);
         doRemovePreview(hallName);
     }
 
+    /**
+     * Aggiunge tutte le informazioni della nuova sala sul database.
+     * @param hallName -> nome della nuova sala;
+     * @param toInsert -> lista dei posti a sedere della nuova sala.
+     */
     @Override
     public void insertNewHall(String hallName, List<Seat> toInsert) {
         try{
@@ -137,6 +159,11 @@ public class HallDaoImpl implements HallDao {
         }
     }
 
+    /**
+     * Aggiunge la preview di una nuova sala sul database.
+     * @param hallName -> nome della nuova sala;
+     * @param previewStream -> stream della preview della nuova sala.
+     */
     @Override
     public void insertNewHallpreview(String hallName, ByteArrayInputStream previewStream) {
         try {
@@ -146,6 +173,11 @@ public class HallDaoImpl implements HallDao {
         }
     }
 
+    /**
+     * Permette di aggiornare il nome della sala sul database.
+     * @param oldHallName -> vecchio nome della sala sul quale basarci per ritrovare le informazioni;
+     * @param newHallName -> nuovo nome della sala.
+     */
     @Override
     public void renameHallAndPreview(String oldHallName, String newHallName) {
         doRenameHall(oldHallName, newHallName);

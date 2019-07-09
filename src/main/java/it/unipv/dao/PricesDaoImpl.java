@@ -20,8 +20,16 @@ public class PricesDaoImpl implements PricesDao {
         this.dbConnection = dbConnection;
     }
 
+    /**
+     * Recupera le informazioni riguardanti i prezzi del cinema.
+     * @return -> l'oggetto Prices correttamente inizializzato con i prezzi del cinema.
+     */
     @Override public Prices retrievePrices() { return doRetrievePrices(); }
 
+    /**
+     * Aggiorna le informazioni riguardanti i prezzi del cinema.
+     * @param p -> l'oggetto Prices contenente le informazioni da aggiornare.
+     */
     @Override
     public void updatePrices(Prices p) {
         doTruncate();

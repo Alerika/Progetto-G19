@@ -1,5 +1,12 @@
 package it.unipv.model;
 
+/**
+ * Oggetto che rappresenta i prezzi del cinema.
+ *     1) base -> è il prezzo di base del biglietto;
+ *     2) vip -> è il supplemento per il vip;
+ *     3) threed -> è il supplemento per una proiezione 3D;
+ *     4) reduced -> è il prezzo ridotto per i disabili.
+ */
 public class Prices {
     private double base;
     private double vip;

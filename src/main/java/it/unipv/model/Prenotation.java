@@ -5,6 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+/**
+ * Oggetto che rappresenta la prenotazione di un film da parte di un utente.
+ */
 public class Prenotation implements Comparable<Prenotation> {
     private String nomeUtente;
     private String nomeFilm;

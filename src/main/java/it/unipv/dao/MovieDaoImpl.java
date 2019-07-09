@@ -30,10 +30,10 @@ public class MovieDaoImpl implements MovieDao {
     public MovieDaoImpl(DBConnection dbConnection) { this.dbConnection = dbConnection; }
 
     /**
-     * Questo metodo viene utilizzato per recuperare la lista dei film completa, quindi comprendendo anche la locandina
+     * Recupera la lista dei film completa, compresa la locandina
      * @param requestedWidth -> la larghezza dell'Image che rappresenta la locandina
      * @param requestedHeight -> l'altezza dell'Image che rappresenta la locandina
-     * @param preserveRatio -> decidere se mantenere l'aspect ratio o meno
+     * @param preserveRatio -> indica se mantenere l'aspect ratio o meno
      * @param smooth -> indica in generale se applicare un algoritmo di miglioramento dell'Image finale;
      * @return -> ritorna la lista completa dei film, comprensiva di locandina
      */
@@ -51,11 +51,9 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     /**
-     * Questo metodo ritorna la lista dei film senza però la locandina. Questo perché può capitare di dover
-     * utilizzare le informazioni dei film senza però andare a dover recuperare per forza di cose la loro locandina.
-     * Principalmente il motivo risiede nel fatto che il database è lento, essendo gratuito e, quindi, tutta la logica
-     * è fatta in locale anziché via database.
-     * @return -> ritorna la lista completa dei film senza però la locandina
+     * Recupera la lista dei film senza la locandina. Questo perché può capitare di dover
+     *     utilizzare le informazioni dei film, senza però interessare la locandina.
+     * @return -> ritorna la lista completa dei film senza la locandina.
      */
     @Override
     public List<Movie> retrieveMovieListWithoutPoster() {
@@ -66,6 +64,11 @@ public class MovieDaoImpl implements MovieDao {
         }
     }
 
+    /**
+     * Inserisce le informazioni di un nuovo film nel database.
+     * @param toInsert -> nuovo film da inserire;
+     * @param posterStream -> stream della locandina del nuovo film.
+     */
     @Override
     public void insertNewMovie(Movie toInsert, FileInputStream posterStream) {
         try {
@@ -76,9 +79,9 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     /**
-     * Il metodo va ad aggiornare tutto ciò che riguarda il film tranne la sua locandina:
-     * questo viene fatto per risparmiare il tempo che sarebbe altrimenti impiegato nell'upload (magari inutile) della locandina.
-     * @param toUpdate -> il film da aggiornare che non comprende la sua locandina (o potrebbe, ma non viene considerata);
+     * Aggiorna tutto ciò che riguarda il film tranne la locandina:
+     *     questo per risparmiare il tempo che sarebbe altrimenti impiegato nell'upload (magari inutile) della locandina.
+     * @param toUpdate -> il film da aggiornare.
      */
     @Override
     public void updateMovieButNotPoster(Movie toUpdate) {
@@ -86,9 +89,8 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     /**
-     * Il metodo va ad aggiornare tutto ciò che riguarda il film, includendo la sua locandina:
-     * è preferibile utilizzare il suddetto metodo solo se si ha necessario bisogno di aggiornare anche la locandina del film.
-     * @param toUpdate -> il film da aggiornare comprendente la sua locandina.
+     * Aggiorna tutto ciò che riguarda il film, inclusa la locandina:
+     * @param toUpdate -> il film da aggiornare.
      */
     @Override
     public void updateMovie(Movie toUpdate, FileInputStream posterStream) {
@@ -99,6 +101,10 @@ public class MovieDaoImpl implements MovieDao {
         }
     }
 
+    /**
+     * Rimuove il film dal database.
+     * @param toDelete -> film da rimuovere.
+     */
     @Override
     public void deleteMovie(Movie toDelete) {
         doDeleteMovie(toDelete);

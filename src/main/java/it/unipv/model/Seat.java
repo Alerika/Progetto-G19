@@ -10,7 +10,6 @@ import java.awt.*;
 /**
  * Questa classe rappresenta il singolo posto a sedere:
  * è una JLabel che presenta un bordo quadrato blu.
- * Il singolo posto a sedere è trascinabile all'interno della piantina
  * TODO: fare in modo che non possa essere trascinato all'esterno della piantina stessa
  */
 public class Seat extends JLabel {

@@ -45,6 +45,11 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Permette di eseguire una query e ritorna il ResultSet risultante.
+     * @param query -> query da eseguire.
+     * @return -> ResultSet risultante dalla query.
+     */
     public ResultSet getResultFromQuery(String query) {
         try {
             return statement.executeQuery(query);

@@ -20,10 +20,22 @@ public class PrenotationDaoImpl implements PrenotationDao {
 
     public PrenotationDaoImpl(DBConnection dbConnection) { this.dbConnection = dbConnection; }
 
+    /**
+     * Recupera la lista delle prenotazioni dal database.
+     * @return -> lista delle prenotazioni correttamente inizializzata.
+     */
     @Override public List<Prenotation> retrievePrenotationList() { return doRetrievePrenotationList(); }
 
+    /**
+     * Inserisce le informazioni di una nuova prenotazione nel database.
+     * @param toInsert -> la nuova prenotazione da inserire.
+     */
     @Override public void insertNewPrenotation(Prenotation toInsert) { doInsertNewPrenotation(toInsert); }
 
+    /**
+     * Rimuove le informazioni di una prenotazione dal database.
+     * @param toDelete -> la prenotazione da rimuovere.
+     */
     @Override public void deletePrenotation(Prenotation toDelete) { doDeletePrenotation(toDelete); }
 
     private void doDeletePrenotation(Prenotation toDelete) {

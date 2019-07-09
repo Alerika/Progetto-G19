@@ -4,9 +4,8 @@ import javafx.scene.image.Image;
 
 /**
  * Oggetto che rappresenta un film.
- * Il parametro "Codice" viene usato come identificativo
- *    (esempio: se devo modificare le informazioni di un film ci accedo e lo sovrascrivo
- *    tramite il codice).
+ *     codice -> viene usato come identificativo alla creazione del film
+ *               (Es.: se devo modificare le informazioni di un film ci accedo e lo sovrascrivo tramite il codice).
  */
 public class Movie implements Comparable<Movie> {
     private String codice;
