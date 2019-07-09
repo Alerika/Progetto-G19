@@ -27,6 +27,14 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.apache.commons.io.FilenameUtils;
 
+/**
+ * Controller di resources/fxml/managerarea/hallPanel.fxml
+ * Questa classe viene utilizzata per:
+ *    1) Aggiungere una nuova sala
+ *    2) Modificare una sala già esistente
+ *    3) Rinominare una sala già esistente
+ *    4) Cancellare una sala già esistente
+ */
 public class HallPanelController implements ICloseablePane {
 
     @FXML private ScrollPane hallPanel;
@@ -43,6 +51,11 @@ public class HallPanelController implements ICloseablePane {
     private HallDao hallDao;
     private DBConnection dbConnection;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param managerHomeController -> serve per segnalare all'Area Manager le operazioni effettuate
+     * @param dbConnection -> la connessione al database utilizzata per istanziare HallDaoImpl
+     */
     public void init(IManagerAreaTrigger managerHomeController, DBConnection dbConnection) {
         this.managerHomeController = managerHomeController;
         this.dbConnection = dbConnection;
@@ -76,6 +89,7 @@ public class HallPanelController implements ICloseablePane {
         }
     }
 
+    //Metodo utilizzato per creare la griglia delle sale, a partire dai nomi e dalle previews delle stesse
     private void createHallGrid() {
         grigliaSale.getChildren().clear();
 
@@ -89,6 +103,7 @@ public class HallPanelController implements ICloseablePane {
         columnCount = 0;
     }
 
+    //Metodo utilizzato per creare la singola cella della griglia; una cella contiene la preview, il nome sala, icona rinomina ed icona cancella.
     private void createViewFromPreviews(String hallName, Image preview) {
         Label nomeSalaLabel = new Label(FilenameUtils.removeExtension(hallName));
         nomeSalaLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
@@ -144,6 +159,7 @@ public class HallPanelController implements ICloseablePane {
         deleteIcon.setOnMouseClicked(event -> removeHall(nomeSalaLabel.getText()));
     }
 
+    //Listener al tasto di rimozione sala
     private void removeHall(String hallName) {
         Optional<ButtonType> option =
                 GUIUtils.showConfirmationAlert( "Attenzione"
@@ -160,6 +176,7 @@ public class HallPanelController implements ICloseablePane {
         }
     }
 
+    //Listener al tasto di rinominazione sala
     private void renameHall(String hallName, Label labelToModify, Label renameIcon, Label deleteIcon) {
         String newHallName = GUIUtils.showInputAlert("Rinomina Sala", "Rinomina " + hallName, "Inserisci il nuovo nome della sala").orElse(null);
         if(newHallName!=null) {
@@ -197,6 +214,7 @@ public class HallPanelController implements ICloseablePane {
         return status;
     }
 
+    //Listener al tasto "Nuova Sala"
     @FXML private void newHallListener() {
         String nomeSala = GUIUtils.showInputAlert("Nuova Sala", "Stai creando una nuova sala:", "Inserisci il nome della sala").orElse(null);
         if(nomeSala!=null) {
@@ -232,6 +250,7 @@ public class HallPanelController implements ICloseablePane {
         }
     }
 
+    //Metodo utilizzato per creare un Alert contente due textfield per l'inserimento del numero di righe e colonne per la griglia iniziale di una nuova sala
     private Optional<Pair<String, String>> configureRowAndColumnDialogRequest() {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Nuova sala");
@@ -270,6 +289,7 @@ public class HallPanelController implements ICloseablePane {
         return dialog.showAndWait();
     }
 
+    //Le textfield dell'alert devono contenere solo numeri
     private void makeTextFieldFillableByOnlyDigits(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
@@ -278,15 +298,26 @@ public class HallPanelController implements ICloseablePane {
         });
     }
 
+    /**
+     * Segnala all'area manager che si è verificato un cambiamento alla lista delle sale
+     */
     void triggerModificationToHallList() {
         refreshUIandHallList();
         managerHomeController.triggerToHomeNewHallEvent();
     }
 
+    /**
+     * Segnala alla status bar dell'area manager che si è verificato l'inizio di un nuovo evento
+     * @param text -> descrizione dell'evento
+     */
     void triggerStartEventToManagerHome(String text) {
         managerHomeController.triggerStartStatusEvent(text);
     }
 
+    /**
+     * Segnala alla status bar dell'area manager che si è verificata la fine di un evento
+     * @param text -> descrizione dell'evento
+     */
     void triggerEndEventToManagerHome(String text) {
         managerHomeController.triggerStartStatusEvent(text);
     }
@@ -311,7 +342,6 @@ public class HallPanelController implements ICloseablePane {
         });
     }
 
-    //Supporta fino ai 1080p
     private int getColumnMaxFromPageWidth(double width) {
         if(width<800) {
             return 2;
@@ -328,6 +358,10 @@ public class HallPanelController implements ICloseablePane {
         }
     }
 
+    /**
+     * Metodo chiamato alla chiusura del progetto o dell'area manager:
+     *     permette di chiudere l'eventuale sottofinestra del tool di modifica/creazione sale
+     */
     @Override
     public void closeAllSubWindows() {
         if(hallEditor!=null) {

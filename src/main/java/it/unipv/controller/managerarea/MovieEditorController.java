@@ -3,11 +3,7 @@ package it.unipv.controller.managerarea;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 
-import it.unipv.db.DBConnection;
-import it.unipv.dao.MovieDao;
-import it.unipv.dao.MovieDaoImpl;
 import it.unipv.controller.common.GUIUtils;
 import it.unipv.model.Movie;
 import it.unipv.model.MovieStatusTYPE;
@@ -19,7 +15,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 
-
+/**
+ * Controller di resources/fxml/managerarea/MovieEditor.fxml
+ * Questa classe viene utilizzata per:
+ *    1) Creare un nuovo film
+ *    2) Modificare un film già esistente
+ */
 public class MovieEditorController {
 
     @FXML private TextField imgTextField;
@@ -37,12 +38,13 @@ public class MovieEditorController {
     private Movie movie;
     private ProgrammationPanelController programmationPanelController;
     private MovieListPanelController movieListPanelController;
-    private MovieDao movieDao;
 
-    public MovieEditorController() {}
-
-    void init(ProgrammationPanelController programmationPanelController, DBConnection dbConnection) {
-        this.movieDao = new MovieDaoImpl(dbConnection);
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     *     Questo init imposta l'editor per la creazione di un film
+     * @param programmationPanelController -> il controller della pagina delle programmazioni
+     */
+    void init(ProgrammationPanelController programmationPanelController) {
         this.programmationPanelController = programmationPanelController;
         wasItAlreadyCreated = false;
         initMovieTypeComboBox();
@@ -53,6 +55,12 @@ public class MovieEditorController {
         imgTextField.setEditable(false);
     }
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     *     Questo init imposta l'editor per la modifica di un film dal pannello delle programmazioni.
+     * @param movie -> film da modificare
+     * @param programmationPanelController -> il controller della pagina delle programmazioni
+     */
     void init(Movie movie, ProgrammationPanelController programmationPanelController) {
         this.programmationPanelController = programmationPanelController;
         this.movie = movie;
@@ -66,6 +74,12 @@ public class MovieEditorController {
         imgTextField.setEditable(false);
     }
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     *     Questo init imposta l'editor per la modifica di un film dal pannello della lista film.
+     * @param movie -> film da modificare
+     * @param movieListPanelController -> il controller della pagina della lista film
+     */
     void init(Movie movie, MovieListPanelController movieListPanelController) {
         this.movieListPanelController = movieListPanelController;
         this.movie = movie;
@@ -77,12 +91,14 @@ public class MovieEditorController {
         imgTextField.setEditable(false);
     }
 
+    //Do un tetto massimo di caratteri inseribili come trama perché se no potrebbe appesantire l'UI e il caricamento dei dati
     private void setMaxCharToPlotTextArea() {
         plotTextArea.setTextFormatter(new TextFormatter<String>(change ->
                 change.getControlNewText().length() <= 1100 ? change : null));
 
     }
 
+    //I campi durata e anno devono contenere solo numeri e non anche caratteri
     private void setTextfieldToNumericOnlyTextfield(TextField... tf) {
         for(TextField t : tf) {
             t.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -95,9 +111,10 @@ public class MovieEditorController {
 
     private void initMovieTypeComboBox() {
         movieTypeComboBox.getItems().clear();
-        movieTypeComboBox.setItems(FXCollections.observableList(Arrays.asList("2D", "3D")));
+        movieTypeComboBox.setItems(FXCollections.observableArrayList("2D", "3D"));
     }
 
+    //Se si è in modalità modifica allora devo inizializzare i campi con le informazioni prese dal database
     private void setComponents() {
         titleTextField.setText(movie.getTitolo());
         genreTextField.setText(movie.getGenere());
@@ -113,6 +130,7 @@ public class MovieEditorController {
         plotTextArea.setText(movie.getTrama());
     }
 
+    //Il FileChooser è la finestra che permette di scegliere file dal pc (in questo caso locandine con formato jpg, png o gif)
     private void setFileChooser() {
         searchButton.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
@@ -128,7 +146,13 @@ public class MovieEditorController {
         });
     }
 
-    @FXML public void saveButtonListener() {
+    /* Listener al pulsante salva.
+     * In modalità creazione da errore se rimangono campi non compilati.
+     * In modalità modifica da errore se tutti i campi, ad esclusione della locandina, non vengono compilati:
+     *     questo perché se si va a modificare un film non per forza si vuole modificare la locandina e, quindi,
+     *     si può risparmiare sul tempo di upload dell'immagine.
+     */
+    @FXML private void saveButtonListener() {
         if( titleTextField.getText().trim().equalsIgnoreCase("")
          || genreTextField.getText().trim().equalsIgnoreCase("")
          || directionTextField.getText().trim().equalsIgnoreCase("")
@@ -160,6 +184,7 @@ public class MovieEditorController {
         }
     }
 
+    //Segnala al pannello delle programmazioni l'inserimento di un nuovo film
     private void createNewMovie() {
         Movie m = getMovieFromTextFields();
         try {
@@ -171,18 +196,7 @@ public class MovieEditorController {
         movie = m;
     }
 
-    private void updateMovieAndTriggerToMovieListPanelController() {
-        if(imgTextField.getText().trim().equalsIgnoreCase("")) {
-            movieListPanelController.triggerOverwriteMovieButNotPosterEvent(getMovieFromTextFields());
-        } else {
-            try {
-                movieListPanelController.triggerOverwriteMovieEvent(getMovieFromTextFields(), new FileInputStream(imgTextField.getText()));
-            } catch (FileNotFoundException e) {
-                throw new ApplicationException(e);
-            }
-        }
-    }
-
+    //Segnala al pannello delle programmazioni l'aggiornamento di un film
     private void updateMovieAndTriggerToProgrammationListPanelController() {
         if(imgTextField.getText().trim().equalsIgnoreCase("")) {
             programmationPanelController.triggerOverwriteMovieButNotPosterEvent(getMovieFromTextFields());
@@ -195,6 +209,20 @@ public class MovieEditorController {
         }
     }
 
+    //Segnala al pannello della lista film l'aggiornamento di un film
+    private void updateMovieAndTriggerToMovieListPanelController() {
+        if(imgTextField.getText().trim().equalsIgnoreCase("")) {
+            movieListPanelController.triggerOverwriteMovieButNotPosterEvent(getMovieFromTextFields());
+        } else {
+            try {
+                movieListPanelController.triggerOverwriteMovieEvent(getMovieFromTextFields(), new FileInputStream(imgTextField.getText()));
+            } catch (FileNotFoundException e) {
+                throw new ApplicationException(e);
+            }
+        }
+    }
+
+    //Tramite le informazioni inserite nelle textfield posso creare il film di conseguenza
     private Movie getMovieFromTextFields() {
         Movie m = new Movie();
         m.setTitolo(titleTextField.getText());

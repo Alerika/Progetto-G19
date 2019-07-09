@@ -22,6 +22,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
+/**
+ * Controller di resources/fxml/managerarea/MovieSchedulerEditor.fxml
+ * Questa classe viene utilizzata per creare una programmazione per un film.
+ * La pausa tra un film e l'altro è di 30 minuti.
+ * Casi in cui una programmazione non è accettata dal sistema:
+ *     1) Se si inserisce stessa ora e stessa sala di una prenotazione già esistente;
+ *     2) Se si inserisce un giorno nel passato;
+ *     3) Se un film dura 120 minuti ed è programmato alle 12:00, non si può programmare un secondo film se non dopo 120+30 min
+ *     4) Se esiste un film programmato alle 12, non posso programmare un secondo film alle 11.50:
+ *            devo verificare che, prima di un film già salvato, ci siano (durata film da aggiungere + pausa) minuti disponibili
+ */
 public class MovieScheduleEditorController {
 
     @FXML private DatePicker datePicker;
@@ -35,6 +46,13 @@ public class MovieScheduleEditorController {
     private HallDao hallDao;
     private ScheduleDao scheduleDao;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param movieSchedulerController -> controller da cui viene evocato questo form al quale si segnala la
+     *                                        creazione di una nuova programmazione
+     * @param movie -> film che si vuole programmare
+     * @param dbConnection -> la connessione al database utilizzata per istanziare MovieDaoImpl, HallDaoImpl e ScheduleDaoImpl.
+     */
     void init(MovieSchedulerController movieSchedulerController, Movie movie, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.hallDao = new HallDaoImpl(dbConnection);
@@ -46,6 +64,7 @@ public class MovieScheduleEditorController {
         initHallSelector();
     }
 
+    //Inizializzo la combobox delle sale, prendendo i nomi tramite database (hallDao)
     private void initHallSelector() {
         hallComboBox.getItems().clear();
         List<String> hallNames = hallDao.retrieveHallNames();
@@ -53,14 +72,15 @@ public class MovieScheduleEditorController {
         hallComboBox.setItems(FXCollections.observableList(hallNames));
     }
 
+    //Inizializzo il CustomTimeSpinner (unico elemento generato dal codice, il resto è fxml)
     private void initTimePicker() {
         timeSpinner = new CustomTimeSpinner();
-
         timeSpinnerContainer.getChildren().addAll(timeSpinner);
         timeSpinner.prefWidthProperty().bind(timeSpinnerContainer.widthProperty());
         timeSpinner.prefHeightProperty().bind(timeSpinnerContainer.heightProperty());
     }
 
+    //Listener al pulsante salva, qua vengono effettuati i vari controlli sulle date
     @FXML private void initSaveButtonListener() {
         String date = datePicker.getValue() == null ? "" : formatDate(datePicker.getValue().toString());
         String time = timeSpinner.getValue() == null ? "" : formatTime(timeSpinner.getValue().toString());
@@ -72,7 +92,7 @@ public class MovieScheduleEditorController {
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi compilare tutti i campi!");
         } else if (ApplicationUtils.checkIfDateIsPassed(date + " " + time)) {
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Non puoi programmare un film nel passato!");
-        } else if(checkIfSomethingIsAlreadyScheduledInThatTemporalGap(hall, date + " " + time, Integer.parseInt(movie.getDurata())) ) {
+        } else if(checkIfICanAddThisSchedule(hall, date + " " + time, Integer.parseInt(movie.getDurata())) ) {
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "C'è già una programmazione in questo periodo!");
         } else {
             Schedule schedule = new Schedule();
@@ -86,6 +106,7 @@ public class MovieScheduleEditorController {
         }
     }
 
+    //Metodo che formatta la data nel formato dd/MM/yyyy italiano.
     private String formatDate(String toFormat) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -96,7 +117,7 @@ public class MovieScheduleEditorController {
         }
     }
 
-    //Non hallDao ben capito perché a volte lo spinner ritorna una data con formato HH:mm:ss.SSS
+    //Metodo che formatta l'ora nel formato HH:mm. Non ho ben capito perché a volte lo spinner ritorna una data con formato HH:mm:ss.SSS
     private String formatTime(String toFormat) {
         String[] time = toFormat.split(":");
         if(time.length>2) {
@@ -112,7 +133,8 @@ public class MovieScheduleEditorController {
         }
     }
 
-    private boolean checkIfSomethingIsAlreadyScheduledInThatTemporalGap(String hall, String incomingScheduleDate, int incomingMovieDuration) {
+    //Metodo che controlla se la programmazione inserita dal manager è coerente con le altre programmazioni esistenti
+    private boolean checkIfICanAddThisSchedule(String hall, String incomingScheduleDate, int incomingMovieDuration) {
         List<Schedule> schedules = scheduleDao.retrieveMovieSchedules();
         for(Schedule ms : schedules) {
             if( (ms.getDate().trim().equalsIgnoreCase(incomingScheduleDate) && ms.getHallName().trim().equalsIgnoreCase(hall))
@@ -125,7 +147,7 @@ public class MovieScheduleEditorController {
                         break;
                     }
                 }
-                if(!checkIfICanAddThisSchedule(ms.getDate() + " " + ms.getTime(), existingMovieDuration, incomingScheduleDate, incomingMovieDuration)) {
+                if(!checkIfSomethingIsAlreadyScheduledInThatTemporalGap(ms.getDate() + " " + ms.getTime(), existingMovieDuration, incomingScheduleDate, incomingMovieDuration)) {
                     return true;
                 }
             }
@@ -133,7 +155,12 @@ public class MovieScheduleEditorController {
         return false;
     }
 
-    private boolean checkIfICanAddThisSchedule(String existingScheduleDate, int existingMovieDuration, String incomingScheduleDate, int incomingMovieDuration) {
+    /* Metodo che controlla se è possibile posizionare una programmazione nel range di tempo deciso dal manager
+     * Non va bene posizionare una programmazione prima della fine di un film (più pausa di 30 min)
+     * Non va bene posizionare una programmazione poco prima della programmazione di un altro film:
+     *     bisogna che ci siano (durata del film da programmare + pausa) minuti disponibili prima del film successivo
+    */
+    private boolean checkIfSomethingIsAlreadyScheduledInThatTemporalGap(String existingScheduleDate, int existingMovieDuration, String incomingScheduleDate, int incomingMovieDuration) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Calendar realIncomingScheduleDate = Calendar.getInstance();
         try {
@@ -146,6 +173,7 @@ public class MovieScheduleEditorController {
                 || realIncomingScheduleDate.after(getTimeOccupiedBySchedule(existingScheduleDate, existingMovieDuration, true));
     }
 
+    //Metodo che calcola il tempo occupato da una programmazione
     private Calendar getTimeOccupiedBySchedule(String existingScheduleDate, int movieDuration, boolean isItToAdd) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         Calendar result = Calendar.getInstance();

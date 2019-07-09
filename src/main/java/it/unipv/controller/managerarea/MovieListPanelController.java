@@ -33,6 +33,14 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Controller di resources/fxml/managerarea/MovieListPanel.fxml
+ * Questa classe viene utilizzata per:
+ *    1) Mostrare la lista completa dei film a sistema
+ *    2) Modificare un film già esistente
+ *    3) Abilitare alla programmazione un film già esistente
+ *    4) Cancellare un film già esistente
+ */
 public class MovieListPanelController implements ICloseablePane {
 
     @FXML private TextField searchBarTextfield;
@@ -48,6 +56,11 @@ public class MovieListPanelController implements ICloseablePane {
     private MovieDao movieDao;
     private ScheduleDao scheduleDao;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param managerHomeController -> serve per segnalare all'Area Manager le operazioni effettuate
+     * @param dbConnection -> la connessione al database utilizzata per istanziare MovieDaoImpl e ScheduleDaoImpl
+     */
     public void init(IManagerAreaTrigger managerHomeController, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.scheduleDao = new ScheduleDaoImpl(dbConnection);
@@ -67,6 +80,7 @@ public class MovieListPanelController implements ICloseablePane {
         Collections.sort(movies);
     }
 
+    //Metodo che crea la griglia della lista dei film a partire dai film caricati a sistema
     private void createMovieListGrid() {
         grigliaFilm.getChildren().clear();
 
@@ -83,6 +97,7 @@ public class MovieListPanelController implements ICloseablePane {
         columnCount=0;
     }
 
+    //Metodo che crea la singola cella della griglia; una cella contiene: nome film, icona visibilità, icona modifica ed icona cancella.
     private void createViewFromMoviesList(Movie movie) {
         Label movieTitleLabel = new Label(StringUtils.abbreviate(movie.getTitolo(),30));
         if(movie.getTitolo().length()>30) {
@@ -142,6 +157,7 @@ public class MovieListPanelController implements ICloseablePane {
         pane.getChildren().addAll(editIcon, deleteIcon);
     }
 
+    //Listener all'icona (tasto) di eliminazione del film; all'eliminazione rimuove anche le scheduling ad esso associate
     private void doDelete(Movie movie) {
         Optional<ButtonType> option =
                 GUIUtils.showConfirmationAlert( "Attenzione"
@@ -157,6 +173,7 @@ public class MovieListPanelController implements ICloseablePane {
         }
     }
 
+    //Listener all'icona (tasto) di visibilità; rende programmabile un film che non lo era in precedenza.
     private void doSetVisible(Movie movie) {
         Optional<ButtonType> option =
                 GUIUtils.showConfirmationAlert( "Attenzione"
@@ -172,6 +189,7 @@ public class MovieListPanelController implements ICloseablePane {
         }
     }
 
+    //Listener all'icona (tasto) di modifica; apre il form di modifica del film
     private boolean isMovieEditorAlreadyOpened = false;
     private void openMovieEditor(Movie movie) {
         if(!isMovieEditorAlreadyOpened) {
@@ -202,10 +220,9 @@ public class MovieListPanelController implements ICloseablePane {
         }
     }
 
-    private void refreshUI() {
-        createUI();
-    }
+    private void refreshUI() { createUI(); }
 
+    //Listener al tasto "cerca" della barra di ricerca; ricrea la griglia (senza ricaricare le informazioni) a seconda di ciò che viene cercato
     @FXML private void searchButtonListener() {
         String searchedMovieTitle = searchBarTextfield.getText();
         if(searchedMovieTitle!=null) {
@@ -221,14 +238,24 @@ public class MovieListPanelController implements ICloseablePane {
         }
     }
 
+    /**
+     * Segnala alla Home il cambiamento di un film che non interessa la sua locandina.
+     * @param movie -> film interessato dal cambiamento
+     */
     void triggerOverwriteMovieButNotPosterEvent(Movie movie) {
         triggerToHome(movie, null);
     }
 
+    /**
+     * Segnala alla Home il cambiamento di un film che interessa anche la sua locandina.
+     * @param movie -> film interessato dal cambiamento
+     * @param posterStream -> stream della locandina da salvare
+     */
     void triggerOverwriteMovieEvent(Movie movie, FileInputStream posterStream) {
         triggerToHome(movie, posterStream);
     }
 
+    //Metodo che effettivamente si occupa di aggiornare le informazioni del film e di segnalare alla Home il cambiamento
     private void triggerToHome(Movie movie, FileInputStream posterStream) {
         managerHomeController.triggerStartStatusEvent("Aggiorno il film " + movie.getTitolo() + "...");
         if(posterStream == null) {
@@ -241,6 +268,10 @@ public class MovieListPanelController implements ICloseablePane {
         managerHomeController.triggerEndStatusEvent(movie.getTitolo() + " correttamente aggiornato!");
     }
 
+    /**
+     * Metodo chiamato alla chiusura del progetto o dell'area manager:
+     *     permette di chiudere l'eventuale sottofinestra del form di modifica film
+     */
     @Override
     public void closeAllSubWindows() {
         if(movieEditorControllerStage!=null) {

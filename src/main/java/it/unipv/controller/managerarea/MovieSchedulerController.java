@@ -29,6 +29,11 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+/**
+ * Controller di resources/fxml/managerarea/MovieScheduler.fxml
+ * Questa classe viene utilizzata per mostrare/cancellare le programmazioni esistenti di un film
+ *     o per aprire l'editor di creazione delle programmazioni.
+ */
 public class MovieSchedulerController implements ICloseablePane {
 
     @FXML private Label nuovaProgrammazioneButton;
@@ -43,12 +48,30 @@ public class MovieSchedulerController implements ICloseablePane {
     private DBConnection dbConnection;
     private ScheduleDao scheduleDao;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param movie -> film che è interessato dalla creazione/eliminazione delle programmazioni
+     * @param dbConnection -> la connessione al database utilizzata per istanziare ScheduleDaoImpl
+     */
     void init(Movie movie, DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         scheduleDao = new ScheduleDaoImpl(dbConnection);
         initScheduleGrid(movie);
     }
 
+    private void initMovieSchedulesList() {
+        schedules.clear();
+        actualSchedules.clear();
+        schedules = scheduleDao.retrieveMovieSchedules();
+        Collections.sort(schedules);
+        for(Schedule ms : schedules) {
+            if(ms.getMovieCode().equalsIgnoreCase(movie.getCodice())) {
+                actualSchedules.add(ms);
+            }
+        }
+    }
+
+    //Metodo che crea la griglia delle programmazioni esistenti
     private void initScheduleGrid(Movie movie) {
         grigliaProgrammazione.getChildren().clear();
 
@@ -65,27 +88,7 @@ public class MovieSchedulerController implements ICloseablePane {
         columnCount = 0;
     }
 
-    private boolean isMovieSchedulerEditorAlreadyOpened = false;
-    @FXML private void nuovaProgrammazioneButtonListener() {
-        if(!isMovieSchedulerEditorAlreadyOpened) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/managerarea/MovieScheduleEditor.fxml"));
-                Parent p = loader.load();
-                MovieScheduleEditorController msec = loader.getController();
-                msec.init(this, movie, dbConnection);
-                movieSchedulerEditorStage = new Stage();
-                movieSchedulerEditorStage.setScene(new Scene(p));
-                movieSchedulerEditorStage.setTitle("Nuova programmazione per " + movie.getTitolo());
-                movieSchedulerEditorStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
-                movieSchedulerEditorStage.setOnCloseRequest(event -> isMovieSchedulerEditorAlreadyOpened = false);
-                movieSchedulerEditorStage.show();
-                isMovieSchedulerEditorAlreadyOpened = true;
-            } catch (IOException ex) {
-                throw new ApplicationException(ex);
-            }
-        }
-    }
-
+    //Crea la singola cella della griglia, che contiene le informazioni delle programmazioni e il tasto di eliminazione programmazione
     private void createViewFromMovieSchedulesList(Schedule schedule) {
         Label scheduleLabel = new Label(schedule.getDate() + "   " +  schedule.getTime() + "   " + schedule.getHallName());
         scheduleLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
@@ -113,32 +116,48 @@ public class MovieSchedulerController implements ICloseablePane {
 
         deleteIcon.setLayoutY(scheduleLabel.getLayoutY());
         deleteIcon.setLayoutX(scheduleLabel.getLayoutX()+200);
-        deleteIcon.setOnMouseClicked(e -> {
-            Optional<ButtonType> option =
-                    GUIUtils.showConfirmationAlert( "Attenzione"
-                                                  , "Richiesta conferma:"
-                                                  , "Sei sicuro di voler eliminare dalla lista questa programmazione?");
-            if(option.orElse(null)==ButtonType.YES) {
-                scheduleDao.deleteMovieSchedule(schedule);
-                refreshUI();
-            }
-        });
+        deleteIcon.setOnMouseClicked(e -> doDeleteSchedule(schedule));
 
         pane.getChildren().addAll(scheduleLabel, deleteIcon);
     }
 
-    private void initMovieSchedulesList() {
-        schedules.clear();
-        actualSchedules.clear();
-        schedules = scheduleDao.retrieveMovieSchedules();
-        Collections.sort(schedules);
-        for(Schedule ms : schedules) {
-            if(ms.getMovieCode().equalsIgnoreCase(movie.getCodice())) {
-                actualSchedules.add(ms);
+    //Listener al tasto di eliminazione schedule
+    private void doDeleteSchedule(Schedule schedule) {
+        Optional<ButtonType> option =
+                GUIUtils.showConfirmationAlert( "Attenzione"
+                                              , "Richiesta conferma:"
+                                              , "Sei sicuro di voler eliminare dalla lista questa programmazione?");
+        if(option.orElse(null)==ButtonType.YES) {
+            scheduleDao.deleteMovieSchedule(schedule);
+            refreshUI();
+        }
+    }
+
+    //Listener al tasto "Nuova programmazione", apre il MovieScheduleEditor
+    private boolean isMovieSchedulerEditorAlreadyOpened = false;
+    @FXML private void nuovaProgrammazioneButtonListener() {
+        if(!isMovieSchedulerEditorAlreadyOpened) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/managerarea/MovieScheduleEditor.fxml"));
+                Parent p = loader.load();
+                MovieScheduleEditorController msec = loader.getController();
+                msec.init(this, movie, dbConnection);
+                movieSchedulerEditorStage = new Stage();
+                movieSchedulerEditorStage.setScene(new Scene(p));
+                movieSchedulerEditorStage.setTitle("Nuova programmazione per " + movie.getTitolo());
+                movieSchedulerEditorStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/GoldenMovieStudioIcon.png")));
+                movieSchedulerEditorStage.setOnCloseRequest(event -> isMovieSchedulerEditorAlreadyOpened = false);
+                movieSchedulerEditorStage.show();
+                isMovieSchedulerEditorAlreadyOpened = true;
+            } catch (IOException ex) {
+                throw new ApplicationException(ex);
             }
         }
     }
 
+    /**
+     * Segnala la presenza di una nuova programmazione in lista, in modo tale da far aggiornare l'interfaccia
+     */
     void triggerNewScheduleEvent() { refreshUI(); }
 
     private void refreshUI() {
@@ -146,6 +165,10 @@ public class MovieSchedulerController implements ICloseablePane {
         initScheduleGrid(movie);
     }
 
+    /**
+     * Metodo chiamato alla chiusura del progetto o dell'area manager:
+     *     permette di chiudere l'eventuale sottofinestra del form di creazione nuova programmazione
+     */
     @Override
     public void closeAllSubWindows() {
         if(movieSchedulerEditorStage != null) {

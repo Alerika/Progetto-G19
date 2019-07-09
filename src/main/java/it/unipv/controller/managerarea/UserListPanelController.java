@@ -23,6 +23,13 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Controller di resources/fxml/managerarea/UserListPanel.fxml
+ * Questa classe viene utilizzata per:
+ *     1) mostrare gli utenti registrati a sistema (solo il nome)
+ *     2) modificare la password degli utenti, in caso di segnalato smarrimento codice utente
+ *     3) cancellare un utente
+ */
 public class UserListPanelController {
 
     @FXML private ScrollPane userListPanel;
@@ -36,6 +43,11 @@ public class UserListPanelController {
     private UserDao userDao;
     private IManagerAreaTrigger managerAreaController;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param managerAreaController -> il controller dell'area manager, che segnala alla Home cambiamenti nella lista utenti
+     * @param dbConnection -> la connessione al database utilizzata per istanziare UserDaoImpl
+     */
     public void init(IManagerAreaTrigger managerAreaController, DBConnection dbConnection) {
         this.managerAreaController = managerAreaController;
         this.prenotationDao = new PrenotationDaoImpl(dbConnection);
@@ -58,6 +70,7 @@ public class UserListPanelController {
         Collections.sort(users);
     }
 
+    //Metodo che crea la griglia della lista utenti
     private void createUserListGrid() {
         grigliaUser.getChildren().clear();
 
@@ -70,6 +83,12 @@ public class UserListPanelController {
         initRowAndColumnCount();
     }
 
+    private void initRowAndColumnCount() {
+        rowCount=0;
+        columnCount=0;
+    }
+
+    //Metodo che crea la singola cella della griglia, che contiene nome utente, tasto modifica password e tasto elimina utente
     private void createGridCellFromUser(User user) {
         Label userLabel = new Label(StringUtils.abbreviate(user.getNome(), 30));
         userLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 20));
@@ -112,6 +131,7 @@ public class UserListPanelController {
         pane.getChildren().addAll(userLabel, editIcon, deleteIcon);
     }
 
+    //Listener al tasto di modifica password utente
     private void doEditPassword(User user) {
         String password = GUIUtils.showInputAlert("Modifica password", "Stai modificando la password di " + user.getNome(), "Inserisci la nuova password").orElse(null);
         if(password!=null) {
@@ -129,6 +149,7 @@ public class UserListPanelController {
         }
     }
 
+    //Listener al tasto di rimozione utente
     private void doRemoveUser(User user) {
         Optional<ButtonType> option =
                 GUIUtils.showConfirmationAlert( "Attenzione"
@@ -143,6 +164,7 @@ public class UserListPanelController {
         }
     }
 
+    //Alla rimozione di un utente, cancello anche le sue prenotazioni, perché non ha senso tenerle per ora
     private void removeConcerningPrenotations(User user) {
         List<Prenotation> prenotations = prenotationDao.retrievePrenotationList();
         for(Prenotation p : prenotations) {
@@ -154,6 +176,7 @@ public class UserListPanelController {
 
     private void refreshUI() { createUI(); }
 
+    //Listener al pulsante cerca, ricrea la griglia a seconda di ciò che il manager cerca
     @FXML private void searchButtonListener() {
         String searchedUserName = searchBarTextfield.getText();
         if(searchedUserName!=null) {
@@ -169,11 +192,6 @@ public class UserListPanelController {
         } else {
             refreshUI();
         }
-    }
-
-    private void initRowAndColumnCount() {
-        rowCount=0;
-        columnCount=0;
     }
 
 }

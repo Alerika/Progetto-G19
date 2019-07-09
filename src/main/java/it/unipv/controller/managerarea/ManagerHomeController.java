@@ -23,6 +23,15 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
+/**
+ * Controller di resources/fxml/managerarea/ManagerHome.fxml
+ * Questa classe viene utilizzata per mostrare l'interfaccia principale dell'area manager; permette di:
+ *     1) Entrare nel pannello per creazione/modifica sale
+ *     2) Entrare nel pannello per creazione/modifica film programmati
+ *     3) Entrare nel pannello per modifica  film programmati e non
+ *     4) Entrare nel pannello per modifica password ed eliminazione degli utenti
+ *     5) Entrare nel pannello per la modifica dei prezzi del cinema
+ */
 public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaInitializer {
 
     @FXML private BorderPane mainPanel;
@@ -34,6 +43,11 @@ public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaI
     private DBConnection dbConnection;
     private Thread animatedTipsThread;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe;
+     * @param homeController -> è il controller della Home del cinema, al quale bisogna segnalare eventi di aggiornamento
+     * @param dbConnection -> è la connessione al database che verrà condivisa con tutte le funzioni del manager
+     */
     @Override
     public void init(IHomeTrigger homeController, DBConnection dbConnection) {
         this.homeController = homeController;
@@ -47,6 +61,7 @@ public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaI
         animateTipsLabel();
     }
 
+    // Metodo che gestisce il thread dei suggerimenti della status bar;
     private void animateTipsLabel() {
         animatedTipsThread = GUIUtils.getTipsThread(DataReferences.MANAGERAREATIPS, animatedTipsLabel, 5000);
         animatedTipsThread.start();
@@ -86,6 +101,7 @@ public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaI
         }
     }
 
+    //A seconda di quale label viene cliccata nel menu a sinistra, essa viene colorata per poi aprire il pannello corrispondente
     @FXML
     private void filterByOptions(MouseEvent event){
         Label label = (Label)event.getSource();
@@ -117,7 +133,7 @@ public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaI
                 break;
 
             default:
-                break;
+                throw new ApplicationException("Operazione non supportata/riconosciuta!");
         }
     }
 
@@ -159,6 +175,7 @@ public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaI
         }
     }
 
+    //In chiusura chiudo tutte le sottofinestre e fermo il thread dei suggerimenti
     private void doExit() {
         Stage stage = (Stage) mainPanel.getScene().getWindow();
         stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
@@ -181,14 +198,6 @@ public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaI
         }
     }
 
-    @Override
-    public void closeAllSubWindows() {
-        for(ICloseablePane i : iCloseablePanes) {
-            i.closeAllSubWindows();
-        }
-        if(animatedTipsThread != null) { animatedTipsThread.interrupt(); }
-    }
-
     private void setTransparentOtherLabels(String nameToExclude) {
         for(Label l : labels) {
             if(!l.getText().toLowerCase().equalsIgnoreCase(nameToExclude.toLowerCase())) {
@@ -197,9 +206,24 @@ public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaI
         }
     }
 
+    /**
+     * Se evocato va a chiudere tutte le eventuali sottofinestre e ferma il thread dei suggerimenti dell'Area Manager
+     */
+    @Override
+    public void closeAllSubWindows() {
+        for(ICloseablePane i : iCloseablePanes) {
+            i.closeAllSubWindows();
+        }
+        if(animatedTipsThread != null) { animatedTipsThread.interrupt(); }
+    }
+
+    /** Se evocato va a segnalare alla Home un evento riguardante la lista dei film */
     @Override public void triggerToHomeNewMovieEvent() { homeController.triggerNewMovieEvent(); }
+
+    /** Se evocato va a segnalare alla Home un evento riguardante la lista delle sale */
     @Override public void triggerToHomeNewHallEvent() { homeController.triggerNewHallEvent(); }
 
+    /** Metodo utilizzato per segnalare lo status iniziale dell'operazione in corso. */
     @Override
     public void triggerStartStatusEvent(String text) {
         statusLabel.setVisible(true);
@@ -208,6 +232,7 @@ public class ManagerHomeController implements IManagerAreaTrigger, IManagerAreaI
         statusPBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
     }
 
+    /** Metodo utilizzato per segnalare lo status finale dell'operazione in corso. */
     private static Timeline timeline;
     @Override
     public void triggerEndStatusEvent(String text) {

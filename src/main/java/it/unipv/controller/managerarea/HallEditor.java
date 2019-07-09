@@ -21,6 +21,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Questa classe è un tool per la creazione e modifica delle sale del cinema, accessibile solamente dal manager.
+ * Le possibilità che vengono date al Manager sono quindi:
+ *     Creazione/Rinominazione del singolo posto
+ *     Creazione di una griglia di posti
+ *     Eliminazione del singolo posto o dei posti selezionati
+ *     Spostare il singolo posto o i posti selezionati
+ *     Modificare il tipo del singolo posto o dei posti selezionati
+ */
 class HallEditor extends JFrame {
 
     private DraggableSeatPanel draggableSeatsPanel;
@@ -31,6 +40,13 @@ class HallEditor extends JFrame {
     private boolean wasItAlreadyCreated;
     private HallDao hallDao;
 
+    /**
+     * Costruttore richiamabile se non si vuole impostare una griglia di posti di partenza
+     * @param nomeSala -> nome della sala
+     * @param hallPanelController -> controller da cui viene evocato il tool
+     * @param wasItAlreadyCreated -> impostare a vero se si entra in modalità di modifica, altrimenti impostare a falso
+     * @param dbConnection -> la connessione al database con la quale si istanzia HallDaoImpl.
+     */
     HallEditor( String nomeSala
               , HallPanelController hallPanelController
               , boolean wasItAlreadyCreated
@@ -45,6 +61,14 @@ class HallEditor extends JFrame {
         initFrame();
     }
 
+    /**
+     * Costruttore richiamabile se si vuole impostare una griglia di posti di partenza, impostati già con un nome
+     * @param nomeSala -> nome della sala
+     * @param hallPanelController -> controller da cui viene evocato il tool
+     * @param rows -> numero di righe della griglia di posti di partenza
+     * @param columns -> numero di colonne della griglia di posti di partenza
+     * @param dbConnection -> la connessione al database con la quale si istanzia HallDaoImpl.
+     */
     HallEditor( String nomeSala
               , HallPanelController hallPanelController
               , int rows
@@ -58,7 +82,6 @@ class HallEditor extends JFrame {
         initFrame();
         isSomethingChanged = true;
     }
-
 
     private void initMenuBar() {
         JMenuBar menuBar = new JMenuBar();
@@ -109,7 +132,7 @@ class HallEditor extends JFrame {
               + "   Cancellare più posti alla volta:    dopo averli selezionati, premere DEL (CANC)\n"
               + "   Copia incolla di posti:    dopo averli selezionati, premere CTRL+C e successivamente CTRL+V\n"
               + "   Settare a NORMALE più posti alla volta:    dopo averli selezionati, premere ALT+N\n"
-              + "   Settare a VIP più posti alla volta:    dopo averli selezionati, premere ALT+M\n"
+              + "   Settare a VIP più posti alla volta:    dopo averli selezionati, premere ALT+V\n"
               + "   Settare a DISABILE più posti alla volta:    dopo averli selezionati, premere ALT+D\n"
               + "\n"
               + "Modifiche ai posti:\n"
@@ -118,6 +141,7 @@ class HallEditor extends JFrame {
               + "   Modifica tipologia di un posto:    click destro sul posto e scegliere \"Modifica tipo\"\n"  ;
     }
 
+    //Se si è in modalità modifica -> vero, se si è in modalità creazione -> falso
     private void initDraggableSeatsPanel(boolean wasItAlreayCreated) {
         draggableSeatsPanel = new DraggableSeatPanel(wasItAlreayCreated);
     }
@@ -126,15 +150,12 @@ class HallEditor extends JFrame {
         draggableSeatsPanel = new DraggableSeatPanel(rows, columns);
     }
 
-
+    //Metodo dove si impostano tutti i parametri del frame
     private void initFrame() {
         setTitle("Editor " + nomeSala);
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/GoldenMovieStudioIcon.png")));
         addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                doDisposeOnExit();
-            }
+            @Override public void windowClosing(WindowEvent e) { doDisposeOnExit(); }
         });
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLayout(new GridLayout(1, 1));
@@ -145,6 +166,10 @@ class HallEditor extends JFrame {
         addKeyListener(keyHandler);
     }
 
+    /* Metodo invocato alla chiusura del tool che verifica se tutti i posti hanno un nome:
+     *     se tutti i posti hanno un nome allora chiede se si vuole salvare prima di uscire;
+     *     se ci sono posti che non hanno un nome, allora si informa il manager che la piantina non può essere salvata correttamente
+    */
     private void doDisposeOnExit() {
         if(!draggableSeatsPanel.areAllSeatsBeenNamed()) {
             int reply = JOptionPane.showConfirmDialog(this, "La piantina non verrà salvata perché non a tutti i posti è stato assegnato un nome.\nSicuro di voler uscire?", "Scegli", JOptionPane.YES_NO_OPTION);
@@ -162,6 +187,14 @@ class HallEditor extends JFrame {
         }
     }
 
+    /* Listener alle scorciatoie da tastiera alle varie funzionalità del tool:
+     *    1) canc -> rimuove i posti selezionati
+     *    2) ctrl+c -> copia i posti selezionati
+     *    3) ctrl+v -> incolla i posti selezionati
+     *    4) alt+v -> setta tutti i posti selezionati a VIP
+     *    5) alt+d -> setta tutti i posti selezionati a DISABILE
+     *    6) alt+n -> setta tutti i posti selezionati a NORMALE
+     */
     private KeyListener keyHandler = new KeyAdapter() {
         @Override
         public void keyPressed(KeyEvent e) {
@@ -192,17 +225,29 @@ class HallEditor extends JFrame {
     };
 
 
-    /***********************************************************************************************************************************************************************/
+    /* **********************************************************************************************************************************************************************/
+    /**
+     * Classe che gestisce il pannello dove vengono disegnati i posti e dove vengono fatte tutte le operazioni
+     */
     private class DraggableSeatPanel extends JPanel {
 
         private List<String> createdSeatsName = new ArrayList<>();
         private List<Seat> draggableSeatsList = new ArrayList<>();
 
+        /**
+         * Costruttore del pannello per creazione/modifica di una sala senza griglia iniziale
+         * @param wasItAlreadyCreated -> vero se si è in modalità modifica, falso se si è in modalità creazione
+         */
         DraggableSeatPanel(boolean wasItAlreadyCreated) {
             if(wasItAlreadyCreated) { initDraggableSeatsList(); }
             initSeatPanel();
         }
 
+        /**
+         * Costruttore del pannello per creazione di una sala con griglia iniziale
+         * @param rows -> numero di righe della griglia
+         * @param columns -> numero di colonne della griglia
+         */
         DraggableSeatPanel(int rows, int columns) {
             initDraggableSeatsGrid(rows, columns);
             initSeatPanel();
@@ -216,10 +261,12 @@ class HallEditor extends JFrame {
             pack();
         }
 
+        //Se si è in modalità creazione sala con griglia, allora inizializzo la lista dei posti a sedere con la griglia iniziale
         private void initDraggableSeatsGrid(int rows, int columns) {
             draggableSeatsList.addAll(initGrid(rows, columns, true));
         }
 
+        //Metodo che si occupa di creare la griglia dei posti alla creazione della sala, assegnandogli un nome se richiesto
         private List<Seat> initGrid(int rows, int columns, boolean doYouWantName) {
             List<Seat> res = new ArrayList<>();
             int x = 5;
@@ -243,6 +290,7 @@ class HallEditor extends JFrame {
             return res;
         }
 
+        //Se si è in modalità modifica, allora devo inizializzare la lista di posti a sedere prelevando le informazioni dal database
         private void initDraggableSeatsList() {
             draggableSeatsList = hallDao.retrieveSeats(nomeSala);
             for(Seat mds : draggableSeatsList) {
@@ -250,6 +298,7 @@ class HallEditor extends JFrame {
             }
         }
 
+        //Metodo che si occupa di configurare il singolo posto a sedere, assegnandogli un nome se è richiesto ed il menu richiamabile con click destro
         private void configureMDS(Seat mds, String name, boolean doYouWantName) {
             if(doYouWantName) {
                 createdSeatsName.add(mds.getText());
@@ -258,6 +307,24 @@ class HallEditor extends JFrame {
             mds.setComponentPopupMenu(initJPopupMenu(mds));
             initMouseListenerForMDS(mds);
             add(mds);
+        }
+
+        //Metodo che inizializza il menu richiamabile (per ogni posto) con un click destro sul posto
+        private JPopupMenu initJPopupMenu(Seat mds) {
+            JPopupMenu popupMenu = new JPopupMenu();
+
+            JMenuItem deleteItem = new JMenuItem("Elimina");
+            deleteItem.addActionListener(e -> removeSeat(mds.getX(), mds.getY()));
+            popupMenu.add(deleteItem);
+
+            JMenuItem renameItem = new JMenuItem("Rinomina");
+            renameItem.addActionListener(e -> renameSeat(mds) );
+            popupMenu.add(renameItem);
+
+            JMenuItem modifySeatType = new JMenuItem("Modifica tipo");
+            modifySeatType.addActionListener(e -> updateSeatType(mds, configureTypeSelectionJOptionPaneMenu()));
+            popupMenu.add(modifySeatType);
+            return popupMenu;
         }
 
         private void removeSeat(int x, int y) {
@@ -367,6 +434,7 @@ class HallEditor extends JFrame {
             repaint();
         }
 
+        //Metodo che si occupa di configurare il JOptionPane richiamabile con l'inserimento di una griglia di posti
         private void configureGridJOptionPaneMenu() {
             JTextField rows = new JTextField();
             JTextField columns = new JTextField();
@@ -390,24 +458,6 @@ class HallEditor extends JFrame {
             }
         }
 
-        private JPopupMenu initJPopupMenu(Seat mds) {
-            JPopupMenu popupMenu = new JPopupMenu();
-
-            JMenuItem deleteItem = new JMenuItem("Elimina");
-            deleteItem.addActionListener(e -> removeSeat(mds.getX(), mds.getY()));
-            popupMenu.add(deleteItem);
-
-            JMenuItem renameItem = new JMenuItem("Rinomina");
-            renameItem.addActionListener(e -> renameSeat(mds) );
-            popupMenu.add(renameItem);
-
-            JMenuItem modifySeatType = new JMenuItem("Modifica tipo");
-            modifySeatType.addActionListener(e -> updateSeatType(mds, configureTypeSelectionJOptionPaneMenu()));
-            popupMenu.add(modifySeatType);
-            return popupMenu;
-        }
-
-
         private void updateSeatType(Seat mds, SeatTYPE type) {
             if(type!=null) {
                 mds.setType(type);
@@ -416,6 +466,7 @@ class HallEditor extends JFrame {
             }
         }
 
+        //Metodo che si occupa di configurare il JOptionPane richiamabile con la modifica del tipo di un posto
         private SeatTYPE configureTypeSelectionJOptionPaneMenu() {
             JComboBox<SeatTYPE> typeSelector = new JComboBox<>(new SeatTYPE[] {SeatTYPE.NORMALE, SeatTYPE.VIP, SeatTYPE.DISABILE});
             Object[] message = { "Tipo: ", typeSelector, };
@@ -461,6 +512,7 @@ class HallEditor extends JFrame {
             }
         }
 
+        //Metodo che si occupa effettivamente di salvare la piantina, caricando le informazioni su database
         private void doSave() {
             if(wasItAlreadyCreated) {
                 Platform.runLater(() ->hallPanelController.triggerStartEventToManagerHome("Aggiorno la piantina di " + nomeSala + "..."));
@@ -480,6 +532,7 @@ class HallEditor extends JFrame {
             isSomethingChanged = false;
         }
 
+        //Metodo che si occupa di creare uno screen del frame, che verrà poi utilizzato come anteprima nelle altre parti del progetto
         private ByteArrayInputStream saveSnapshot(Component c) {
             try {
                 BufferedImage img = new BufferedImage(c.getWidth(), c.getHeight(), BufferedImage.TYPE_INT_RGB);

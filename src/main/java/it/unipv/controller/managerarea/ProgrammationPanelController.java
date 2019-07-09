@@ -31,6 +31,15 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Controller di resources/fxml/managerarea/ProgrammationPanel.fxml
+ * Questa classe viene utilizzata per:
+ *    1) Mostrare la lista dei film attualmente programmati
+ *    2) Modificare un film programmato già esistente
+ *    3) Creare un nuovo film (alla creazione, è settato automaticamente programmabile)
+ *    4) Cancellare un film già esistente
+ *    5) Aprire il form di programmazione del film
+ */
 public class ProgrammationPanelController implements ICloseablePane {
 
     @FXML private Label nuovoFilmButton;
@@ -47,6 +56,11 @@ public class ProgrammationPanelController implements ICloseablePane {
     private ScheduleDao scheduleDao;
     private DBConnection dbConnection;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param managerHomeController -> controller della home del manager, al quale vengono segnalati cambiamenti nella lista film
+     * @param dbConnection -> la connessione al database utilizzata per istanziare MovieDaoIMpl e ScheduleDaoImpl
+     */
     public void init(IManagerAreaTrigger managerHomeController, DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         this.movieDao = new MovieDaoImpl(dbConnection);
@@ -70,6 +84,7 @@ public class ProgrammationPanelController implements ICloseablePane {
         Collections.sort(movies);
     }
 
+    //Metodo che si occupa di creare la griglia dei film programmabili
     private void createMovieGrid() {
         grigliaFilm.getChildren().clear();
 
@@ -88,6 +103,13 @@ public class ProgrammationPanelController implements ICloseablePane {
         columnCount = 0;
     }
 
+    /* La creazione della singola cella della griglia, contenente:
+     *     1) Locandina cliccabile che porta alla modifica del film;
+     *     2) Informazioni principali sul film;
+     *     3) Pulsante che apre il pannello delle programmazioni;
+     *     4) Pulsante che imposta non programmabile il film;
+     *     5) Pulsante che avvia l'eliminazione del film e delle sue programmazioni,
+    */
     private void createViewFromMoviesList(Movie movie) {
         Label nomeFilmLabel = new Label(StringUtils.abbreviate(movie.getTitolo(), 17));
         if(movie.getTitolo().length()>17) {
@@ -190,6 +212,7 @@ public class ProgrammationPanelController implements ICloseablePane {
         GUIUtils.setScaleTransitionOnControl(posterPreview);
     }
 
+    //Listener al pulsante di eliminazione film
     private void doDeleteMovie(Movie movie) {
         Optional<ButtonType> option =
                 GUIUtils.showConfirmationAlert( "Attenzione"
@@ -205,6 +228,17 @@ public class ProgrammationPanelController implements ICloseablePane {
         }
     }
 
+    //Rimuovo le programmazioni associate al film in questione se si cancella il film
+    private void removeAssociatedSchedules(Movie movie) {
+        List<Schedule> schedules = scheduleDao.retrieveMovieSchedules();
+        for(Schedule ms : schedules) {
+            if(movie.getCodice().equalsIgnoreCase(ms.getMovieCode())) {
+                scheduleDao.deleteMovieSchedule(ms);
+            }
+        }
+    }
+
+    //Listener al pulsante che imposta non programmabile il film
     private void doHideMovie(Movie movie) {
         Optional<ButtonType> option =
                 GUIUtils.showConfirmationAlert( "Attenzione"
@@ -220,6 +254,7 @@ public class ProgrammationPanelController implements ICloseablePane {
         }
     }
 
+    //Listener al tasto di apertura del pannello delle programmazioni
     private boolean isMovieSchedulerAlreadyOpened = false;
     private void openMovieScheduler(Movie movie) {
         if(!isMovieSchedulerAlreadyOpened) {
@@ -244,6 +279,7 @@ public class ProgrammationPanelController implements ICloseablePane {
         }
     }
 
+    //Metodo che apre l'editor film in modalità creazione se isANewFilm = true, se no lo apre in modalità modifica
     private boolean isMovieEditorAlreadyOpened = false;
     private void openMovieEditor(Movie movie, boolean isANewFilm) {
         if(!isMovieEditorAlreadyOpened) {
@@ -254,7 +290,7 @@ public class ProgrammationPanelController implements ICloseablePane {
                 movieEditorStage = new Stage();
                 movieEditorStage.setScene(new Scene(p));
                 if(isANewFilm) {
-                    mec.init(this, dbConnection);
+                    mec.init(this);
                     movieEditorStage.setTitle("Editor Film");
                 } else {
                     mec.init(movie, this);
@@ -270,19 +306,16 @@ public class ProgrammationPanelController implements ICloseablePane {
         }
     }
 
-    private void removeAssociatedSchedules(Movie movie) {
-        List<Schedule> schedules = scheduleDao.retrieveMovieSchedules();
-        for(Schedule ms : schedules) {
-            if(movie.getCodice().equalsIgnoreCase(ms.getMovieCode())) {
-                scheduleDao.deleteMovieSchedule(ms);
-            }
-        }
-    }
-
+    //Listener del tasto "Nuovo Film"
     @FXML private void nuovoFilmButtonListener() {
        openMovieEditor(null, true);
     }
 
+    /**
+     * Segnala alla Home la creazione di un nuovo film
+     * @param movie -> il film appena creato
+     * @param posterStream -> la locandina del film appena creato
+     */
     void triggerNewMovieEvent(Movie movie, FileInputStream posterStream) {
         managerHomeController.triggerStartStatusEvent("Inserisco " + movie.getTitolo() + " a sistema...");
         movieDao.insertNewMovie(movie, posterStream);
@@ -291,14 +324,24 @@ public class ProgrammationPanelController implements ICloseablePane {
         managerHomeController.triggerEndStatusEvent(movie.getTitolo() + " correttamente inserito a sistema!");
     }
 
+    /**
+     * Segnala alla Home il cambiamento di un film che non interessa la sua locandina.
+     * @param movie -> film interessato dal cambiamento
+     */
     void triggerOverwriteMovieButNotPosterEvent(Movie movie) {
         triggerToHome(movie, null);
     }
 
+    /**
+     * Segnala alla Home il cambiamento di un film che interessa anche la sua locandina.
+     * @param movie -> film interessato dal cambiamento
+     * @param posterStream -> stream della locandina da salvare
+     */
     void triggerOverwriteMovieEvent(Movie movie, FileInputStream posterStream) {
         triggerToHome(movie, posterStream);
     }
 
+    //Metodo che effettivamente si occupa di aggiornare le informazioni del film e di segnalare alla Home il cambiamento
     private void triggerToHome(Movie movie, FileInputStream posterStream) {
         managerHomeController.triggerStartStatusEvent("Aggiorno " + movie.getTitolo() + "...");
         if(posterStream == null) {
@@ -345,6 +388,10 @@ public class ProgrammationPanelController implements ICloseablePane {
         }
     }
 
+    /**
+     * Metodo chiamato alla chiusura del progetto o dell'area manager:
+     *     permette di chiudere le eventuali sottofinestre del pannello delle programmazioni e dell'editor film
+     */
     @Override
     public void closeAllSubWindows() {
         if(movieEditorStage != null) {

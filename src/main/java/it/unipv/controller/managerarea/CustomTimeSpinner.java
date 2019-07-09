@@ -11,8 +11,13 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.input.InputEvent;
 import javafx.util.StringConverter;
 
+/**
+ * Oggetto grafico che permette al manager di scegliere l'ora ed i minuti della proiezione grazie a delle frecce
+ *    È una modifica all'oggetto originale "Spinner" che permette appunto di usarlo per scegliere ore/minuti
+ */
 class CustomTimeSpinner extends Spinner<LocalTime> {
 
+    //Ci sono due modalità in questo spinner: posso scegliere l'ora (HOURS) oppure i minuti (MINUTES)
      enum Mode {
 
         HOURS {
@@ -78,6 +83,7 @@ class CustomTimeSpinner extends Spinner<LocalTime> {
 
         };
 
+        //prevede un formato che presenta due numeri di due cifre massimo divise da due punti (Es: 10:40)
         TextFormatter<LocalTime> textFormatter = new TextFormatter<>(localTimeConverter, LocalTime.now(), c -> {
             String newText = c.getControlNewText();
             if (newText.matches("[0-9]{0,2}:[0-9]{0,2}")) {

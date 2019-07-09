@@ -13,17 +13,26 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+/**
+ * Controller di resources/fxml/managerarea/PricesPanel.fxml
+ * Questa classe viene utilizzata per mostrare/modificare i prezzi del cinema
+ */
 public class PricesPanelController {
 
     private Prices prices = null;
     private PricesDao pricesDao;
     private IManagerAreaTrigger managerHomeController;
-    @FXML TextField baseTextField;
-    @FXML TextField vipTextField;
-    @FXML TextField threeDTextField;
-    @FXML TextField reducedTextField;
-    @FXML Label saveButton;
+    @FXML private TextField baseTextField;
+    @FXML private TextField vipTextField;
+    @FXML private TextField threeDTextField;
+    @FXML private TextField reducedTextField;
+    @FXML private Label saveButton;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param managerHomeController -> Controller della Home del manager, al quale vengono segnalati cambiamenti sui prezzi
+     * @param dbConnection -> la connessione al database utilizzata per istanziare PricesDaoImpl
+     */
     public void init(IManagerAreaTrigger managerHomeController, DBConnection dbConnection) {
         this.managerHomeController = managerHomeController;
         pricesDao = new PricesDaoImpl(dbConnection);
@@ -33,6 +42,7 @@ public class PricesPanelController {
         GUIUtils.setScaleTransitionOnControl(saveButton);
     }
 
+    //Prendo le informazioni dei prezzi, se esistenti sul database, e le carico nelle textfield
     private void fillUI() {
         managerHomeController.triggerStartStatusEvent("Carico le informazioni riguardanti i prezzi...");
         Platform.runLater(() -> {
@@ -44,6 +54,7 @@ public class PricesPanelController {
 
     private void initPricesIfExists(){ prices = pricesDao.retrievePrices(); }
 
+    //Se i prezzi esistono su database, allora carico le informazioni nelle textfield
     private void setComponentIfPricesExists(){
         if(prices!=null){
             baseTextField.setText(""+prices.getBase());
@@ -53,6 +64,7 @@ public class PricesPanelController {
         }
     }
 
+    //Listener al tasto salva
     @FXML
     private void doSave() throws NumberFormatException {
         managerHomeController.triggerStartStatusEvent("Salvo i nuovi prezzi...");
