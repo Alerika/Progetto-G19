@@ -36,6 +36,10 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Controller di resources/fxml/userarea/HistoryPanel.fxml
+ * Questa classe viene utilizzata per mostrare lo storico delle prenotazioni e le relative fatture
+ */
 public class HistoryPanelController implements ICloseablePane {
 
     private User loggedUser;
@@ -53,7 +57,12 @@ public class HistoryPanelController implements ICloseablePane {
     @FXML private TextField searchBarTextfield;
     @FXML private Label searchButton;
 
-
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param areaRiservataController -> serve per segnalare all'area riservata le operazioni effettuate
+     * @param loggedUser -> l'utente connesso al sistema
+     * @param dbConnection -> la connessione al database utilizzata per istanziare MovieDaoImpl e PrenotationDaoImpl
+     */
     public void init(IUserReservedAreaTrigger areaRiservataController, User loggedUser, DBConnection dbConnection) {
         this.movieDao = new MovieDaoImpl(dbConnection);
         this.prenotationDao = new PrenotationDaoImpl(dbConnection);
@@ -73,36 +82,6 @@ public class HistoryPanelController implements ICloseablePane {
             createMovieGrid();
         });
         areaRiservataController.triggerEndStatusEvent("Lista film visti da " + loggedUser.getNome() + " caricata con successo!");
-    }
-
-    private void refreshUI() { createMovieGrid(); }
-
-    private int getColumnMaxFromPageWidth(double width) {
-        if(width<800) {
-            return 2;
-        } else if(width>800 && width<=1360) {
-            return 3;
-        } else if(width>1360 && width<=1600) {
-            return 4;
-        } else if(width>1600) {
-            return 5;
-        } else {
-            return 6;
-        }
-    }
-
-    private int temp = 0;
-    private void checkPageDimension() {
-        Platform.runLater(() -> {
-            Stage stage = (Stage) historyPanel.getScene().getWindow();
-            stage.widthProperty().addListener(e -> {
-                columnMax = getColumnMaxFromPageWidth(stage.getWidth());
-                if (temp != columnMax) {
-                    temp = columnMax;
-                    refreshUI();
-                }
-            });
-        });
     }
 
     private void initMovieAndPrenotationList() {
@@ -128,6 +107,7 @@ public class HistoryPanelController implements ICloseablePane {
         }
     }
 
+    //Metodo che crea la griglia dello storico
     private void createMovieGrid() {
         grigliaFilm.getChildren().clear();
 
@@ -138,6 +118,7 @@ public class HistoryPanelController implements ICloseablePane {
         initRowAndColumnCount();
     }
 
+    //Metodo che crea la singola cella della griglia, che contiene la locandina, il nome del film e il tasto per aprire il pannello delle fatture
     private void createViewFromMoviesList(Movie movie) {
         Label nomeFilmLabel = new Label(StringUtils.abbreviate(movie.getTitolo(), 17));
         if(movie.getTitolo().length()>17) {
@@ -182,6 +163,7 @@ public class HistoryPanelController implements ICloseablePane {
         pane.getChildren().addAll(oldestPrenotationIcon);
     }
 
+    //Listener al tasto di apertura del pannello delle fatture
     private boolean isAlreadyOpened = false;
     private void openOldestPrenotationWindow(Movie movie) {
         if(!isAlreadyOpened) {
@@ -192,9 +174,9 @@ public class HistoryPanelController implements ICloseablePane {
                 }
             }
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/userarea/OldestPrenotation.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/userarea/PrenotationList.fxml"));
                 Parent p = loader.load();
-                OldestPrenotationController opc = loader.getController();
+                PrenotationListController opc = loader.getController();
                 opc.init(toInject);
                 oldestPrenotationStage = new Stage();
                 oldestPrenotationStage.setScene(new Scene(p));
@@ -209,8 +191,8 @@ public class HistoryPanelController implements ICloseablePane {
         }
     }
 
-    @FXML
-    public void searchButtonListener() {
+    //Listener al tasto di ricerca, ricrea la griglia a seconda di ciò che l'utente inserisce nella barra di ricerca.
+    @FXML private void searchButtonListener() {
         String searchedString = searchBarTextfield.getText();
         if(searchedString!=null) {
             grigliaFilm.getChildren().clear();
@@ -230,6 +212,40 @@ public class HistoryPanelController implements ICloseablePane {
         columnCount=0;
     }
 
+    private void refreshUI() { createMovieGrid(); }
+
+    private int getColumnMaxFromPageWidth(double width) {
+        if(width<800) {
+            return 2;
+        } else if(width>800 && width<=1360) {
+            return 3;
+        } else if(width>1360 && width<=1600) {
+            return 4;
+        } else if(width>1600) {
+            return 5;
+        } else {
+            return 6;
+        }
+    }
+
+    private int temp = 0;
+    private void checkPageDimension() {
+        Platform.runLater(() -> {
+            Stage stage = (Stage) historyPanel.getScene().getWindow();
+            stage.widthProperty().addListener(e -> {
+                columnMax = getColumnMaxFromPageWidth(stage.getWidth());
+                if (temp != columnMax) {
+                    temp = columnMax;
+                    refreshUI();
+                }
+            });
+        });
+    }
+
+    /**
+     * Metodo chiamato alla chiusura del progetto o dell'area riservata:
+     *     permette di chiudere l'eventuale sottofinestra delle fatture
+     */
     @Override
     public void closeAllSubWindows() {
         if(oldestPrenotationStage!=null) {

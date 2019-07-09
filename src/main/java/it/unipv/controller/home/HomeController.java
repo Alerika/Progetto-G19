@@ -279,7 +279,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/userarea/AreaRiservataHome.fxml"));
                 Parent p = loader.load();
                 areaRiservataInitializer = loader.getController();
-                areaRiservataInitializer.init(loggedUser, true, dbConnection);
+                areaRiservataInitializer.init(loggedUser, dbConnection);
                 reservedAreaStage = new Stage();
                 reservedAreaStage.setScene(new Scene(p));
                 reservedAreaStage.setMinHeight(710);

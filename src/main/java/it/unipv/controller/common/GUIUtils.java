@@ -1,5 +1,8 @@
 package it.unipv.controller.common;
 
+import it.unipv.conversion.PrenotationToPDF;
+import it.unipv.model.Prenotation;
+import it.unipv.utils.ApplicationException;
 import it.unipv.utils.CloseableUtils;
 import javafx.animation.*;
 import javafx.application.Platform;
@@ -10,9 +13,11 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
@@ -191,5 +196,32 @@ public class GUIUtils {
         fadeOut.setToValue(0);
         fadeOut.playFromStart();
         label.setOpacity(0);
+    }
+
+    /**
+     * Metodo utilizzabile per aprire il FileChooser in modalità di salvataggio per il PDF delle fatture
+     * @param toSave -> prenotazione da salvare
+     */
+    public static void openPDFFileSaver(Prenotation toSave) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documenti PDF", "*.pdf"));
+
+        fileChooser.setInitialFileName( "Prenotazione "
+                                      + toSave.getNomeFilm().replaceAll("[-+.^:,]","")
+                                      + " - " + (toSave.getGiornoFilm()+toSave.getOraFilm()).replaceAll("[-+/.^:,]","")
+                                      + " - " + toSave.getNomeUtente()
+                                      + ".pdf");
+        File f = fileChooser.showSaveDialog(null);
+
+        try{
+            if(f!=null) {
+                PrenotationToPDF.generatePDF(f.getPath(), "UTF-8", toSave);
+                showAlert(Alert.AlertType.CONFIRMATION, "Conferma", "Operazione riuscita:", "Prenotazione correttamente salvata!\nPer pagare presentarsi con la fattura alla reception!");
+            }
+        } catch (Exception ex) {
+            showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore durante la creazione del PDF: ", ex.getMessage());
+            throw new ApplicationException(ex);
+        }
     }
 }

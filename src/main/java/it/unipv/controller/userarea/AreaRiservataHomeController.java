@@ -27,6 +27,14 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
+/**
+ * Controller di resources/fxml/userarea/AreaRuservataHome.fxml
+ * Questa classe viene utilizzata per mostrare l'interfaccia principale dell'area riservata utente; permette di:
+ *     1) Entrare nel pannello "Home" per visualizzare le informazioni utente, soprattutto il Codice Utente fornito in registrazione;
+ *     2) Entrare nel pannello delle "Prenotazioni", per poter scaricare la fattura;
+ *     3) Entrare nel pannello dei "Film Visti", per poter vedere lo storico dei film e delle fatture relative;
+ *     4) Entrare nel pannello dei "Suggerimenti", per poter vedere una lista di film che potrebbero interessare all'utente;
+ */
 public class AreaRiservataHomeController implements IUserReservedAreaInitializer, IUserReservedAreaTrigger {
 
     @FXML private BorderPane mainPanel;
@@ -34,16 +42,19 @@ public class AreaRiservataHomeController implements IUserReservedAreaInitializer
     @FXML private ProgressBar statusPBar;
     private List<Label> labels = new ArrayList<>();
     private User loggedUser;
-    private boolean summonedByHome;
     private List<ICloseablePane> iCloseablePanes = new ArrayList<>();
     private DBConnection dbConnection;
     private Thread animatedTipsThread;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe;
+     * @param loggedUser -> l'utente che richiede di vedere la propria area riservata;
+     * @param dbConnection -> la connessione al database che verrà condivisa a tutte le funzioni dell'area riservata.
+     */
     @Override
-    public void init(User loggedUser, boolean summonedByHome, DBConnection dbConnection) {
+    public void init(User loggedUser, DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         this.loggedUser = loggedUser;
-        this.summonedByHome = summonedByHome;
 
         statusLabel.setVisible(false);
         statusPBar.setVisible(false);
@@ -55,6 +66,7 @@ public class AreaRiservataHomeController implements IUserReservedAreaInitializer
         animateTipsLabel();
     }
 
+    // Metodo che gestisce il thread dei suggerimenti della status bar;
     private void animateTipsLabel() {
         animatedTipsThread = GUIUtils.getTipsThread(DataReferences.USERRESERVEDAREATIPS, animatedTipsLabel, 5000);
         animatedTipsThread.start();
@@ -93,6 +105,7 @@ public class AreaRiservataHomeController implements IUserReservedAreaInitializer
         }
     }
 
+    //A seconda di quale label viene cliccata nel menu a sinistra, essa viene colorata per poi aprire il pannello corrispondente
     @FXML
     private void filterByOptions(MouseEvent event){
         Label label = (Label)event.getSource();
@@ -156,11 +169,10 @@ public class AreaRiservataHomeController implements IUserReservedAreaInitializer
         }
     }
 
+    //In chiusura chiudo tutte le sottofinestre e fermo il thread dei suggerimenti
     private void doExit() {
         Stage stage = (Stage) mainPanel.getScene().getWindow();
-        if(summonedByHome) {
-            stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
-        }
+        stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
         closeAllSubWindows();
         stage.close();
     }
@@ -188,6 +200,9 @@ public class AreaRiservataHomeController implements IUserReservedAreaInitializer
         }
     }
 
+    /**
+     * Se evocato va a chiudere tutte le eventuali sottofinestre e ferma il thread dei suggerimenti dell'Area Riservata
+     */
     @Override
     public void closeAllSubWindows() {
         for(ICloseablePane i : iCloseablePanes) {
@@ -196,6 +211,7 @@ public class AreaRiservataHomeController implements IUserReservedAreaInitializer
         if(animatedTipsThread != null) { animatedTipsThread.interrupt(); }
     }
 
+    /** Metodo utilizzato per segnalare lo status iniziale dell'operazione in corso. */
     @Override
     public void triggerStartStatusEvent(String text) {
         statusLabel.setVisible(true);
@@ -204,6 +220,7 @@ public class AreaRiservataHomeController implements IUserReservedAreaInitializer
         statusPBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
     }
 
+    /** Metodo utilizzato per segnalare lo status finale dell'operazione in corso. */
     private static Timeline timeline;
     @Override
     public void triggerEndStatusEvent(String text) {

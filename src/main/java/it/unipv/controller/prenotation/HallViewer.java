@@ -13,6 +13,9 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Questa classe è usata come selettore dei posti durante la prenotazione, accessibile solamente all'utente.
+ */
 class HallViewer extends JFrame {
     private String nomeSala;
     private JPanel undraggableSeatsPanel;
@@ -22,6 +25,13 @@ class HallViewer extends JFrame {
     private boolean isSomethingChanged = false;
     private HallDao hallDao;
 
+    /**
+     * Costruttore richiamabile se l'utente non ha ancora selezionato dei posti
+     * @param moviePrenotationController -> controller del form di prenotazione, al quale si segnalano i posti confermati dall'utente;
+     * @param nomeSala -> il nome della sala che ha scelto l'utente;
+     * @param occupiedSeatNames -> lista dei posti già attualmente selezionati e confermati in precedenza (anche da altri utenti);
+     * @param dbConnection -> la connessione al database utilizzata per istanziare HallDaoImpl.
+     */
     HallViewer(MoviePrenotationController moviePrenotationController, String nomeSala, List<String> occupiedSeatNames, DBConnection dbConnection) {
         this.moviePrenotationController = moviePrenotationController;
         this.nomeSala = nomeSala;
@@ -33,6 +43,16 @@ class HallViewer extends JFrame {
         initFrame();
     }
 
+    private void initDraggableSeatsList() { undraggableSeats = hallDao.retrieveSeats(nomeSala); }
+
+    /**
+     * Costruttore richiamabile se l'utente ha già selezionato dei posti e vuole selezionarne o deselezionarne altri.
+     * @param moviePrenotationController -> controller del form di prenotazione, al quale si segnalano i posti confermati dall'utente;
+     * @param nomeSala -> il nome della sala che ha scelto l'utente;
+     * @param selectedMDS -> lista dei posti selezionati dall'utente nella stessa sessione
+     * @param occupiedSeatNames -> lista dei posti già attualmente selezionati e confermati in precedenza (anche da altri utenti);
+     * @param dbConnection -> la connessione al database utilizzata per istanziare HallDaoImpl.
+     */
     HallViewer(MoviePrenotationController moviePrenotationController, String nomeSala, List<Seat> selectedMDS, List<String> occupiedSeatNames, DBConnection dbConnection) {
         this.moviePrenotationController = moviePrenotationController;
         this.nomeSala = nomeSala;
@@ -62,37 +82,6 @@ class HallViewer extends JFrame {
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
     }
 
-    private void setUnselectableSeat(List<String> names) {
-        if(names.size()>0) {
-            for(Seat mds : undraggableSeats) {
-                for(String s : names) {
-                    if(mds.getText().trim().equalsIgnoreCase(s)) {
-                        mds.setType(SeatTYPE.OCCUPATO);
-                        mds.updateBackgroundForChangingType();
-                    }
-                }
-            }
-        }
-    }
-
-    private void setSelectedMDS() {
-        List<Seat> toAdd = new ArrayList<>();
-        for(Seat mds : undraggableSeats) {
-            for(Seat smds : selectedMDS) {
-                if(smds.getText().trim().equals(mds.getText().trim())) {
-                    mds.setBorder(new LineBorder(Color.CYAN,3));
-                    toAdd.add(mds);
-                }
-            }
-        }
-        selectedMDS.clear();
-        selectedMDS.addAll(toAdd);
-    }
-
-    private void initDraggableSeatsList() {
-        undraggableSeats = hallDao.retrieveSeats(nomeSala);
-    }
-
     private void initUndraggableSeatsPanel() {
         undraggableSeatsPanel = new JPanel();
         undraggableSeatsPanel.setMinimumSize(new Dimension(300, 150));
@@ -119,6 +108,36 @@ class HallViewer extends JFrame {
         }
     }
 
+    private void setUnselectableSeat(List<String> names) {
+        if(names.size()>0) {
+            for(Seat mds : undraggableSeats) {
+                for(String s : names) {
+                    if(mds.getText().trim().equalsIgnoreCase(s)) {
+                        mds.setType(SeatTYPE.OCCUPATO);
+                        mds.updateBackgroundForChangingType();
+                    }
+                }
+            }
+        }
+    }
+
+    //Metodo che imposta "selezionati" i posti che l'utente aveva già selezionato in questa sessione (magari per deselezionarne o selezionarne poi altri)
+    private void setSelectedMDS() {
+        List<Seat> toAdd = new ArrayList<>();
+        for(Seat mds : undraggableSeats) {
+            for(Seat smds : selectedMDS) {
+                if(smds.getText().trim().equals(mds.getText().trim())) {
+                    mds.setBorder(new LineBorder(Color.CYAN,3));
+                    toAdd.add(mds);
+                }
+            }
+        }
+        selectedMDS.clear();
+        selectedMDS.addAll(toAdd);
+    }
+
+
+
     private void initFrame() {
         setTitle(nomeSala + ": seleziona i posti!");
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/GoldenMovieStudioIcon.png")));
@@ -129,14 +148,12 @@ class HallViewer extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                doConfirmSelectedSeats();
-            }
+            @Override public void windowClosing(WindowEvent e) { doConfirmSelectedSeats(); }
         });
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
+    //Metodo invocato in chiusura del frame; chiede la conferma dei posti selezionati prima di chiudere il frame.
     private void doConfirmSelectedSeats() {
         if(isSomethingChanged) {
             int reply = JOptionPane.showConfirmDialog(this, "Confermi i posti selezionati?", "Conferma posti", JOptionPane.YES_NO_OPTION);

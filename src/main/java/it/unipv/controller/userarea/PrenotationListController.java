@@ -1,14 +1,11 @@
 package it.unipv.controller.userarea;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import it.unipv.conversion.PrenotationToPDF;
 import it.unipv.controller.common.GUIUtils;
 import it.unipv.model.Prenotation;
-import it.unipv.utils.ApplicationException;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -18,11 +15,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class OldestPrenotationController {
+/**
+ * Controller di resources/fxml/userarea/PrenotationList.fxml
+ * Questa classe viene utilizzata per mostrare lo storico delle fatture per un relativo film
+ */
+public class PrenotationListController {
 
     private List<Prenotation> prenotations = new ArrayList<>();
     @FXML private ScrollPane prenotationPanel;
@@ -31,6 +31,10 @@ public class OldestPrenotationController {
     private static int rowCount = 0;
     private static int columnCount = 0;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param prenotations -> lista delle prenotazioni effettuate per quel determinato film
+     */
     public void init(List<Prenotation> prenotations) {
         this.prenotations = prenotations;
         Collections.sort(prenotations);
@@ -38,6 +42,7 @@ public class OldestPrenotationController {
         createPrenotationListGrid();
     }
 
+    //Metodo che crea la griglia delle prenotazioni
     private void createPrenotationListGrid() {
         grigliaPrenotazioni.getChildren().clear();
 
@@ -53,6 +58,7 @@ public class OldestPrenotationController {
         columnCount=0;
     }
 
+    //Metodo che crea la singola cella della griglia, mostra la prenotazione ed il tasto per il download della fattura relativa
     private void createGridCellFromPrenotation(Prenotation p) {
         Label dayLabel = new Label(p.getGiornoFilm());
         dayLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 20));
@@ -81,35 +87,15 @@ public class OldestPrenotationController {
 
         invoceIcon.setLayoutY(dayLabel.getLayoutY());
         invoceIcon.setLayoutX(dayLabel.getLayoutX()+140);
-        invoceIcon.setOnMouseClicked(event -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialDirectory(new File(System.getProperty("userarea.home")));
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documenti PDF", "*.pdf"));
-            fileChooser.setInitialFileName( "Prenotazione "
-                    + p.getNomeFilm().replaceAll("[-+.^:,]","")
-                    + " - " + (p.getGiornoFilm()+p.getOraFilm()).replaceAll("[-+/.^:,]","")
-                    + " - " + p.getNomeUtente()
-                    + ".pdf");
-            File f = fileChooser.showSaveDialog(null);
-
-            try{
-                if(f!=null) {
-                    PrenotationToPDF.generatePDF(f.getPath(), "UTF-8", p);
-                    GUIUtils.showAlert(Alert.AlertType.CONFIRMATION, "Conferma", "Operazione riuscita:", "Prenotazione correttamente salvata!\nPer pagare presentarsi con la fattura alla reception!");
-                }
-            } catch (Exception ex) {
-                GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore durante la creazione del PDF: ", ex.getMessage());
-                throw new ApplicationException(ex);
-            }
-
-        });
+        invoceIcon.setOnMouseClicked(event -> GUIUtils.openPDFFileSaver(p));
 
 
         pane.getChildren().addAll(dayLabel, invoceIcon);
     }
 
+    //Listener al tasto "Chiudi"
     @FXML
-    public void doClose() {
+    private void doClose() {
         Stage stage = (Stage) closeButton.getScene().getWindow();
         stage.getOnCloseRequest().handle(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
         stage.close();

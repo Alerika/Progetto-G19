@@ -1,17 +1,14 @@
 package it.unipv.controller.userarea;
 
-import java.io.File;
 import java.util.*;
 
 import it.unipv.controller.common.IUserReservedAreaTrigger;
 import it.unipv.db.DBConnection;
 import it.unipv.dao.PrenotationDao;
 import it.unipv.dao.PrenotationDaoImpl;
-import it.unipv.conversion.PrenotationToPDF;
 import it.unipv.controller.common.GUIUtils;
 import it.unipv.model.User;
 import it.unipv.model.Prenotation;
-import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -23,9 +20,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
-import javafx.stage.FileChooser;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Controller di resources/fxml/userarea/CurrentPrenotationPanel.fxml
+ * Questa classe viene utilizzata per mostrare le prenotazioni correnti e per scaricare le relative fatture
+ */
 public class CurrentPrenotationPanelController {
 
     private User user;
@@ -39,6 +39,12 @@ public class CurrentPrenotationPanelController {
     @FXML private TextField searchBarTextfield;
     @FXML private Label searchButton;
 
+    /**
+     * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
+     * @param areaRiservataController -> serve per segnalare all'area riservata le operazioni effettuate
+     * @param user -> l'utente connesso al sistema
+     * @param dbConnection -> la connessione al database utilizzata per istanziare PrenotationDaoImpl
+     */
     public void init(IUserReservedAreaTrigger areaRiservataController, User user, DBConnection dbConnection) {
         this.user = user;
         this.prenotationDao = new PrenotationDaoImpl(dbConnection);
@@ -68,6 +74,7 @@ public class CurrentPrenotationPanelController {
         Collections.sort(prenotations);
     }
 
+    //Metodo che crea la griglia delle prenotazioni
     private void createPrenotationListGrid() {
         grigliaPrenotazioni.getChildren().clear();
         GUIUtils.setScaleTransitionOnControl(searchButton);
@@ -79,6 +86,7 @@ public class CurrentPrenotationPanelController {
         initRowAndColumnCount();
     }
 
+    //Metodo che crea la singola cella della griglia, che contiene la prenotazione, il tasto per scaricare la fattura e quello per eliminarla
     private void createGridCellFromPrenotation(Prenotation p) {
         Label movieNameLabel = new Label(StringUtils.abbreviate(p.getNomeFilm(), 23));
         if(p.getNomeFilm().length()>23) {
@@ -122,7 +130,7 @@ public class CurrentPrenotationPanelController {
 
         invoiceIcon.setLayoutY(dayLabel.getLayoutY());
         invoiceIcon.setLayoutX(dayLabel.getLayoutX()+140);
-        invoiceIcon.setOnMouseClicked(event -> doSaveInvoicePDF(p));
+        invoiceIcon.setOnMouseClicked(event -> GUIUtils.openPDFFileSaver(p));
 
         deleteIcon.setLayoutY(dayLabel.getLayoutY());
         deleteIcon.setLayoutX(invoiceIcon.getLayoutX()+40);
@@ -133,6 +141,7 @@ public class CurrentPrenotationPanelController {
         pane.getChildren().addAll(movieNameLabel, dayLabel, invoiceIcon, deleteIcon);
     }
 
+    //Listener al tasto di eliminazione della prenotazione;
     private void doDeletePrenotation(Prenotation toDelete) {
         Optional<ButtonType> option =
                 GUIUtils.showConfirmationAlert( "Attenzione"
@@ -144,28 +153,6 @@ public class CurrentPrenotationPanelController {
         }
     }
 
-    private void doSaveInvoicePDF(Prenotation p) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Documenti PDF", "*.pdf"));
-        fileChooser.setInitialFileName( "Prenotazione "
-                                      + p.getNomeFilm().replaceAll("[-+.^:,]","")
-                                      + " - " + (p.getGiornoFilm()+p.getOraFilm()).replaceAll("[-+/.^:,]","")
-                                      + " - " + p.getNomeUtente()
-                                      + ".pdf");
-        File f = fileChooser.showSaveDialog(null);
-
-        try{
-            if(f!=null) {
-                PrenotationToPDF.generatePDF(f.getPath(), "UTF-8", p);
-                GUIUtils.showAlert(Alert.AlertType.CONFIRMATION, "Conferma", "Operazione riuscita:", "Prenotazione correttamente salvata!\nPer pagare presentarsi con la fattura alla reception!");
-            }
-        } catch (Exception ex) {
-            GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore durante la creazione del PDF: ", ex.getMessage());
-            throw new ApplicationException(ex);
-        }
-    }
-
     private void initRowAndColumnCount() {
         rowCount=0;
         columnCount=0;
@@ -173,8 +160,8 @@ public class CurrentPrenotationPanelController {
 
     private void refreshUI() { createUI(); }
 
-    @FXML
-    public void searchButtonListener() {
+    //Listener al tasto di ricerca, ricrea la griglia a seconda di ciò che l'utente inserisce nella barra di ricerca.
+    @FXML private void searchButtonListener() {
         String searchedString = searchBarTextfield.getText();
         if(searchedString!=null) {
             grigliaPrenotazioni.getChildren().clear();
