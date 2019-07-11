@@ -8,7 +8,7 @@ public interface IHomeTrigger {
     void triggerNewMovieEvent();
     void triggerNewHallEvent();
     void triggerMovieClicked(Movie movie);
-    void triggerOpenHomePanel();
+    void triggerOpenProgrammationPanel();
     void triggerOpenReservedArea();
     void triggerStartStatusEvent(String text);
     void triggerEndStatusEvent(String text);

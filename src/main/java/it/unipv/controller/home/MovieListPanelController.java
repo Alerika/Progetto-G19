@@ -79,7 +79,7 @@ public class MovieListPanelController {
         GUIUtils.setScaleTransitionOnControl(homeImage);
         homeImage.setOnMouseClicked(e -> {
             if(isGridFiltered) {
-                homeController.triggerOpenHomePanel();
+                homeController.triggerOpenProgrammationPanel();
                 isGridFiltered = false;
             }
         });

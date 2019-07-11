@@ -142,15 +142,15 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         if(menuWindow.isVisible()) { closeMenu(); }
     }
 
-    /* Metodo invocato al click del pulsante "Home" del menu:
+    /* Metodo invocato al click del pulsante "Programmazione" del menu:
      *     ci sono due frame perché bisogna dare il tempo al menù di richiudersi finendo la sua animazione
      *     dopo che il menù si è chiuso parte il frame che inizializza la lista dei film.
     */
     @FXML
-    private void homeClick() {
+    private void programmazioneClick() {
         closeAllSubWindows();
         KeyFrame kf1 = new KeyFrame(Duration.millis(100), e -> closeMenu());
-        KeyFrame kf2 = new KeyFrame(Duration.millis(290), e -> openHomePanel());
+        KeyFrame kf2 = new KeyFrame(Duration.millis(290), e -> openProgrammationPanel());
         Platform.runLater(new Timeline(kf1,kf2)::play);
     }
 
@@ -177,7 +177,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         closeMenu();
     }
 
-    private void openHomePanel() {
+    private void openProgrammationPanel() {
         movieListPanelController = openNewPanel("/fxml/home/movieList.fxml").getController();
         movieListPanelController.init(this, dbConnection);
     }
@@ -486,7 +486,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     }
 
     /** Metodo utilizzato per segnalare alla Home di ritornare alla lista dei film. */
-    @Override public void triggerOpenHomePanel() { openHomePanel(); }
+    @Override public void triggerOpenProgrammationPanel() { openProgrammationPanel(); }
 
     /** Metodo utilizzato per segnalare alla Home di aprire l'area riservata utente. */
     @Override public void triggerOpenReservedArea() { doOpenReservedArea(); }

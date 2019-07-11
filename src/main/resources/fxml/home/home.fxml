@@ -58,7 +58,7 @@
                   </ImageView>
                   <AnchorPane fx:id="menuWindow" layoutX="63.0" layoutY="67.0" prefHeight="248.0" prefWidth="238.0">
                      <children>
-                        <Label fx:id="home" alignment="CENTER" contentDisplay="CENTER" layoutX="97.0" layoutY="23.0" onMouseClicked="#homeClick" prefHeight="31.0" prefWidth="44.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Home" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="99.0">
+                        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="47.0" layoutY="25.0" onMouseClicked="#programmazioneClick" prefHeight="31.0" prefWidth="149.0" style="-fx-cursor: hand;" stylesheets="@../../css/BebasNeue.css" text="Programmazione" textAlignment="CENTER" textFill="WHITE" AnchorPane.leftAnchor="47.0">
                            <font>
                               <Font name="Bebas Neue Regular" size="24.0" />
                            </font>

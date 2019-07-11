@@ -51,7 +51,7 @@ public class SingleMoviePanelController implements ICloseablePane {
     private ScheduleDao scheduleDao;
     private Font font = new Font("Bebas Neue Regular", 24);
     @FXML private ScrollPane singleMovieScroll;
-    @FXML private Label goBackToHomeButton;
+    @FXML private Label goBackToProgrammationButton;
 
     /**
      * Metodo principale del controller, deve essere chiamato all'inizializzazione della classe.
@@ -214,9 +214,9 @@ public class SingleMoviePanelController implements ICloseablePane {
                                            , poster
                                            , synopsis, movieSynopsis);
 
-        GUIUtils.setScaleTransitionOnControl(goBackToHomeButton);
-        goBackToHomeButton.getStylesheets().add("css/BebasNeue.css");
-        goBackToHomeButton.setOnMouseClicked(event -> homeController.triggerOpenHomePanel());
+        GUIUtils.setScaleTransitionOnControl(goBackToProgrammationButton);
+        goBackToProgrammationButton.getStylesheets().add("css/BebasNeue.css");
+        goBackToProgrammationButton.setOnMouseClicked(event -> homeController.triggerOpenProgrammationPanel());
 
     }
 
