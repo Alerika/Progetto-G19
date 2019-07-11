@@ -13,7 +13,7 @@
    <children>
       <AnchorPane prefHeight="768.0" prefWidth="1360.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <AnchorPane layoutX="69.0" layoutY="11.0" prefHeight="176.0" prefWidth="1360.0" style="-fx-background-color: #db8f00;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane layoutX="69.0" layoutY="11.0" onMouseClicked="#panelCloseMenuListener" prefHeight="176.0" prefWidth="1360.0" style="-fx-background-color: #db8f00;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <ImageView fitHeight="139.0" fitWidth="184.0" layoutX="43.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="69.0" AnchorPane.rightAnchor="1107.0">
                      <image>
@@ -42,7 +42,7 @@
                   </AnchorPane>
                </children>
             </AnchorPane>
-            <BorderPane fx:id="homePanel" layoutX="658.0" layoutY="174.0" prefHeight="565.0" prefWidth="1360.0" AnchorPane.bottomAnchor="29.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="174.0" />
+            <BorderPane fx:id="homePanel" layoutX="658.0" layoutY="174.0" onMouseClicked="#panelCloseMenuListener" prefHeight="565.0" prefWidth="1360.0" AnchorPane.bottomAnchor="29.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="174.0" />
             <AnchorPane fx:id="menuContainer" layoutX="-18.0" layoutY="183.0" prefHeight="318.0" prefWidth="324.0">
                <children>
                   <Rectangle fx:id="rectangleMenu" arcHeight="14.0" arcWidth="14.0" fill="#db8f00" height="67.0" layoutX="57.0" layoutY="17.0" stroke="TRANSPARENT" strokeType="INSIDE" width="161.0" />

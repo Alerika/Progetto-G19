@@ -105,30 +105,43 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     }
 
     /* *********************************************************** METODI RIGUARDANTI IL MENÙ *********************************************************** */
-    //Il metodo gestisce l'animazione del menu, sia in apertura che chiusura
     @FXML
     private void animationMenu(){
         if(!menuWindow.isVisible()){
-            menuWindow.setOpacity(0);
-            menuWindow.setVisible(true);
-            new Timeline(new KeyFrame(Duration.seconds(0.3), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() +81))).play();
-            new Timeline(new KeyFrame(Duration.seconds(0.3), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()+244))).play();
-
-            FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.4), menuWindow);
-            fadeIn.setDelay(Duration.seconds(0.2));
-            fadeIn.setFromValue(0);
-            fadeIn.setToValue(1.0);
-            fadeIn.play();
+            openMenu();
         } else {
-            FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.1), menuWindow);
-            fadeOut.setFromValue(1.0);
-            fadeOut.setToValue(0);
-            fadeOut.play();
-            menuWindow.setVisible(false);
-
-            new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight() - 244))).play();
-            new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() - 81))).play();
+            closeMenu();
         }
+    }
+
+    //Animazione di apertura del menu, richiamabile solamente al click sull'imageView delle tre righe del menu
+    private void openMenu() {
+        menuWindow.setOpacity(0);
+        menuWindow.setVisible(true);
+        new Timeline(new KeyFrame(Duration.seconds(0.3), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() +81))).play();
+        new Timeline(new KeyFrame(Duration.seconds(0.3), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()+244))).play();
+
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.4), menuWindow);
+        fadeIn.setDelay(Duration.seconds(0.2));
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
+    }
+
+    private void closeMenu() {
+        FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.1), menuWindow);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0);
+        fadeOut.play();
+        menuWindow.setVisible(false);
+
+        new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight() - 244))).play();
+        new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() - 81))).play();
+    }
+
+    @FXML
+    private void panelCloseMenuListener() {
+        if(menuWindow.isVisible()) { closeMenu(); }
     }
 
     /* Metodo invocato al click del pulsante "Home" del menu:
