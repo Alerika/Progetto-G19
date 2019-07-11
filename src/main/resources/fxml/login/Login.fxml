@@ -37,7 +37,7 @@
                <font>
                   <Font size="18.0" />
                </font></PasswordField>
-            <CheckBox fx:id="rememberCheckbox" layoutX="35.0" layoutY="450.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="331.0" text="Ricordati" textFill="WHITE">
+            <CheckBox fx:id="rememberCheckbox" layoutX="35.0" layoutY="450.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="331.0" text="Ricordami" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>

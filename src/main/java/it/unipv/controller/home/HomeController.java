@@ -105,40 +105,38 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     }
 
     /* *********************************************************** METODI RIGUARDANTI IL MENÙ *********************************************************** */
+    //Animazione di apertura del menu. È richiamato al click (mousePressed) sull'imageView delle tre righe del menu.
     @FXML
-    private void animationMenu(){
-        if(!menuWindow.isVisible()){
-            openMenu();
-        } else {
-            closeMenu();
+    private void openMenu() {
+        if(!menuWindow.isVisible()) {
+            menuWindow.setOpacity(0);
+            menuWindow.setVisible(true);
+            new Timeline(new KeyFrame(Duration.seconds(0.3), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() +81))).play();
+            new Timeline(new KeyFrame(Duration.seconds(0.3), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()+244))).play();
+
+            FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.4), menuWindow);
+            fadeIn.setDelay(Duration.seconds(0.2));
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1.0);
+            fadeIn.play();
         }
     }
 
-    //Animazione di apertura del menu, richiamabile solamente al click sull'imageView delle tre righe del menu
-    private void openMenu() {
-        menuWindow.setOpacity(0);
-        menuWindow.setVisible(true);
-        new Timeline(new KeyFrame(Duration.seconds(0.3), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() +81))).play();
-        new Timeline(new KeyFrame(Duration.seconds(0.3), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight()+244))).play();
-
-        FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.4), menuWindow);
-        fadeIn.setDelay(Duration.seconds(0.2));
-        fadeIn.setFromValue(0);
-        fadeIn.setToValue(1.0);
-        fadeIn.play();
-    }
-
+    //Animazione di chiusura del menu. Viene richiamato ogni qual volta il menu dovrebbe essere chiuso.
     private void closeMenu() {
-        FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.1), menuWindow);
-        fadeOut.setFromValue(1.0);
-        fadeOut.setToValue(0);
-        fadeOut.play();
-        menuWindow.setVisible(false);
+        if(menuWindow.isVisible()) {
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.1), menuWindow);
+            fadeOut.setFromValue(1.0);
+            fadeOut.setToValue(0);
+            fadeOut.play();
+            menuWindow.setVisible(false);
 
-        new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight() - 244))).play();
-        new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() - 81))).play();
+            new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.heightProperty(), rectangleMenu.getHeight() - 244))).play();
+            new Timeline(new KeyFrame(Duration.seconds(0.15), new KeyValue(rectangleMenu.widthProperty(), rectangleMenu.getWidth() - 81))).play();
+        }
     }
 
+    //Listener al click esterno al menu: in questo caso, se io clicco esternamente al menu aperto, è meglio che esso si chiuda.
     @FXML
     private void panelCloseMenuListener() {
         if(menuWindow.isVisible()) { closeMenu(); }
@@ -151,7 +149,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     @FXML
     private void homeClick() {
         closeAllSubWindows();
-        KeyFrame kf1 = new KeyFrame(Duration.millis(100), e -> animationMenu());
+        KeyFrame kf1 = new KeyFrame(Duration.millis(100), e -> closeMenu());
         KeyFrame kf2 = new KeyFrame(Duration.millis(290), e -> openHomePanel());
         Platform.runLater(new Timeline(kf1,kf2)::play);
     }
@@ -163,7 +161,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     @FXML
     private void salaClick() {
         closeAllSubWindows();
-        KeyFrame kf1 = new KeyFrame(Duration.millis(100), e -> animationMenu());
+        KeyFrame kf1 = new KeyFrame(Duration.millis(100), e -> closeMenu());
         KeyFrame kf2 = new KeyFrame(Duration.millis(290), e -> openHallList());
         Platform.runLater(new Timeline(kf1,kf2)::play);
     }
@@ -176,7 +174,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     private void infoClick() {
         closeAllSubWindows();
         openInfo();
-        animationMenu();
+        closeMenu();
     }
 
     private void openHomePanel() {
@@ -213,17 +211,17 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     /* *********************************************************** APERTURA/CHIUSURA LOGIN-REGISTRAZIONE-AREARISERVATA *********************************************************** */
     @FXML private void areaRiservataClick() {
         openReservedArea();
-        animationMenu();
+        closeMenu();
     }
 
     @FXML private void registrationWindow(){
         if(!stageRegistrazione.isShowing()){
             if(loggedUser==null) {
                 openRegistrazione();
-                animationMenu();
+                closeMenu();
             } else {
                 doLogout();
-                animationMenu();
+                closeMenu();
             }
         }
     }
