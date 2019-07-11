@@ -82,8 +82,8 @@ public class MovieScheduleEditorController {
 
     //Listener al pulsante salva, qua vengono effettuati i vari controlli sulle date
     @FXML private void initSaveButtonListener() {
-        String date = datePicker.getValue() == null ? "" : formatDate(datePicker.getValue().toString());
-        String time = timeSpinner.getValue() == null ? "" : formatTime(timeSpinner.getValue().toString());
+        String date = datePicker.getValue() == null ? "" : ApplicationUtils.formatDate(datePicker.getValue().toString());
+        String time = timeSpinner.getValue() == null ? "" : ApplicationUtils.formatTime(timeSpinner.getValue().toString());
         String hall = hallComboBox.getValue() == null ? "" : hallComboBox.getValue().toString();
 
         if( date.trim().equalsIgnoreCase("")
@@ -103,33 +103,6 @@ public class MovieScheduleEditorController {
             scheduleDao.insertNewMovieSchedule(schedule);
             moviePanelController.triggerNewScheduleEvent();
             GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Successo", "Operazione riuscita: ", "Salvataggio riuscito correttamente!");
-        }
-    }
-
-    //Metodo che formatta la data nel formato dd/MM/yyyy italiano.
-    private String formatDate(String toFormat) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
-            return sdf1.format(sdf.parse(toFormat));
-        } catch (ParseException e) {
-            throw new ApplicationException(e);
-        }
-    }
-
-    //Metodo che formatta l'ora nel formato HH:mm. Non ho ben capito perché a volte lo spinner ritorna una data con formato HH:mm:ss.SSS
-    private String formatTime(String toFormat) {
-        String[] time = toFormat.split(":");
-        if(time.length>2) {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
-                SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm");
-                return sdf1.format(sdf.parse(toFormat));
-            } catch (ParseException e) {
-                throw new ApplicationException(e);
-            }
-        } else {
-            return toFormat;
         }
     }
 

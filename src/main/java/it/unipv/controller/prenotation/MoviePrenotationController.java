@@ -16,6 +16,7 @@ import it.unipv.dao.ScheduleDaoImpl;
 import it.unipv.controller.common.*;
 import it.unipv.model.*;
 import it.unipv.utils.ApplicationException;
+import it.unipv.utils.ApplicationUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -303,18 +304,7 @@ public class MoviePrenotationController implements ICloseablePane {
                 occupiedSeat.add(p.getPostiSelezionati());
             }
         }
-        return getActualOccupiedSeatsList(occupiedSeat);
-    }
-
-    /* Siccome i posti prenotati vengono trattati come una stringa con separatore "-",
-     *     mi faccio ritornare una lista di stringhe (rappresentanti i posti) splittando la stringa iniziale per "-"
-     */
-    private List<String> getActualOccupiedSeatsList(List<String> listaPostiOccupati) {
-        List<String> res = new ArrayList<>();
-        for (String s : listaPostiOccupati) {
-            res.addAll(Arrays.asList(s.split("-")));
-        }
-        return res;
+        return ApplicationUtils.splitter(occupiedSeat, "-");
     }
 
     //Creo il pannello del riepilogo finale (dopo che l'utente ha scelto i posti)

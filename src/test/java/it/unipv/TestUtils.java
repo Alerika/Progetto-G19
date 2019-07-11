@@ -1,3 +1,5 @@
+package it.unipv;
+
 import it.unipv.model.Schedule;
 import it.unipv.utils.ApplicationException;
 import junit.framework.TestCase;

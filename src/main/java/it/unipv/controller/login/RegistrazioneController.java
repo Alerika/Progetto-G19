@@ -8,6 +8,7 @@ import it.unipv.dao.UserDao;
 import it.unipv.dao.UserDaoImpl;
 import it.unipv.controller.common.GUIUtils;
 import it.unipv.model.User;
+import it.unipv.utils.ApplicationUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -97,7 +98,7 @@ public class RegistrazioneController {
         boolean shouldDie = false;
         String res = "";
         while(!shouldDie) {
-            String codice = RandomStringUtils.random(5, "0123456789abcdefghijklmnopqrstuvzxy").toUpperCase();
+            String codice = ApplicationUtils.getRandomCode(5, "0123456789abcdefghijklmnopqrstuvzxy");
             boolean status = false;
             for(User u : users) {
                 if(u.getCodice().equalsIgnoreCase(codice)) {

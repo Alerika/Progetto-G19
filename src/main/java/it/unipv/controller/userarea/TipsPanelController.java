@@ -104,7 +104,7 @@ public class TipsPanelController {
             genres.add(m.getGenere());
         }
 
-        genres = getActualSeenGenres(genres);
+        genres = ApplicationUtils.splitter(genres, ",");
 
         int max = genres.size()> 3 ? 3 : genres.size();
         Map.Entry<String, Integer> mostRepeated;
@@ -142,20 +142,6 @@ public class TipsPanelController {
         }
         Collections.sort(prenotations);
         return prenotations;
-    }
-
-    //Quando viene creato un film, esso potrebbe appartenere a più generi (separati da una virgola)
-    private List<String> getActualSeenGenres(List<String> test) {
-        List<String> res = new ArrayList<>();
-        for(String s : test) {
-            String[] x = s.split(",");
-            if(x.length>0) {
-                res.addAll(Arrays.asList(x));
-            } else {
-                res.add(s);
-            }
-        }
-        return res;
     }
 
     //Metodo che ricava la parola più ricorrente in una lista di stringhe

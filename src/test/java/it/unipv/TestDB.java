@@ -1,3 +1,5 @@
+package it.unipv;
+
 import it.unipv.db.DBConnection;
 import junit.framework.TestCase;
 import org.junit.Test;
