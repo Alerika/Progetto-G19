@@ -256,7 +256,7 @@ public class SingleMoviePanelController implements ICloseablePane {
         List<Schedule> schedules = getProgrammationListFromMovie(movie);
         for(Schedule ms : schedules) {
             if(i<10) {
-                if(!ApplicationUtils.checkIfDateIsPassed(ms.getDate())) {
+                if(!ApplicationUtils.checkIfDateIsInThePast(ms.getDate())) {
                     Label scheduleLabel = new Label();
                     scheduleLabel.setText("  " + ms.getDate() + "  ");
                     scheduleLabel.setTextFill(Color.WHITE);

@@ -1,35 +1,56 @@
 package it.unipv;
 
 import it.unipv.db.DBConnection;
+import it.unipv.utils.DataReferences;
 import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(JUnit4.class)
 public class TestDB extends TestCase {
 
-    @Test
-    public void provaLettura() {
-        DBConnection dbConnection = new DBConnection();
-        try {
-            writeResultSet(dbConnection.getResultFromQuery("select * from z6xOH9WKhI.MAPS"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            dbConnection.close();
-        }
+    private DBConnection dbConnection;
+
+    @Before
+    public void before() {
+        dbConnection = new DBConnection();
     }
 
-       private void writeResultSet(ResultSet resultSet) throws SQLException {
-        while (resultSet.next()) {
-            System.out.println("Nome Sala: " + resultSet.getString("NOME_SALA"));
-            System.out.println("Nome Posto: " + resultSet.getString("NOME_POSTO"));
-            System.out.println("Coordinata X: " + resultSet.getString("COORD_X"));
-            System.out.println("Coordinata Y: " + resultSet.getString("COORD_Y"));
+    @After
+    public void after() {
+        dbConnection.close();
+    }
+
+    @Test
+    public void testQuery() throws SQLException {
+        List<String> result = new ArrayList<>();
+
+        try (ResultSet resultSet = dbConnection.getResultFromQuery("select distinct NOME_SALA from " + DataReferences.DBNAME + ".MAPS")) {
+            while (resultSet.next()) {
+                result.add(resultSet.getString("NOME_SALA"));
+            }
         }
+
+        for(String s : result) {
+            System.out.println(s);
+        }
+
+        assertTrue(result.size()>0);
+    }
+
+    @Test
+    public void checkConnection() throws SQLException {
+        assertFalse(dbConnection.getConnection().isClosed());
+
+        dbConnection.close();
+        assertTrue(dbConnection.getConnection().isClosed());
     }
 }

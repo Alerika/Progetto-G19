@@ -90,7 +90,7 @@ public class MovieScheduleEditorController {
          || time.trim().equalsIgnoreCase("")
          || hall.trim().equalsIgnoreCase("") ){
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Devi compilare tutti i campi!");
-        } else if (ApplicationUtils.checkIfDateIsPassed(date + " " + time)) {
+        } else if (ApplicationUtils.checkIfDateIsInThePast(date + " " + time)) {
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "Non puoi programmare un film nel passato!");
         } else if(checkIfICanAddThisSchedule(hall, date + " " + time, Integer.parseInt(movie.getDurata())) ) {
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "C'è già una programmazione in questo periodo!");
@@ -139,7 +139,7 @@ public class MovieScheduleEditorController {
         try {
             realIncomingScheduleDate.setTime(sdf.parse(incomingScheduleDate));
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw new ApplicationException(e);
         }
 
         return realIncomingScheduleDate.before(getTimeOccupiedBySchedule(existingScheduleDate, incomingMovieDuration, false))

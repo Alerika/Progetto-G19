@@ -41,7 +41,7 @@ import java.util.List;
  * I suggerimenti sono animati da tipsThread, il quale viene stoppato al termine dell'esecuzione del programma;
  * Ci sono diversi trigger per l'aggiornamento delle pagine (se il Manager effettua cambiamenti è giusto che la home si aggiorni adeguatamente),
  *     e per la progress bar dello stato, poiché se vengono effettuate operazioni dal database è giusto mostrare all'utente una sorta di caricamento;
- * Implementa IHomeInitializer, invocato da chi deve iare la classe (it.unipv.main.Home);
+ * Implementa IHomeInitializer, invocato da chi deve avviare la classe (it.unipv.main.Home);
  * Implementa IHomeTrigger, invocato da chi deve utilizzare uno dei suoi trigger (i controller che vengono istanziati a seconda di ciò che si sceglie di fare).
  */
 public class HomeController implements IHomeTrigger, IHomeInitializer {
@@ -76,7 +76,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
     public void init(DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         if(checkIfThereIsAlreadyUserSaved()) {
-            loggedUser = UserInfo.getUserInfo();
+            loggedUser = UserInfo.getUserInfo(DataReferences.INFOUSERFILE);
             setupLoggedUser();
         } else {
             logoutPane.setVisible(false);
@@ -422,7 +422,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
         loggedUser = null;
 
         if(checkIfThereIsAlreadyUserSaved()) {
-            UserInfo.deleteUserInfoFileInUserDir();
+            UserInfo.deleteUserInfoFileInUserDir(DataReferences.INFOUSERFILE);
         }
 
         closeReservedArea();
@@ -443,7 +443,7 @@ public class HomeController implements IHomeTrigger, IHomeInitializer {
      *    e che quindi il sistema deve accedere automaticamente all'avvio.
     */
     private boolean checkIfThereIsAlreadyUserSaved() {
-        return UserInfo.checkIfUserInfoFileExists();
+        return UserInfo.checkIfUserInfoFileExists(DataReferences.INFOUSERFILE);
     }
     /* ****************************************************************************************************************************************** */
 

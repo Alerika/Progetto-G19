@@ -1,21 +1,27 @@
 package it.unipv;
 
 import it.unipv.model.Schedule;
+import it.unipv.utils.ApplicationException;
 import it.unipv.utils.ApplicationUtils;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
 
 @RunWith(JUnit4.class)
 public class CinemaUtilsTest extends TestCase {
 
     @Test
-    public void testIfDateIsPassed() {
-        assertTrue(ApplicationUtils.checkIfDateIsPassed("02/04/2019"));
+    public void testIfDateIsInThePast() {
+        assertTrue(ApplicationUtils.checkIfDateIsInThePast("02/04/2019"));
     }
 
     @Test
@@ -30,17 +36,17 @@ public class CinemaUtilsTest extends TestCase {
     }
 
     @Test
-    public void testDateFormatter() {
+    public void testIfDateIsBeenFormatted() {
         assertEquals("30/04/2019", ApplicationUtils.formatDate("2019-04-30"));
     }
 
     @Test
-    public void testTimeFormatter() {
+    public void testIfHoursAreBeenFormatted() {
         assertEquals("22:30", ApplicationUtils.formatTime("22:30:23.11"));
     }
 
     @Test
-    public void testGetterActualSeatsList() {
+    public void testIfSeatsAreActuallyBeenSplittedByMinus() {
         //Aggiungo 13 posti a caso
         List<String> listaPostiOccupati = new ArrayList<>();
         listaPostiOccupati.add("A1-A2-A3");
@@ -58,11 +64,11 @@ public class CinemaUtilsTest extends TestCase {
     }
 
     @Test
-    public void testGetterActualSeenGenres() {
+    public void testIfGenresAreActuallyBeenSplittedByComma() {
         //Aggiungo 6 generi a caso separati da ,
         List<String> listaGeneri = new ArrayList<>();
-        listaGeneri.add("Azione,Commedia");
-        listaGeneri.add("Anime,Fantascienza,Horror");
+        listaGeneri.add("Azione, Commedia");
+        listaGeneri.add("Anime, Fantascienza, Horror");
         listaGeneri.add("Drammatico");
 
         List<String> res = ApplicationUtils.splitter(listaGeneri, ",");
@@ -75,7 +81,7 @@ public class CinemaUtilsTest extends TestCase {
     }
 
     @Test
-    public void userCodeTest() {
+    public void testIfUserCodesAreTrulyRandomlyGenerated() {
         String codice1 = ApplicationUtils.getRandomCode(5, "0123456789abcdefghijklmnopqrstuvzxy");
         String codice2 = ApplicationUtils.getRandomCode(5, "0123456789abcdefghijklmnopqrstuvzxy");
 
@@ -84,4 +90,53 @@ public class CinemaUtilsTest extends TestCase {
         assertNotEquals(codice1, codice2);
     }
 
+    //Metodo utilizzato per trovare i generi più visti dall'utente e dare così dei suggerimenti
+    @Test
+    public void testIfTheyAreTrulyTheMostRepeatedWordsInList() {
+        List<String> words = new LinkedList<>(Arrays.asList( "Azione"
+                                                           , "Commedia"
+                                                           , "Azione"
+                                                           , "Dramma"
+                                                           , "Commedia"
+                                                           , "Anime"
+                                                           , "Dramma"
+                                                           , "Fantascienza"));
+
+        assertThat( ApplicationUtils.getListOfMostRepeatedWordsInList(3, words) //actual
+                  , is(new LinkedList<>(Arrays.asList("Azione", "Commedia", "Dramma"))));   //expected
+    }
+
+    @Test
+    public void testIfICanAddThisSchedule() {
+        assertTrue(checkIfICanAddThisSchedule("17/05/2019 17:00", 60, 30, "17/05/2019 15:29", 60));
+        assertTrue(checkIfICanAddThisSchedule("17/05/2019 17:00", 60, 30, "17/05/2019 18:31", 60));
+        assertFalse(checkIfICanAddThisSchedule("17/05/2019 17:00", 60, 30, "17/05/2019 17:01", 60));
+        assertFalse(checkIfICanAddThisSchedule("17/05/2019 17:00", 60, 30, "17/05/2019 16:59", 60));
+    }
+
+    private boolean checkIfICanAddThisSchedule(String existingScheduleDate, int existingMovieDuration, int pause, String incomingScheduleDate, int incomingMovieDuration) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        Calendar realIncomingScheduleDate = Calendar.getInstance();
+        try {
+            realIncomingScheduleDate.setTime(sdf.parse(incomingScheduleDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return realIncomingScheduleDate.before(getTimeOccupiedBySchedule(existingScheduleDate, incomingMovieDuration, pause, false))
+                || realIncomingScheduleDate.after(getTimeOccupiedBySchedule(existingScheduleDate, existingMovieDuration, pause, true));
+    }
+
+    private Calendar getTimeOccupiedBySchedule(String existingScheduleDate, int movieDuration, int pause, boolean isItToAdd) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        Calendar result = Calendar.getInstance();
+        try {
+            result.setTime(sdf.parse((existingScheduleDate)));
+        } catch (ParseException e) {
+            throw new ApplicationException(e);
+        }
+        if(isItToAdd) { result.add(Calendar.MINUTE, movieDuration+pause); }
+        if(!isItToAdd) { result.add(Calendar.MINUTE, -(movieDuration+pause)); }
+        return result;
+    }
 }

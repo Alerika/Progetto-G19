@@ -98,7 +98,6 @@ public class TipsPanelController {
     private List<String> getTopThreeSeenGenres() {
         initSeenMovies(initPrenotationList());
         List<String> genres = new ArrayList<>();
-        List<String> res = new ArrayList<>();
 
         for(Movie m : seenMovies) {
             genres.add(m.getGenere());
@@ -106,24 +105,13 @@ public class TipsPanelController {
 
         genres = ApplicationUtils.splitter(genres, ",");
 
-        int max = genres.size()> 3 ? 3 : genres.size();
-        Map.Entry<String, Integer> mostRepeated;
-        for(int i=0; i<max; i++) {
-            mostRepeated = getMostRepeatedWordInList(genres);
-            for(int j=0; j<mostRepeated.getValue(); j++) {
-                genres.remove(mostRepeated.getKey());
-            }
-            res.add(mostRepeated.getKey());
-        }
-
-        Collections.sort(res);
-        return res;
+        return ApplicationUtils.getListOfMostRepeatedWordsInList(genres.size()> 3 ? 3 : genres.size(), genres);
     }
 
     private void initSeenMovies(List<Prenotation> prenotations) {
         for(Movie m : fullMovieList) {
             for(Prenotation p : prenotations) {
-                if(m.getCodice().equalsIgnoreCase(p.getCodiceFilm()) && ApplicationUtils.checkIfDateIsPassed(p.getGiornoFilm())) {
+                if(m.getCodice().equalsIgnoreCase(p.getCodiceFilm()) && ApplicationUtils.checkIfDateIsInThePast(p.getGiornoFilm())) {
                     if(!seenMovies.contains(m)) {
                         seenMovies.add(m);
                     }
@@ -142,26 +130,6 @@ public class TipsPanelController {
         }
         Collections.sort(prenotations);
         return prenotations;
-    }
-
-    //Metodo che ricava la parola più ricorrente in una lista di stringhe
-    private Map.Entry<String, Integer> getMostRepeatedWordInList(List<String> test) {
-        Map<String, Integer> stringsCount = new HashMap<>();
-
-        for(String string: test) {
-            Integer count = stringsCount.get(string);
-            if(count == null)  { count = 0; }
-            count++;
-            stringsCount.put(string,count);
-        }
-
-        Map.Entry<String,Integer> mostRepeated = null;
-        for(Map.Entry<String, Integer> e: stringsCount.entrySet()) {
-            if(mostRepeated == null || mostRepeated.getValue()<e.getValue())
-                mostRepeated = e;
-        }
-
-        return mostRepeated;
     }
 
     //Metodo che si occupa di creare la griglia dei film suggeriti

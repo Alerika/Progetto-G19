@@ -4,7 +4,6 @@ import com.lowagie.text.DocumentException;
 import it.unipv.conversion.PrenotationToPDF;
 import it.unipv.model.Prenotation;
 import it.unipv.utils.ApplicationException;
-import it.unipv.utils.ApplicationUtils;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,13 +15,19 @@ import java.io.IOException;
 @RunWith(JUnit4.class)
 public class PDFTester extends TestCase {
 
+    //Non metto una cartella random perché è utile vedere fisicamente come viene il pdf aprendolo
     private static final String PDFPATH = "test.pdf";
     private static final String ENCODING = "UTF-8";
 
     @Test
-    public void test() {
+    public void testIfPrenotationToPDFIsTrulyCreatingAPDF() {
+        File pdf = new File(PDFPATH);
+        if(pdf.exists()) {
+            assertTrue(pdf.delete());
+        }
+        assertFalse(pdf.exists());
         createTestPDF();
-        assertTrue(new File("test.pdf").exists());
+        assertTrue(pdf.exists());
     }
 
     private void createTestPDF() {

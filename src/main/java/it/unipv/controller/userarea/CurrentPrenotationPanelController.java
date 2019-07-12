@@ -67,7 +67,7 @@ public class CurrentPrenotationPanelController {
         List<Prenotation> x = prenotationDao.retrievePrenotationList();
         for(Prenotation p : x) {
             if( p.getNomeUtente().equalsIgnoreCase(user.getNome())
-             && !ApplicationUtils.checkIfDateIsPassed(p.getGiornoFilm())) {
+             && !ApplicationUtils.checkIfDateIsInThePast(p.getGiornoFilm())) {
                 prenotations.add(p);
             }
         }

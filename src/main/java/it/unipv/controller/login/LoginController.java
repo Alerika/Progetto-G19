@@ -12,6 +12,7 @@ import it.unipv.conversion.UserInfo;
 import it.unipv.controller.common.GUIUtils;
 import it.unipv.model.User;
 import it.unipv.utils.ApplicationException;
+import it.unipv.utils.DataReferences;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -96,7 +97,12 @@ public class LoginController {
                 doRealLogin(user);
 
                 if(rememberCheckbox.isSelected()) {
-                    UserInfo.createUserInfoFileInUserDir(user.getNome(), user.getPassword(), user.getEmail(), user.getCodice());
+                    UserInfo.createUserInfoFileInUserDir( user.getNome()
+                                                        , user.getPassword()
+                                                        , user.getEmail()
+                                                        , user.getCodice()
+                                                        , DataReferences.INFOUSERDIR
+                                                        , DataReferences.INFOUSERFILE);
                 }
 
                 homeController.triggerEndStatusEvent("Complimenti " + user.getNome() + ": accesso effettuato con successo!");

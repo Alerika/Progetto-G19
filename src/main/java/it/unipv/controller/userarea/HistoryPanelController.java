@@ -97,7 +97,7 @@ public class HistoryPanelController implements ICloseablePane {
         String temp = "";
         for(Movie m : y) {
             for(Prenotation p : prenotations) {
-                if(m.getCodice().equalsIgnoreCase(p.getCodiceFilm()) && ApplicationUtils.checkIfDateIsPassed(p.getGiornoFilm())) {
+                if(m.getCodice().equalsIgnoreCase(p.getCodiceFilm()) && ApplicationUtils.checkIfDateIsInThePast(p.getGiornoFilm())) {
                     if(!m.getTitolo().equalsIgnoreCase(temp)) {
                         movies.add(m);
                         temp = m.getTitolo();

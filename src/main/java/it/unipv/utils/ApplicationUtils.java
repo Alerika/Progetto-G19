@@ -12,7 +12,7 @@ public class ApplicationUtils {
         return UUID.randomUUID().toString();
     }
 
-    public static boolean checkIfDateIsPassed(String toCheck){
+    public static boolean checkIfDateIsInThePast(String toCheck){
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Date dateToCheck;
         try {
@@ -65,9 +65,11 @@ public class ApplicationUtils {
         for(String s : toSplit) {
             String[] supp = s.split(regex);
             if(supp.length>0) {
-                res.addAll(Arrays.asList(supp));
+                for(String x : supp) {
+                    res.add(x.trim());
+                }
             } else {
-                res.add(s);
+                res.add(s.trim());
             }
         }
         return res;
@@ -81,5 +83,47 @@ public class ApplicationUtils {
      */
     public static String getRandomCode(int maxChar, String chars) {
         return RandomStringUtils.random(maxChar, chars).toUpperCase();
+    }
+
+    /**
+     * Metodo che ritorna una lista di *maxOfWords* parole ricorrenti in una lista di *words*
+     * @param maxOfWords -> numero massimo di elementi da inserire in lista
+     * @param words -> lista di stringhe di cui trovare le *maxOfWords* parole più ricorrenti
+     * @return -> la lista delle *maxOfWords* parole più ricorrenti nella lista di *words*
+     */
+    public static List<String> getListOfMostRepeatedWordsInList(int maxOfWords, List<String> words) {
+        List<String> res = new ArrayList<>();
+        Map.Entry<String, Integer> mostRepeated;
+        for(int i=0; i<maxOfWords; i++) {
+            mostRepeated = getMostRepeatedWordInList(words);
+            for(int j=0; j<mostRepeated.getValue(); j++) {
+                words.remove(mostRepeated.getKey());
+            }
+            res.add(mostRepeated.getKey());
+        }
+
+        Collections.sort(res);
+        return res;
+    }
+
+
+    //Metodo che ricava la parola più ricorrente in una lista di stringhe
+    private static Map.Entry<String, Integer> getMostRepeatedWordInList(List<String> words) {
+        Map<String, Integer> stringsCount = new HashMap<>();
+
+        for(String string: words) {
+            Integer count = stringsCount.get(string);
+            if(count == null)  { count = 0; }
+            count++;
+            stringsCount.put(string,count);
+        }
+
+        Map.Entry<String,Integer> mostRepeated = null;
+        for(Map.Entry<String, Integer> e: stringsCount.entrySet()) {
+            if(mostRepeated == null || mostRepeated.getValue()<e.getValue())
+                mostRepeated = e;
+        }
+
+        return mostRepeated;
     }
 }
