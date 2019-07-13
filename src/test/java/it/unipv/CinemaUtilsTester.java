@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(JUnit4.class)
-public class CinemaUtilsTest extends TestCase {
+public class CinemaUtilsTester extends TestCase {
 
     @Test
     public void testIfDateIsInThePast() {

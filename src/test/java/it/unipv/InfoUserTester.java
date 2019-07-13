@@ -62,11 +62,11 @@ public class InfoUserTester extends TestCase {
 
     private void createUser() {
         UserInfo.createUserInfoFileInUserDir( user.getNome()
-                , user.getPassword()
-                , user.getEmail()
-                , user.getCodice()
-                , tmpFolder.getRoot().getAbsolutePath()
-                , getTmpFile().getPath());
+                                            , user.getPassword()
+                                            , user.getEmail()
+                                            , user.getCodice()
+                                            , tmpFolder.getRoot().getAbsolutePath()
+                                            , getTmpFile().getPath());
     }
 
     private File getTmpFile() {

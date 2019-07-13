@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(JUnit4.class)
-public class TestDB extends TestCase {
+public class DBTester extends TestCase {
 
     private DBConnection dbConnection;
 
