@@ -25,7 +25,6 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * Controller di resources/fxml/managerarea/hallPanel.fxml
@@ -105,7 +104,7 @@ public class HallPanelController implements ICloseablePane {
 
     //Metodo utilizzato per creare la singola cella della griglia; una cella contiene la preview, il nome sala, icona rinomina ed icona cancella.
     private void createViewFromPreviews(String hallName, Image preview) {
-        Label nomeSalaLabel = new Label(FilenameUtils.removeExtension(hallName));
+        Label nomeSalaLabel = new Label(hallName);
         nomeSalaLabel.setFont(Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15));
         hallNames.add(nomeSalaLabel.getText());
         nomeSalaLabel.setTextFill(Color.WHITE);

@@ -26,7 +26,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -108,7 +107,7 @@ public class HallListPanelController implements ICloseablePane {
     private void createViewFromPreviews(String hallName, Image preview) {
         Font font = Font.font("system", FontWeight.NORMAL, FontPosture.REGULAR, 15);
 
-        Label nomeSalaLabel = new Label(FilenameUtils.removeExtension(hallName));
+        Label nomeSalaLabel = new Label(hallName);
         nomeSalaLabel.setFont(font);
         nomeSalaLabel.setTextFill(Color.WHITE);
 
