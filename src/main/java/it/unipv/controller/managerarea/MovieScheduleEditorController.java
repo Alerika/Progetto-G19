@@ -42,6 +42,8 @@ public class MovieScheduleEditorController {
     private CustomTimeSpinner timeSpinner;
     private Movie movie;
     private MovieSchedulerController moviePanelController;
+    private List<Schedule> schedules;
+    private List<Movie> movies;
     private MovieDao movieDao;
     private HallDao hallDao;
     private ScheduleDao scheduleDao;
@@ -60,9 +62,15 @@ public class MovieScheduleEditorController {
         this.moviePanelController = movieSchedulerController;
         this.movie = movie;
         GUIUtils.setScaleTransitionOnControl(salvaProgrammazioneButton);
+        initScheduleList();
+        initMovieList();
         initTimePicker();
         initHallSelector();
     }
+
+    private void initScheduleList() { schedules = scheduleDao.retrieveMovieSchedules(); }
+
+    private void initMovieList() { movies =  movieDao.retrieveMovieListWithoutPoster(); }
 
     //Inizializzo la combobox delle sale, prendendo i nomi tramite database (hallDao)
     private void initHallSelector() {
@@ -95,25 +103,29 @@ public class MovieScheduleEditorController {
         } else if(checkIfICanAddThisSchedule(hall, date + " " + time, Integer.parseInt(movie.getDurata())) ) {
             GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore", "C'è già una programmazione in questo periodo!");
         } else {
-            Schedule schedule = new Schedule();
-            schedule.setMovieCode(movie.getCodice());
-            schedule.setDate(date);
-            schedule.setTime(time);
-            schedule.setHallName(hall);
-            scheduleDao.insertNewMovieSchedule(schedule);
+            doSave(date, time, hall);
             moviePanelController.triggerNewScheduleEvent();
             GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Successo", "Operazione riuscita: ", "Salvataggio riuscito correttamente!");
+            initScheduleList();
+            initMovieList();
         }
+    }
+
+    private void doSave(String date, String time, String hall) {
+        Schedule schedule = new Schedule();
+        schedule.setMovieCode(movie.getCodice());
+        schedule.setDate(date);
+        schedule.setTime(time);
+        schedule.setHallName(hall);
+        scheduleDao.insertNewMovieSchedule(schedule);
     }
 
     //Metodo che controlla se la programmazione inserita dal manager è coerente con le altre programmazioni esistenti
     private boolean checkIfICanAddThisSchedule(String hall, String incomingScheduleDate, int incomingMovieDuration) {
-        List<Schedule> schedules = scheduleDao.retrieveMovieSchedules();
         for(Schedule ms : schedules) {
             if( (ms.getDate().trim().equalsIgnoreCase(incomingScheduleDate) && ms.getHallName().trim().equalsIgnoreCase(hall))
              || (ms.getHallName().trim().equalsIgnoreCase(hall)) ) {
                 int existingMovieDuration = 0;
-                List<Movie> movies = movieDao.retrieveMovieListWithoutPoster();
                 for(Movie m : movies) {
                     if(ms.getMovieCode().equalsIgnoreCase(m.getCodice())) {
                         existingMovieDuration = Integer.parseInt(m.getDurata());

@@ -6,12 +6,16 @@ import java.util.List;
 import java.util.Optional;
 
 import it.unipv.controller.common.IManagerAreaTrigger;
+import it.unipv.dao.ScheduleDao;
+import it.unipv.dao.ScheduleDaoImpl;
 import it.unipv.db.DBConnection;
 import it.unipv.dao.HallDao;
 import it.unipv.dao.HallDaoImpl;
 import it.unipv.controller.common.GUIUtils;
 import it.unipv.controller.common.ICloseablePane;
+import it.unipv.model.Schedule;
 import it.unipv.utils.ApplicationException;
+import it.unipv.utils.ApplicationUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -160,46 +164,72 @@ public class HallPanelController implements ICloseablePane {
 
     //Listener al tasto di rimozione sala
     private void removeHall(String hallName) {
-        Optional<ButtonType> option =
-                GUIUtils.showConfirmationAlert( "Attenzione"
-                                              , "Richiesta conferma:"
-                                              , "Vuoi davvero eliminare la piantina " + hallName + "?");
-        if(option.orElse(null)==ButtonType.YES) {
-            managerHomeController.triggerStartStatusEvent("Rimuovo " + hallName + "...");
-            hallDao.removeHallAndPreview(hallName);
-            initHallNameList();
-            initPreview();
-            managerHomeController.triggerToHomeNewHallEvent();
-            refreshUIandHallList();
-            managerHomeController.triggerEndStatusEvent("Piantina " + hallName + " correttamente eliminata!");
+        if (!checkIfIsOccupiedFromProgrammations(hallName)) {
+            Optional<ButtonType> option =
+                    GUIUtils.showConfirmationAlert("Attenzione"
+                                                  , "Richiesta conferma:"
+                                                  , "Vuoi davvero eliminare la piantina " + hallName + "?");
+            if (option.orElse(null) == ButtonType.YES) {
+                doRemove(hallName);
+            }
+        } else {
+            GUIUtils.showAlert( Alert.AlertType.ERROR
+                              , "Errore"
+                              , "Sala occupata: "
+                              , "Impossibile cancellare la sala, è attualmente occupata da delle programmazioni.\nUna volta terminate, sarà possibile cancellarla.");
         }
+
+    }
+
+    //Metodo che si occupa della vera rimozione e dell'aggiornamento delle liste
+    private void doRemove(String hallName) {
+        managerHomeController.triggerStartStatusEvent("Rimuovo " + hallName + "...");
+        hallDao.removeHallAndPreview(hallName);
+        initHallNameList();
+        initPreview();
+        managerHomeController.triggerToHomeNewHallEvent();
+        refreshUIandHallList();
+        managerHomeController.triggerEndStatusEvent("Piantina " + hallName + " correttamente eliminata!");
     }
 
     //Listener al tasto di rinominazione sala
     private void renameHall(String hallName, Label labelToModify, Label renameIcon, Label deleteIcon) {
-        String newHallName = GUIUtils.showInputAlert("Rinomina Sala", "Rinomina " + hallName, "Inserisci il nuovo nome della sala").orElse(null);
-        if(newHallName!=null) {
-            if(!newHallName.trim().equalsIgnoreCase("")) {
-                if(checkIfItIsFree(newHallName)) {
-                    managerHomeController.triggerStartStatusEvent("Rinomino " + hallName + " in " + newHallName + "...");
-                    labelToModify.setText(newHallName);
-                    renameIcon.setTooltip(new Tooltip("Rinomina " + newHallName));
-                    deleteIcon.setTooltip(new Tooltip("Elimina " + newHallName));
-
-                    hallDao.renameHallAndPreview(hallName, newHallName);
-                    initHallNameList();
-                    initPreview();
-
-                    managerHomeController.triggerToHomeNewHallEvent();
-                    GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "Sala rinominata con successo!");
-                    managerHomeController.triggerEndStatusEvent(hallName + " correttamente rinominata!");
+        if(!checkIfIsOccupiedFromProgrammations(hallName)) {
+            String newHallName = GUIUtils.showInputAlert("Rinomina Sala", "Rinomina " + hallName, "Inserisci il nuovo nome della sala").orElse(null);
+            if(newHallName!=null) {
+                if(!newHallName.trim().equalsIgnoreCase("")) {
+                    if(checkIfItIsFree(newHallName)) {
+                            doRename(hallName, labelToModify, renameIcon, deleteIcon, newHallName);
+                    } else {
+                        GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Esiste già una sala con questo nome!");
+                    }
                 } else {
-                    GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Esiste già una sala con questo nome!");
+                    GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi compilare il campo!");
                 }
-            } else {
-                GUIUtils.showAlert(Alert.AlertType.ERROR, "Errore", "Si è verificato un errore:", "Devi compilare il campo!");
             }
+        } else {
+            GUIUtils.showAlert( Alert.AlertType.ERROR
+                    , "Errore"
+                    , "Sala occupata: "
+                    , "Impossibile rinominare la sala, è attualmente occupata da delle programmazioni.\nUna volta terminate, sarà possibile rinominarla.");
         }
+
+    }
+
+    //Metodo che si occupa di rinominare realmente la sala e di segnalare il cambiamento
+    private void doRename(String hallName, Label labelToModify, Label renameIcon, Label deleteIcon, String newHallName) {
+        managerHomeController.triggerStartStatusEvent("Rinomino " + hallName + " in " + newHallName + "...");
+        labelToModify.setText(newHallName);
+        renameIcon.setTooltip(new Tooltip("Rinomina " + newHallName));
+        deleteIcon.setTooltip(new Tooltip("Elimina " + newHallName));
+
+        hallDao.renameHallAndPreview(hallName, newHallName);
+        initHallNameList();
+        initPreview();
+
+        managerHomeController.triggerToHomeNewHallEvent();
+        GUIUtils.showAlert(Alert.AlertType.INFORMATION, "Informazione", "Operazione riuscita: ", "Sala rinominata con successo!");
+        managerHomeController.triggerEndStatusEvent(hallName + " correttamente rinominata!");
     }
 
     private boolean checkIfItIsFree(String name) {
@@ -211,6 +241,19 @@ public class HallPanelController implements ICloseablePane {
             }
         }
         return status;
+    }
+
+    private boolean checkIfIsOccupiedFromProgrammations(String hallName) {
+        ScheduleDao scheduleDao = new ScheduleDaoImpl(dbConnection);
+        List<Schedule> schedules = scheduleDao.retrieveMovieSchedules();
+        for(Schedule s : schedules) {
+            if(s.getHallName().equals(hallName)) {
+                if(!ApplicationUtils.checkIfDateIsInThePast(s.getDate())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     //Listener al tasto "Nuova Sala"
