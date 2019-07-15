@@ -37,6 +37,7 @@ public class Prenotation implements Comparable<Prenotation> {
     public String getSalaFilm() { return salaFilm; }
     public String getPostiSelezionati() { return postiSelezionati; }
     public String getCostoTotale() { return costoTotale; }
+    public void setCostoTotale(String costoTotale) { this.costoTotale = costoTotale; }
 
     @Override
     public int compareTo(Prenotation o) {

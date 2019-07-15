@@ -17,7 +17,7 @@ public class PDFTester extends TestCase {
 
     //Non metto una cartella random perché è utile vedere fisicamente come viene il pdf aprendolo
     private static final String PDFPATH = "test.pdf";
-    private static final String ENCODING = "UTF-8";
+    private static final String ENCODING = "windows-1252";
 
     @Test
     public void testIfPrenotationToPDFIsTrulyCreatingAPDF() {

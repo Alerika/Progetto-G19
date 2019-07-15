@@ -22,6 +22,7 @@ public class CinemaUtilsTester extends TestCase {
     @Test
     public void testIfDateIsInThePast() {
         assertTrue(ApplicationUtils.checkIfDateIsInThePast("02/04/2019"));
+        assertFalse(ApplicationUtils.checkIfDateIsInThePast("20/07/2400"));
     }
 
     @Test
@@ -33,6 +34,7 @@ public class CinemaUtilsTester extends TestCase {
         m2.setDate("03/04/2019");
         m2.setTime("21:00");
         assertEquals(1, m1.compareTo(m2));
+        assertEquals(-1, m2.compareTo(m1));
     }
 
     @Test
@@ -59,7 +61,7 @@ public class CinemaUtilsTester extends TestCase {
 
         for(String s : res) { System.out.println(s); }
 
-        //Controllo se sono 12 posti realmente
+        //Controllo se sono 13 posti realmente
         assertEquals(13, res.size());
     }
 

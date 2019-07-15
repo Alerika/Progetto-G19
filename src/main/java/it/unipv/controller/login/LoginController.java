@@ -150,8 +150,6 @@ public class LoginController {
 
     private void doExit(){ ((Stage) loginButton.getScene().getWindow()).close(); }
 
-    /* Metodo che viene invocato dal form di reset password, se invocato vuol dire che è stata resettata una password
-     *     e si ha necessità di ricaricare la lista utenti
-    */
+    /** Notifica il reset di una password utente */
     void triggerResettedPasswordEvent() { initUserList(); }
 }

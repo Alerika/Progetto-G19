@@ -116,6 +116,13 @@ public class MovieListPanelController {
         posterPreview.setPreserveRatio(true);
         posterPreview.setFitWidth(200);
 
+        Label posterPreviewLabel = new Label();
+        posterPreviewLabel.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        posterPreviewLabel.setGraphic(posterPreview);
+        posterPreviewLabel.setTooltip(new Tooltip(movie.getTitolo() + " (" + getRealMovieType(movie.getTipo()) + ")"));
+
+        GUIUtils.setScaleTransitionOnControl(posterPreviewLabel);
+
         AnchorPane anchor = new AnchorPane();
 
         if (columnCount == columnMax) {
@@ -129,16 +136,18 @@ public class MovieListPanelController {
         movieScroll.setContent(filmGrid);
         GridPane.setMargin(anchor, new Insets(15, 0, 5, 15));
 
-        anchor.getChildren().addAll(posterPreview);
-        posterPreview.setLayoutX(30);
+        anchor.getChildren().addAll(posterPreviewLabel);
+        posterPreviewLabel.setLayoutX(30);
         if (rowCount == 0) {
-            posterPreview.setLayoutY(20);
+            posterPreviewLabel.setLayoutY(20);
         }
 
         //Segnalo alla home che l'utente ha cliccato sul film e quindi bisogna mostrare le informazioni riguardanti quel film
-        posterPreview.setOnMouseClicked(e -> homeController.triggerMovieClicked(movie));
+        posterPreviewLabel.setOnMouseClicked(e -> homeController.triggerMovieClicked(movie));
+    }
 
-        GUIUtils.setScaleTransitionOnControl(posterPreview);
+    private String getRealMovieType(MovieTYPE type) {
+        return type.equals(MovieTYPE.TWOD) ? "2D" : "3D";
     }
 
     //Metodo che si occupa dell'animazione del menu a tendina dei generi

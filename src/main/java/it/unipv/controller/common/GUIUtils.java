@@ -216,7 +216,7 @@ public class GUIUtils {
 
         try{
             if(f!=null) {
-                PrenotationToPDF.generatePDF(f.getPath(), "UTF-8", toSave);
+                PrenotationToPDF.generatePDF(f.getPath(), "windows-1252", toSave);
                 showAlert(Alert.AlertType.CONFIRMATION, "Conferma", "Operazione riuscita:", "Prenotazione correttamente salvata!\nPer pagare presentarsi con la fattura alla reception!");
             }
         } catch (Exception ex) {

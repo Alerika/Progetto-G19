@@ -102,19 +102,17 @@ public class MoviePrenotationController implements ICloseablePane {
     private void initSchedules(String date, Movie movie) {
         List<Schedule> allSchedules = scheduleDao.retrieveMovieSchedules();
         Collections.sort(allSchedules);
-        String ora = "";
         for (Schedule ms : allSchedules) {
             if (ms.getDate().equals(date) && ms.getMovieCode().equals(movie.getCodice())) {
-                if (!ora.equals(ms.getTime())) {
-                    schedules.add(ms);
-                    ora = ms.getTime();
-                }
+                schedules.add(ms);
             }
         }
     }
 
-    private void initListOfHallNames() { completeHallNameList = hallDao.retrieveHallNames(); }
-
+    private void initListOfHallNames() {
+        completeHallNameList = hallDao.retrieveHallNames();
+        Collections.sort(completeHallNameList);
+    }
     private void initPrices() { prices = pricesDao.retrievePrices(); }
 
     private void initPrenotationList() { prenotations = prenotationDao.retrievePrenotationList(); }
@@ -146,26 +144,30 @@ public class MoviePrenotationController implements ICloseablePane {
         double x = initalX + 230;
         double y = 50;
         int count = 0;
+        String ora = "";
         for (Schedule ms : schedules) {
-            Label hourLabel = new Label("  " + ms.getTime() + "  ");
-            hourLabel.setTextFill(Color.WHITE);
-            hourLabel.setFont(font);
-            hourLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
+            if(!ms.getTime().equals(ora)) {
+                Label hourLabel = new Label("  " + ms.getTime() + "  ");
+                hourLabel.setTextFill(Color.WHITE);
+                hourLabel.setFont(font);
+                hourLabel.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
 
-            setHourLabelListener(font, hourLabel);
+                setHourLabelListener(font, hourLabel);
 
-            if (count >= 5) {
-                y += 50;
-                x = initalX + 230;
-                count = 0;
+                if (count >= 5) {
+                    y += 50;
+                    x = initalX + 230;
+                    count = 0;
+                }
+
+                hourLabel.setLayoutX(x);
+                hourLabel.setLayoutY(y);
+                x += 100;
+                count++;
+                listOfHourLabels.add(hourLabel);
+                orariPanel.getChildren().add(hourLabel);
             }
-
-            hourLabel.setLayoutX(x);
-            hourLabel.setLayoutY(y);
-            x += 100;
-            count++;
-            listOfHourLabels.add(hourLabel);
-            orariPanel.getChildren().add(hourLabel);
+            ora = ms.getTime();
         }
     }
 
@@ -242,6 +244,7 @@ public class MoviePrenotationController implements ICloseablePane {
                 res.add(ms.getHallName());
             }
         }
+        Collections.sort(res);
         return res;
     }
 
