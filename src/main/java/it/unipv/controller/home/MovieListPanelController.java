@@ -33,6 +33,7 @@ public class MovieListPanelController {
     private MovieDao movieDao;
     private GridPane filmGrid = new GridPane();
     private List<Movie> movies = new ArrayList<>();
+    private List<Movie> filteredMovies = new ArrayList<>();
     private static int rowCount = 0;
     private static int columnCount = 0;
     private static int columnMax = 0;
@@ -70,7 +71,7 @@ public class MovieListPanelController {
         homeController.triggerStartStatusEvent("Carico i film programmati...");
         Platform.runLater(() -> {
             initMovieList();
-            initMovieGrid();
+            initMovieGrid(movies);
         });
         homeController.triggerEndStatusEvent("Film programmati correttamente caricati!");
     }
@@ -91,7 +92,7 @@ public class MovieListPanelController {
     }
 
     //Metodo che crea la visualizzazione in griglia dei film
-    private void initMovieGrid(){
+    private void initMovieGrid(List<Movie> movies){
         filmGrid.getChildren().clear();
         filmGrid.setHgap(120);
         filmGrid.setVgap(80);
@@ -197,7 +198,6 @@ public class MovieListPanelController {
         }
 
         animationGenere();
-        isGridFiltered = true;
     }
 
     //Metodo che si occupa di spostare il rettangolo da 2D a 3D e di filtrare la griglia dei film in base a ciò che viene cliccato dall'utente;
@@ -235,46 +235,54 @@ public class MovieListPanelController {
                 type = MovieTYPE.THREED;
                 break;
         }
-        isGridFiltered = true;
     }
 
     //Metodo che crea la griglia a seconda del tipo (2D o 3D) cliccato (in questo caso, il genere non è già stato scelto)
     private void filterMoviesByMovieTYPE(MovieTYPE type) {
+        filteredMovies.clear();
         filmGrid.getChildren().clear();
         for(Movie m : movies) {
             if(m.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
                 if(m.getTipo().equals(type)) {
                     addMovie(m);
+                    filteredMovies.add(m);
                 }
             }
         }
         initRowAndColumnCount();
+        isGridFiltered = true;
     }
 
     //Metodo che crea la griglia a seconda del genere cliccato (in questo caso il tipo 2D o 3D non è già stato scelto)
     private void filterMoviesByMovieGenre(String genere) {
         filmGrid.getChildren().clear();
+        filteredMovies.clear();
         for(Movie m : movies) {
             if(m.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
                 if(m.getGenere().toLowerCase().contains(genere.toLowerCase())) {
                     addMovie(m);
+                    filteredMovies.add(m);
                 }
             }
         }
         initRowAndColumnCount();
+        isGridFiltered = true;
     }
 
     //Metodo che crea la griglia a seconda del genere e del tipo cliccato
     private void filterMoviesByMovieTYPEAndMovieGenre(MovieTYPE type, String genere) {
         filmGrid.getChildren().clear();
+        filteredMovies.clear();
         for(Movie m : movies) {
             if(m.getStatus().equals(MovieStatusTYPE.AVAILABLE)) {
                 if(m.getGenere().toLowerCase().contains(genere.toLowerCase()) && m.getTipo().equals(type)) {
                     addMovie(m);
+                    filteredMovies.add(m);
                 }
             }
         }
         initRowAndColumnCount();
+        isGridFiltered = true;
     }
 
     /** Metodo invocato dalla Home quando viene segnalato un evento riguardante la lista film; a questo punto si ricrea l'interfaccia */
@@ -289,7 +297,11 @@ public class MovieListPanelController {
                 columnMax = getColumnMaxFromPageWidth(stage.getWidth());
                 if (temp != columnMax) {
                     temp = columnMax;
-                    initMovieGrid();
+                    if(isGridFiltered) {
+                        initMovieGrid(filteredMovies);
+                    } else {
+                        initMovieGrid(movies);
+                    }
                 }
             });
         });
